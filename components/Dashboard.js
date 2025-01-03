@@ -11,8 +11,11 @@ import {
   CircleUserRound,
 } from "lucide-react";
 import Sidebar, { SidebarItem } from "@/components/Sidebar";
+import { useSession } from "next-auth/react";
 
 const Dashboard = ({ children }) => {
+  const { data: session } = useSession();
+  console.log(session);
   return (
     <>
       <div>
@@ -49,8 +52,17 @@ const Dashboard = ({ children }) => {
                   </div>
 
                   <div className="text-sm">
-                    <p className="font-bold">KSVJ</p>
-                    <p>abc@gmail.com</p>
+                    {session ? (
+                      <>
+                        <p className="font-bold">{session.user.name}</p>
+                        <p>{session.user.email}</p>
+                      </>
+                    ) : (
+                      <>
+                        <p className="font-bold">Guest</p>
+                        <p>guest@example.com</p>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>

@@ -39,9 +39,17 @@ export const authOptions = {
           // Check if user exists
           if (result.recordset.length > 0) {
             const user = result.recordset[0];
+            console.log(user);
             return {
-              id: user.UserName,
+              id: user.UserId,
               name: user.UserName,
+              firstName: user.FirstName,
+              lastName: user.LastName,
+              cnic: user.CNICNo,
+              email: user.Email,
+              gender: user.Gender,
+              companyId: user.CompanyId,
+              roleId: user.RoleId,
             }; // Return user object for session
           } else {
             throw new Error("Invalid username or password");
@@ -64,7 +72,13 @@ export const authOptions = {
       if (user) {
         token.id = user.id;
         token.name = user.name;
+        token.firstName = user.firstName;
+        token.lastName = user.lastName;
+        token.cnic = user.cnic;
         token.email = user.email;
+        token.gender = user.gender;
+        token.companyId = user.companyId;
+        token.roleId = user.roleId;
       }
       return token;
     },
@@ -72,7 +86,13 @@ export const authOptions = {
       session.user = {
         id: token.id,
         name: token.name,
+        firstName: token.firstName,
+        lastName: token.lastName,
+        cnic: token.cnic,
         email: token.email,
+        gender: token.gender,
+        companyId: token.companyId,
+        roleId: token.roleId,
       };
       return session;
     },
