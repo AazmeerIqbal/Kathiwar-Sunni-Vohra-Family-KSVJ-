@@ -25,6 +25,7 @@ export const SignupForm = ({ setIsLogin }) => {
     const templateParams = {
       from_name: "KSVJ",
       to_email: formData.email,
+      cnic: formData.cnic,
       message: `Welcome ${formData.firstName} ${formData.lastName}! We are thrilled to have you onboard.`,
       link: "http://161.97.145.87:8075/login",
     };
