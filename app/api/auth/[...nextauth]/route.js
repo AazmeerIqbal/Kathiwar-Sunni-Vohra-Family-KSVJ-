@@ -19,20 +19,21 @@ export const authOptions = {
         },
       },
       async authorize(credentials) {
-        const { username, password } = credentials;
+        const { cnic, password } = credentials;
 
         let pool;
         try {
           // Connect to the database
           pool = await connectToDB();
+          console.log(cnic);
 
           // Query the database to find the user
           const result = await pool
             .request()
-            .input("username", sql.VarChar, username)
+            .input("cnic", sql.VarChar, cnic)
             .input("password", sql.VarChar, encrypt(password))
             .query(
-              "SELECT UserName, UserPassword FROM Users WHERE UserName = @username AND UserPassword = @password"
+              "SELECT * FROM Users WHERE CNICNo = @cnic AND UserPassword = @password"
             );
 
           // Check if user exists
@@ -63,6 +64,7 @@ export const authOptions = {
       if (user) {
         token.id = user.id;
         token.name = user.name;
+        token.email = user.email;
       }
       return token;
     },
@@ -70,10 +72,12 @@ export const authOptions = {
       session.user = {
         id: token.id,
         name: token.name,
+        email: token.email,
       };
       return session;
     },
   },
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
 const handler = NextAuth(authOptions);

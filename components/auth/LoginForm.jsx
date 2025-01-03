@@ -5,6 +5,7 @@ import { Button } from "../ui/Button";
 import { validateEmail } from "@/utils/validation";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import CNICInput from "@/utils/CnicFormatter";
 
 // Notification Toaster
 import { ToastContainer, toast } from "react-toastify";
@@ -13,7 +14,7 @@ import "react-toastify/dist/ReactToastify.css";
 export const LoginForm = ({ isAdmin, onToggleMode }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    email: "",
+    cnic: "",
     password: "",
     rememberMe: false,
   });
@@ -22,6 +23,7 @@ export const LoginForm = ({ isAdmin, onToggleMode }) => {
   const router = useRouter();
 
   const handleSubmit = async (e) => {
+    console.log(formData);
     e.preventDefault();
     setErrors({});
     const newErrors = {};
@@ -42,7 +44,7 @@ export const LoginForm = ({ isAdmin, onToggleMode }) => {
       // Call the signIn function
       const result = await signIn("credentials", {
         redirect: false, // Prevent automatic redirection
-        username: formData.email,
+        cnic: formData.cnic,
         password: formData.password,
       });
 
@@ -82,16 +84,12 @@ export const LoginForm = ({ isAdmin, onToggleMode }) => {
   return (
     <>
       <form onSubmit={handleSubmit} className="space-y-6">
-        <Input
-          label="Username"
-          type="text"
-          placeholder="abc"
-          value={formData.email}
-          onChange={(e) =>
-            setFormData((prev) => ({ ...prev, email: e.target.value }))
-          }
-          error={errors.email}
-          icon={<User className="w-5 h-5" />}
+        <CNICInput
+          label="CNIC #"
+          placeholder="Enter CNIC"
+          formData={formData}
+          setFormData={setFormData}
+          errors={errors}
         />
 
         <Input

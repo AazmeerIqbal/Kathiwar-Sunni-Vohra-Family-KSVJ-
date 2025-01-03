@@ -4,7 +4,7 @@ const config = {
   user: "sa",
   password: "test",
   server: "AZMEER",
-  database: "ifapk",
+  database: "KSVJ",
   options: {
     trustServerCertificate: true,
     trustedConnection: false,

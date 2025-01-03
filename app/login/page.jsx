@@ -12,14 +12,12 @@ const Login = () => {
     <AuthLayout
       title={
         isLogin
-          ? `KSVJ - ${isAdmin ? "Admin" : "User"} Login`
+          ? `KSVJ - ${isAdmin ? "Admin" : "Member"} Login`
           : "Create Account"
       }
       subtitle={
         isLogin
-          ? `Welcome back! Please enter your details to ${
-              isAdmin ? "manage your dashboard" : "access your account"
-            }.`
+          ? `Welcome back!`
           : "Fill in the information below to create your account."
       }
     >
@@ -41,7 +39,7 @@ const Login = () => {
         </>
       ) : (
         <>
-          <SignupForm />
+          <SignupForm setIsLogin={setIsLogin} />
           <p className="text-center text-sm text-gray-600">
             Already have an account?{" "}
             <button
