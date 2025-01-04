@@ -149,7 +149,7 @@ export const SignupForm = ({ setIsLogin }) => {
       }
     } catch (error) {
       console.error("Error during signup:", error);
-      alert("An error occurred. Please try again later.");
+      alert(error.message);
     } finally {
       setIsLoading(false);
     }

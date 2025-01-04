@@ -46,8 +46,28 @@ export async function POST(req) {
     VALUES (@Username, @FirstName, @LastName, @Email, @MemberId, @CNICNo, @UserPassword, @Gender, @CompanyId, @RoleId);
   `;
 
+  const checkUsernameQuery = `
+    SELECT UserId 
+    FROM Users 
+    WHERE UserName = @Username;
+  `;
+
   try {
     const pool = await connectToDB(config);
+
+    // Check if the username already exists
+    const result = await pool
+      .request()
+      .input("Username", username)
+      .query(checkUsernameQuery);
+
+    if (result.recordset.length > 0) {
+      // Username already exists
+      return NextResponse.json(
+        { message: "Username already exists" },
+        { status: 400 }
+      );
+    }
 
     // Insert user data into the database
     await pool
