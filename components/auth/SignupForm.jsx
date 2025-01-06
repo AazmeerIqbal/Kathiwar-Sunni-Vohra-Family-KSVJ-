@@ -5,6 +5,8 @@ import { Button } from "../ui/Button";
 import { validateEmail, validatePassword } from "../../utils/validation";
 import CNICInput from "@/utils/CnicFormatter";
 import emailjs from "@emailjs/browser";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export const SignupForm = ({ setIsLogin }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -97,7 +99,6 @@ export const SignupForm = ({ setIsLogin }) => {
       newErrors.confirmPassword = "Passwords do not match";
     }
 
-    // If there are validation errors, show them
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -126,8 +127,9 @@ export const SignupForm = ({ setIsLogin }) => {
       const data = await response.json();
 
       if (response.ok) {
-        console.log("Signup successful:", data);
-        alert("Signup successful!");
+        toast.success("Signup successful!", {
+          position: "bottom-center",
+        });
 
         SendEmail(formData);
 
@@ -144,12 +146,14 @@ export const SignupForm = ({ setIsLogin }) => {
         });
         setIsLogin(true);
       } else {
-        console.error("Signup failed:", data);
-        alert(data.message || "Signup failed. Please try again.");
+        toast.error(data.message || "Signup failed. Please try again.", {
+          position: "bottom-center",
+        });
       }
     } catch (error) {
-      console.error("Error during signup:", error);
-      alert(error.message);
+      toast.error(error.message, {
+        position: "bottom-center",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -280,6 +284,7 @@ export const SignupForm = ({ setIsLogin }) => {
       <Button type="submit" isLoading={isLoading} fullWidth>
         {isLoading ? "Creating Account..." : "Create Account"}
       </Button>
+      <ToastContainer />
     </form>
   );
 };

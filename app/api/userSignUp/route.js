@@ -46,6 +46,12 @@ export async function POST(req) {
     VALUES (@Username, @FirstName, @LastName, @Email, @MemberId, @CNICNo, @UserPassword, @Gender, @CompanyId, @RoleId);
   `;
 
+  const checkCnicQuery = `
+    SELECT CNICNo 
+    FROM tb_member_mst
+    WHERE CNICNo = @CNICNo;
+  `;
+
   const checkUsernameQuery = `
     SELECT UserId 
     FROM Users 
@@ -55,41 +61,58 @@ export async function POST(req) {
   try {
     const pool = await connectToDB(config);
 
-    // Check if the username already exists
-    const result = await pool
+    const CnicResult = await pool
       .request()
-      .input("Username", username)
-      .query(checkUsernameQuery);
+      .input("CNICNo", cnic)
+      .query(checkCnicQuery);
 
-    if (result.recordset.length > 0) {
-      // Username already exists
+    if (CnicResult.recordset.length > 0) {
+      // Check if the username already exists
+      const result = await pool
+        .request()
+        .input("Username", username)
+        .query(checkUsernameQuery);
+
+      if (result.recordset.length > 0) {
+        // Username already exists
+        return NextResponse.json(
+          { message: "Username already exists" },
+          { status: 400 }
+        );
+      }
+
+      // Insert user data into the database
+      await pool
+        .request()
+        .input("Username", username)
+        .input("FirstName", firstName)
+        .input("LastName", lastName)
+        .input("Email", email)
+        .input("MemberId", memberId || null) // If memberId is null, set it to NULL in the DB
+        .input("CNICNo", cnic)
+        .input("UserPassword", encrypt(password))
+        .input("Gender", genderValue)
+        .input("CompanyId", "12")
+        .input("RoleId", "55")
+        .query(insertQuery);
+
+      await closeConnection(pool);
+
       return NextResponse.json(
-        { message: "Username already exists" },
+        { message: "User created successfully" },
+        { status: 201 }
+      );
+    } else {
+      return NextResponse.json(
+        {
+          message:
+            "Cnic: " +
+            cnic +
+            " is not registered, please contact to main office",
+        },
         { status: 400 }
       );
     }
-
-    // Insert user data into the database
-    await pool
-      .request()
-      .input("Username", username)
-      .input("FirstName", firstName)
-      .input("LastName", lastName)
-      .input("Email", email)
-      .input("MemberId", memberId || null) // If memberId is null, set it to NULL in the DB
-      .input("CNICNo", cnic)
-      .input("UserPassword", encrypt(password))
-      .input("Gender", genderValue)
-      .input("CompanyId", "12")
-      .input("RoleId", "55")
-      .query(insertQuery);
-
-    await closeConnection(pool);
-
-    return NextResponse.json(
-      { message: "User created successfully" },
-      { status: 201 }
-    );
   } catch (error) {
     console.error("Error inserting user data:", error);
 
