@@ -58,6 +58,18 @@ export async function POST(req) {
     WHERE UserName = @Username;
   `;
 
+  const checkCnicQueryInUser = `
+    SELECT UserId 
+    FROM Users 
+    WHERE CNICNo = @CNICNo;
+  `;
+
+  const checkEmailQueryInUser = `
+  SELECT Email 
+  FROM Users 
+  WHERE Email = @Email;
+`;
+
   try {
     const pool = await connectToDB(config);
 
@@ -77,6 +89,34 @@ export async function POST(req) {
         // Username already exists
         return NextResponse.json(
           { message: "Username already exists" },
+          { status: 400 }
+        );
+      }
+
+      // Check if the Cnic already exists
+      const result2 = await pool
+        .request()
+        .input("CNICNo", cnic)
+        .query(checkCnicQueryInUser);
+
+      if (result2.recordset.length > 0) {
+        // Username already exists
+        return NextResponse.json(
+          { message: "Cnic already exists" },
+          { status: 400 }
+        );
+      }
+
+      // Check if the Email already exists
+      const result3 = await pool
+        .request()
+        .input("Email", email)
+        .query(checkEmailQueryInUser);
+
+      if (result3.recordset.length > 0) {
+        // Username already exists
+        return NextResponse.json(
+          { message: "Email already exists" },
           { status: 400 }
         );
       }

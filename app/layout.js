@@ -6,6 +6,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { SessionProvider, useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
 import Login from "./login/page";
+import ResetPassword from "./reset-password/page";
 import Dashboard from "@/components/Dashboard";
 
 const geistSans = Geist({
@@ -54,8 +55,13 @@ export default function RootLayout({ children }) {
         <SessionProvider>
           <div className="main">
             <main className="app">
-              {pathname === "/login" ? (
-                <Login />
+              {pathname === "/login" || pathname === "/reset-password" ? (
+                // Allow the resetPassword page to be rendered without authentication
+                pathname === "/login" ? (
+                  <Login />
+                ) : (
+                  children // This will render the ResetPassword page
+                )
               ) : (
                 <AuthWrapper>
                   <Dashboard>{children}</Dashboard>
