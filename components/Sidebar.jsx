@@ -4,16 +4,26 @@ import { ChevronFirst, ChevronLast, MoreVertical, LogOut } from "lucide-react";
 import Link from "next/link";
 import { createContext, useContext, useState } from "react";
 import { signOut } from "next-auth/react";
+import GradientText from "./ui/GradientText";
 
 const SidebarContext = createContext();
 
-export default function Sidebar({ children }) {
+export default function Sidebar({ children, onToggle }) {
   const [expanded, setExpanded] = useState(false);
 
   const handleLogout = (e) => {
     e.preventDefault();
     signOut({ callbackUrl: "/login" });
   };
+
+  const toggleSidebar = () => {
+    setExpanded((curr) => {
+      const newState = !curr;
+      if (onToggle) onToggle(newState); // Pass the updated state to the parent
+      return newState;
+    });
+  };
+
   return (
     <>
       <aside className="h-screen">
@@ -25,15 +35,22 @@ export default function Sidebar({ children }) {
                 expanded ? "w-32" : "w-0"
               }`}
             /> */}
-            <p
-              className={`overflow-hidden transition-all text-3xl font-bold tracking-wide ${
-                expanded ? "w-32" : "w-0"
+            <span
+              className={`overflow-hidden transition-all text-3xl  font-bold tracking-wide ${
+                expanded ? "ml-2" : "w-0"
               }`}
             >
-              KSVJ
-            </p>
+              <GradientText
+                colors={["#00e5ff", "#0047ab", "#00e5ff"]}
+                animationSpeed={4}
+                showBorder={false}
+                className="text-start"
+              >
+                KSVJ
+              </GradientText>
+            </span>
             <button
-              onClick={() => setExpanded((curr) => !curr)}
+              onClick={toggleSidebar}
               className="p-1.5 rounded-lg bg-gray-50 hover:bg-gray-100"
             >
               {expanded ? <ChevronFirst /> : <ChevronLast />}

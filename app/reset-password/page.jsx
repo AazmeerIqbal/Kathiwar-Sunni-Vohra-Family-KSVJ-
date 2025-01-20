@@ -1,8 +1,8 @@
 "use client";
-import { useSearchParams, useRouter } from "next/navigation"; // Correct hooks for App Router
-import { useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useState, Suspense } from "react";
 
-const ResetPassword = () => {
+const ResetPasswordForm = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const token = searchParams.get("token"); // Get the token from query params
@@ -81,6 +81,14 @@ const ResetPassword = () => {
         Reset Password
       </button>
     </form>
+  );
+};
+
+const ResetPassword = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPasswordForm />
+    </Suspense>
   );
 };
 
