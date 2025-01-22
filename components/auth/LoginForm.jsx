@@ -47,7 +47,7 @@ export const LoginForm = ({ isAdmin, onToggleMode }) => {
           console.log("SUCCESS!", result.status, result.text);
         },
         (error) => {
-          console.error("FAILED...", error);
+          console.log("FAILED...", error);
           alert("Failed to send the reset email. Please try again.");
         }
       );
@@ -152,7 +152,7 @@ export const LoginForm = ({ isAdmin, onToggleMode }) => {
           progress: undefined,
         });
 
-        console.error("Login failed:", result.error);
+        console.log("Login failed:", result.error);
         setErrors({ general: "Invalid username or password" });
       }
     } catch (error) {
@@ -167,7 +167,7 @@ export const LoginForm = ({ isAdmin, onToggleMode }) => {
         progress: undefined,
       });
 
-      console.error("Unexpected error:", error);
+      console.log("Unexpected error:", error);
     }
   };
 

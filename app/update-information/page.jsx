@@ -1,25 +1,113 @@
-import React from "react";
-import { RxUpdate } from "react-icons/rx";
+"use client";
+import React, { useState } from "react";
 import { RiDownloadCloud2Fill } from "react-icons/ri";
-import GradientText from "@/components/ui/GradientText";
+import { FaPlus } from "react-icons/fa";
+import { ButtonInfoHover } from "@/components/ui/ButtonInfoHover";
+import { useSession } from "next-auth/react";
+
+// Notification Toaster
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Page = () => {
-  return (
-    <div className="m-4">
-      <div className="flex justify-between items-center">
-        <h1 className="text-xl font-bold">Update Information</h1>
+  const { data: session } = useSession();
+  const [Loading, setLoading] = useState(false);
+  const [UserData, setUserData] = useState([]);
 
-        <div className="group relative">
-          <button className="cursor-pointer group/download relative flex gap-1 px-4 py-2 bg-[#5c5fe9] text-[#f1f1f1] rounded-3xl hover:bg-opacity-70 font-semibold shadow-xl active:shadow-inner transition-all duration-300">
-            <RiDownloadCloud2Fill className="text-xl my-auto" />
-            Fetch
-          </button>
-          <div className="absolute text-xs scale-0 rounded-md py-2 px-2 bg-[#5c5fe9]  mt-3 top-full group-hover:scale-100 origin-top transition-all duration-300 shadow-lg before:content-[''] before:absolute before:bottom-full before:left-2/4 before:w-3 before:h-3 before:border-solid before:bg-[#5c5fe9] before:rotate-45 before:translate-y-2/4 before:-translate-x-2/4 text-white">
-            Fetch current data from the server
+  // Personal Information Toggle
+  const [toggle, setToggle] = useState(false);
+
+  const handleFetchData = async () => {
+    try {
+      setLoading(true);
+      // Log the CNIC from the session
+      console.log(session.user.cnic);
+
+      // Construct the API URL
+      const apiUrl = `/api/update-information/${session.user.cnic}`;
+
+      // Make the API call
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      // Parse the response
+      const result = await response.json();
+
+      // Check if the response is successful
+      if (response.ok) {
+        setLoading(false);
+        toast.success("User Data Fetched Successfully", {
+          position: "top-right",
+        });
+        setUserData(result.data.recordset[0]);
+        console.log("Data fetched successfully:", UserData);
+        // Handle success (e.g., update state, display a message, etc.)
+      } else {
+        setLoading(false);
+        console.error("Error fetching data:", result.message);
+        // Handle error (e.g., show an error message to the user)
+      }
+    } catch (error) {
+      setLoading(false);
+      console.error("Error calling API:", error);
+    }
+  };
+
+  return (
+    <>
+      <div className="m-4">
+        <div className="flex justify-between items-center">
+          <h1 className="text-xl font-bold">Update Information</h1>
+
+          <div className="group relative">
+            <ButtonInfoHover
+              text={"Fetch"}
+              info={"Fetch current data from the server"}
+              icon={<RiDownloadCloud2Fill className="text-xl my-auto" />}
+              Loading={Loading}
+              handleFetchData={handleFetchData}
+            />
+          </div>
+        </div>
+
+        {/* Personal Information */}
+        <div className="w-full mt-4 bg-white shadow-lg rounded-lg border border-gray-200">
+          <div
+            className="flex justify-between items-center p-4 bg-[#2E5077] text-white cursor-pointer rounded-t-lg"
+            onClick={() => setToggle((prev) => !prev)}
+          >
+            <h2 className="font-semibold text-lg">Personal Information</h2>
+            <span
+              className={`transform transition-transform ${
+                toggle ? "rotate-45" : "rotate-0"
+              }`}
+            >
+              <FaPlus />
+            </span>
+          </div>
+
+          {/* Collapsible Content - Personal Information */}
+          <div
+            className={`overflow-hidden transition-all duration-300 ${
+              toggle ? "max-h-[500px]" : "max-h-0"
+            }`}
+          >
+            <div className="p-4 text-gray-700">
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus
+                lacinia odio vitae vestibulum vestibulum. Cras venenatis euismod
+                malesuada.
+              </p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+      <ToastContainer />
+    </>
   );
 };
 

@@ -45,7 +45,7 @@ export const SignupForm = ({ setIsLogin }) => {
           // alert("Welcome email sent successfully!");
         },
         (error) => {
-          console.error("FAILED...", error);
+          console.log("FAILED...", error);
           alert("Failed to send the welcome email. Please try again.");
         }
       );

@@ -56,7 +56,7 @@ const Dashboard = ({ children }) => {
         <div className="w-full">
           <div className="w-full h-16 border-r shadow-sm">
             <div className="flex justify-between h-full items-center p-6">
-              <div className="font-bold text-3xl">
+              <div className="font-bold md:text-3xl text-2xl">
                 {isSidebarOpen ? (
                   ""
                 ) : (
@@ -70,12 +70,12 @@ const Dashboard = ({ children }) => {
                   </GradientText>
                 )}{" "}
               </div>
-              <div className="flex gap-3">
-                <div className="cursor-pointer border-2 border-gray-300 rounded-full p-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <CircleUserRound className="text-white w-8 h-8" />
+              <div className="flex md:gap-3 gap-2 items-center">
+                <div className="cursor-pointer border-2 border-gray-300 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-lg hover:shadow-xl transition-shadow duration-300 p-1 ">
+                  <CircleUserRound className="text-white md:h-8 md:w-8 h-6 w-6" />
                 </div>
 
-                <div className="text-sm">
+                <div className="md:text-sm text-xs">
                   {session ? (
                     <>
                       <p className="font-bold">{session.user.name}</p>
