@@ -26,8 +26,8 @@ export default function Sidebar({ children, onToggle }) {
 
   return (
     <>
-      <aside className="h-screen">
-        <nav className="h-full flex flex-col bg-white border-r shadow-sm">
+      <aside className="min-h-screen">
+        <nav className="min-h-full flex flex-col bg-white border-r shadow-sm">
           <div className="p-4 pb-2 flex justify-between items-center">
             {/* <img
               src={logo}
@@ -61,7 +61,7 @@ export default function Sidebar({ children, onToggle }) {
             <ul className="flex-1 px-3">{children}</ul>
           </SidebarContext.Provider>
 
-          <div className="border-t flex p-3 ">
+          <div className="border-t flex p-3 sticky bottom-0 bg-white">
             {/* <img src={profile} className="w-10 h-10 rounded-md" /> */}
             <div className="flex justify-between items-center overflow-hidden transition-all w-full mx-3">
               <div className={`leading-4 ${expanded ? "block" : "hidden"}`}>
