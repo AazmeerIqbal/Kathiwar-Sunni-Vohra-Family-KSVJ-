@@ -2,19 +2,16 @@ import { connectToDB, closeConnection, config } from "@/utils/database";
 import { NextResponse } from "next/server";
 
 export async function GET(req, { params }) {
-  const { cnic } = params;
+  const { cnic } = await params;
 
   try {
     // Establish database connection
     const pool = await connectToDB(config);
 
     // Run queries to fetch data from multiple tables
-    const familyResult = await pool
+    const MembersResult = await pool
       .request()
-      .query("SELECT * FROM tb_member_family_mst");
-    const countryResult = await pool
-      .request()
-      .query("SELECT * FROM CountryMaster");
+      .query("SELECT * FROM tb_member_mst_test where IsUpdatedFlag = 1");
 
     // Close the database connection
     await closeConnection(pool);
@@ -22,8 +19,7 @@ export async function GET(req, { params }) {
     // Return success response with all fetched data
     return NextResponse.json({
       message: "Query executed successfully.",
-      family: familyResult.recordset,
-      countries: countryResult.recordset,
+      Members: MembersResult.recordset,
     });
   } catch (error) {
     // Handle and log errors

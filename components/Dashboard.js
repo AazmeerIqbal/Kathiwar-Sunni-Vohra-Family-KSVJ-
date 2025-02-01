@@ -11,7 +11,7 @@ import {
   Settings,
   CircleUserRound,
 } from "lucide-react";
-import { IoMdInformationCircleOutline } from "react-icons/io";
+import { IoMdInformationCircleOutline, IoIosDocument } from "react-icons/io";
 
 import { usePathname } from "next/navigation";
 
@@ -23,7 +23,7 @@ const Dashboard = ({ children }) => {
   const { data: session } = useSession();
   const pathname = usePathname(); // Get the current path
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  console.log(session);
+  // console.log(session);
   const handleSidebarToggle = (isOpen) => {
     setIsSidebarOpen(isOpen);
     console.log("Sidebar is now:", isOpen ? "Open" : "Closed");
@@ -39,11 +39,20 @@ const Dashboard = ({ children }) => {
               alert
             />
           </Link>
-          <Link href="/update-information">
+          <Link href={`/update-information?cnic=${session.user.cnic}`}>
             <SidebarItem
               icon={<IoMdInformationCircleOutline size={20} />}
               text="Update Information"
-              active={pathname?.includes("/update-information")}
+              active={pathname?.includes(
+                `/update-information?cnic=${session.user.cnic}`
+              )}
+            />
+          </Link>
+          <Link href="/news-letter">
+            <SidebarItem
+              icon={<IoIosDocument size={20} />}
+              text="News Letter"
+              active={pathname?.includes("/news-letter")}
             />
           </Link>
           <SidebarItem icon={<Calendar size={20} />} text="Calendar" />
