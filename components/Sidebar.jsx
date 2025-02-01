@@ -5,15 +5,18 @@ import Link from "next/link";
 import { createContext, useContext, useState } from "react";
 import { signOut } from "next-auth/react";
 import GradientText from "./ui/GradientText";
+import { useRouter } from "next/navigation";
 
 const SidebarContext = createContext();
 
 export default function Sidebar({ children, onToggle }) {
   const [expanded, setExpanded] = useState(false);
+  const router = useRouter();
 
   const handleLogout = (e) => {
     e.preventDefault();
-    signOut({ callbackUrl: "/login" });
+    signOut({ redirect: false });
+    router.push("/login");
   };
 
   const toggleSidebar = () => {
