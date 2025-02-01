@@ -15,6 +15,7 @@ import "react-toastify/dist/ReactToastify.css";
 export const LoginForm = ({ isAdmin, onToggleMode }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
+    username: "",
     cnic: "",
     password: "",
     rememberMe: false,
@@ -112,9 +113,14 @@ export const LoginForm = ({ isAdmin, onToggleMode }) => {
 
     // Validate CNIC
     const cnicRegex = /^\d{5}-\d{7}-\d{1}$/; // CNIC format XXXXX-XXXXXXX-X
-    if (!cnicRegex.test(formData.cnic)) {
+    if (!isAdmin && !cnicRegex.test(formData.cnic)) {
       newErrors.cnic =
         "Please enter a valid CNIC in the format XXXXX-XXXXXXX-X";
+    }
+
+    // Validate username for admin login
+    if (isAdmin && !formData.username) {
+      newErrors.username = "Username is required";
     }
 
     // Validate password
@@ -133,8 +139,10 @@ export const LoginForm = ({ isAdmin, onToggleMode }) => {
       // Call the signIn function
       const result = await signIn("credentials", {
         redirect: false, // Prevent automatic redirection
-        cnic: formData.cnic,
+        username: isAdmin ? formData.username : undefined,
+        cnic: isAdmin ? undefined : formData.cnic,
         password: formData.password,
+        isAdmin, // Pass the isAdmin flag to the backend
       });
 
       setIsLoading(false);
@@ -174,13 +182,26 @@ export const LoginForm = ({ isAdmin, onToggleMode }) => {
   return (
     <>
       <form onSubmit={handleSubmit} className="space-y-6">
-        <CNICInput
-          label="CNIC #"
-          placeholder="Enter CNIC"
-          formData={formData}
-          setFormData={setFormData}
-          errors={errors}
-        />
+        {isAdmin ? (
+          <Input
+            label="Username"
+            type="text"
+            placeholder="Enter username"
+            value={formData.username}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, username: e.target.value }))
+            }
+            error={errors.username}
+          />
+        ) : (
+          <CNICInput
+            label="CNIC #"
+            placeholder="Enter CNIC"
+            formData={formData}
+            setFormData={setFormData}
+            errors={errors}
+          />
+        )}
 
         <Input
           label="Password"
@@ -205,14 +226,16 @@ export const LoginForm = ({ isAdmin, onToggleMode }) => {
             <span className="text-sm text-gray-600">Show Password</span>
           </label>
 
-          <button
-            type="button"
-            className="text-sm text-blue-600 hover:text-blue-500 font-medium"
-            onClick={handleForgotPass}
-            disabled={forgetPassClick ? true : false}
-          >
-            Forgot password?
-          </button>
+          {!isAdmin && (
+            <button
+              type="button"
+              className="text-sm text-blue-600 hover:text-blue-500 font-medium"
+              onClick={handleForgotPass}
+              disabled={forgetPassClick}
+            >
+              Forgot password?
+            </button>
+          )}
         </div>
 
         <Button type="submit" isLoading={isLoading} fullWidth>
@@ -221,20 +244,17 @@ export const LoginForm = ({ isAdmin, onToggleMode }) => {
             : `Sign in as ${isAdmin ? "Admin" : "User"}`}
         </Button>
 
-        {/* {errors.general && (
-          <p className="text-red-500 text-sm mt-2">{errors.general}</p>
-        )} */}
-
         <div className="text-center">
           <button
             type="button"
             className="text-sm text-gray-600 hover:text-blue-500 font-medium"
             onClick={onToggleMode}
           >
-            Switch to {isAdmin ? "User" : "Admin"} Login
+            Switch to {isAdmin ? "Member" : "Admin"} Login
           </button>
         </div>
       </form>
+
       <ToastContainer />
     </>
   );

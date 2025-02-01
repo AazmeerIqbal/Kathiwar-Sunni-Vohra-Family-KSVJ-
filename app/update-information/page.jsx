@@ -8,6 +8,8 @@ import { FaPlus } from "react-icons/fa";
 import { MdOutlineFileUpload } from "react-icons/md";
 import Loader from "@/components/ui/Loader";
 import { useSearchParams } from "next/navigation";
+import Swal from "sweetalert2";
+import { decrypt } from "@/utils/Encryption";
 
 // Notification Toaster
 import { ToastContainer, toast } from "react-toastify";
@@ -19,7 +21,8 @@ import PersonalInformations from "@/components/update-information/PersonalInform
 const Page = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const cnic = searchParams.get("cnic");
+  const cnic = decrypt(searchParams.get("cnic"));
+  console.log(cnic);
   const { data: session } = useSession();
   const [FetchLoading, setFetchLoading] = useState(false);
   const [SbumitLoading, setSbumitLoading] = useState(false);
@@ -162,6 +165,17 @@ const Page = () => {
   };
 
   const handleSubmit = async () => {
+    const result = await Swal.fire({
+      title: "Are you sure you want to fetch data from the main server?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Confirm!",
+      cancelButtonText: "Cancel",
+    });
+
+    if (!result.isConfirmed) return;
     try {
       setSbumitLoading(true);
       const apiUrl = `/api/finalSubmit-UpdateInformation/${session.user.cnic}`;
@@ -189,7 +203,7 @@ const Page = () => {
   };
 
   const handlePrint = () => {
-    router.push("update-information/print");
+    // router.push("update-information/print");
   };
 
   return (
@@ -200,18 +214,7 @@ const Page = () => {
             <h1 className="text-xl font-bold">Update Information</h1>
           </div>
           <div className="flex gap-2 ">
-            <button
-              onClick={handleSubmit}
-              className=" flex gap-1 items-center my-2 hover:opacity-70 py-2 px-4 bg-[#22583e] text-[#f1f1f1] font-semibold rounded-3xl "
-            >
-              {SbumitLoading ? (
-                <Loader w={4} h={4} />
-              ) : (
-                <MdOutlineFileUpload className="text-xl my-auto" />
-              )}
-              Submit
-            </button>
-
+            {/* Print */}
             <button
               onClick={handlePrint}
               className=" flex gap-1 items-center my-2 hover:opacity-70 py-2 px-4 bg-[#213555] text-[#f1f1f1] font-semibold rounded-3xl "
@@ -220,13 +223,45 @@ const Page = () => {
               Print
             </button>
 
-            <ButtonInfoHover
-              text={"Fetch"}
-              info={"Fetch current data from the server"}
-              icon={<RiDownloadCloud2Fill className="text-xl my-auto" />}
-              FetchLoading={FetchLoading}
-              handleFetchData={handleFetchData}
-            />
+            {session.user.isAdmin === 1 ? (
+              cnic !== "cxaa" && (
+                <button
+                  // onClick={handleSubmit}
+                  className=" flex gap-1 items-center my-2 hover:opacity-70 py-2 px-4 bg-[#22583e] text-[#f1f1f1] font-semibold rounded-3xl "
+                >
+                  {SbumitLoading ? (
+                    <Loader w={4} h={4} />
+                  ) : (
+                    <MdOutlineFileUpload className="text-xl my-auto" />
+                  )}
+                  Upload
+                </button>
+              )
+            ) : (
+              <>
+                {/* Submit */}
+                <button
+                  onClick={handleSubmit}
+                  className=" flex gap-1 items-center my-2 hover:opacity-70 py-2 px-4 bg-[#22583e] text-[#f1f1f1] font-semibold rounded-3xl "
+                >
+                  {SbumitLoading ? (
+                    <Loader w={4} h={4} />
+                  ) : (
+                    <MdOutlineFileUpload className="text-xl my-auto" />
+                  )}
+                  Submit
+                </button>
+
+                {/* Fetch */}
+                <ButtonInfoHover
+                  text={"Fetch"}
+                  info={"Fetch current data from the server"}
+                  icon={<RiDownloadCloud2Fill className="text-xl my-auto" />}
+                  FetchLoading={FetchLoading}
+                  handleFetchData={handleFetchData}
+                />
+              </>
+            )}
           </div>
         </div>
 

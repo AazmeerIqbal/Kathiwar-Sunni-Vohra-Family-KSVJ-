@@ -27,6 +27,7 @@ const Dashboard = ({ children }) => {
   const handleSidebarToggle = (isOpen) => {
     setIsSidebarOpen(isOpen);
     console.log("Sidebar is now:", isOpen ? "Open" : "Closed");
+    console.log(session.user);
   };
   return (
     <>
@@ -55,8 +56,11 @@ const Dashboard = ({ children }) => {
               active={pathname?.includes("/news-letter")}
             />
           </Link>
-          <SidebarItem icon={<Calendar size={20} />} text="Calendar" />
-          <SidebarItem icon={<Layers size={20} />} text="Tasks" />
+          <SidebarItem
+            icon={<Calendar size={20} />}
+            text="Contribution Detail"
+          />
+          <SidebarItem icon={<Layers size={20} />} text="Event Attendace" />
           <SidebarItem icon={<Flag size={20} />} text="Reporting" />
           <hr className="my-3" />
           <SidebarItem icon={<Settings size={20} />} text="Settings" />

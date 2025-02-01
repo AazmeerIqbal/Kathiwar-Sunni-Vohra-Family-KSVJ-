@@ -22,10 +22,8 @@ const DocumentPage = () => {
   const [UploadLoading, setUploadLoading] = useState(false);
 
   useEffect(() => {
-    if (session?.user?.cnic) {
-      fetchDocuments();
-    }
-  }, [session]);
+    fetchDocuments();
+  }, []);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -97,22 +95,18 @@ const DocumentPage = () => {
       } else {
         setUploadLoading(false);
         alert(result.message); // Show error message in alert
-        console.error("Upload failed:", result.message);
+        console.log("Upload failed:", result.message);
       }
     } catch (error) {
       setUploadLoading(false);
       alert("An error occurred while uploading the file. Please try again.");
-      console.error("Error uploading file:", error);
+      console.log("Error uploading file:", error);
     }
   };
 
   // Veiw Documents
   const handleView = (document) => {
-    const documentPath =
-      document.IsBulletNews === "1"
-        ? `BulletNews/${document.DocPath}` // For bullet news documents
-        : `/${document.DocPath}`; // For regular documents
-
+    const documentPath = document.DocPath;
     window.open(documentPath, "_blank");
   };
 
@@ -162,50 +156,52 @@ const DocumentPage = () => {
 
   return (
     <div className="m-2 p-4 border border-gray-300 rounded-lg md:text-md text-sm">
-      <div className="border border-gray-300 p-3 w-full  rounded-lg">
-        {/* File Input and Upload Button */}
-        <div>
-          <input
-            type="file"
-            onChange={handleFileChange}
-            className="border w-[80%] sm:w-[30%] md:w-[40%] lg:w-[40%] border-gray-300 p-2 rounded-lg"
-          />
-        </div>
+      {session.user.isAdmin === 1 ? (
+        <div className="border border-gray-300 p-3 w-full  rounded-lg">
+          {/* File Input and Upload Button */}
+          <div>
+            <input
+              type="file"
+              onChange={handleFileChange}
+              className="border w-[80%] sm:w-[30%] md:w-[40%] lg:w-[40%] border-gray-300 p-2 rounded-lg"
+            />
+          </div>
 
-        {/* File Title Input */}
-        <div className="mb-4 mt-2">
-          <input
-            type="text"
-            className="w-[80%] sm:w-[30%] md:w-[40%] lg:w-[40%] rounded-lg border border-gray-300 p-2"
-            value={fileTitle}
-            onChange={(e) => setFileTitle(e.target.value)}
-            placeholder="File Title"
-          />
-        </div>
+          {/* File Title Input */}
+          <div className="mb-4 mt-2">
+            <input
+              type="text"
+              className="w-[80%] sm:w-[30%] md:w-[40%] lg:w-[40%] rounded-lg border border-gray-300 p-2"
+              value={fileTitle}
+              onChange={(e) => setFileTitle(e.target.value)}
+              placeholder="File Title"
+            />
+          </div>
 
-        <div className=" ml-1 flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={isBulletChecked}
-            onChange={() => setIsBulletChecked(!isBulletChecked)}
-            className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-          />
-          <span className="text-gray-700 text-sm font-medium">
-            Bulletin News
-          </span>
-          <button
-            onClick={handleUpload}
-            className="my-3 sm:ml-4 md:ml-4 lg:ml-4 px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg flex items-center gap-2"
-          >
-            {UploadLoading ? (
-              <Loader w={4} h={4} />
-            ) : (
-              <MdFileUpload className="text-lg" />
-            )}{" "}
-            Upload
-          </button>
+          <div className=" ml-1 flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={isBulletChecked}
+              onChange={() => setIsBulletChecked(!isBulletChecked)}
+              className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+            />
+            <span className="text-gray-700 text-sm font-medium">
+              Bulletin News
+            </span>
+            <button
+              onClick={handleUpload}
+              className="my-3 sm:ml-4 md:ml-4 lg:ml-4 px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg flex items-center gap-2"
+            >
+              {UploadLoading ? (
+                <Loader w={4} h={4} />
+              ) : (
+                <MdFileUpload className="text-lg" />
+              )}{" "}
+              Upload
+            </button>
+          </div>
         </div>
-      </div>
+      ) : null}
 
       <div className="my-4 flex flex-wrap gap-4 ">
         {documents
@@ -217,7 +213,7 @@ const DocumentPage = () => {
               date={doc.UploadDate}
               docPath={doc.DocPath}
               id={doc.Id}
-              onView={() => handleView(doc.DocPath)}
+              onView={() => handleView(doc)}
               onDownload={() => handleDownload(doc.DocPath, doc.DocTitle)}
               onDelete={() => handleDelete(doc.Id)}
             />

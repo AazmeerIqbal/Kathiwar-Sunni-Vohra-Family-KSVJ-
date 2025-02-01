@@ -17,23 +17,7 @@ export async function GET(req, { params }) {
 
     // Fetch documents for the given CNIC
     const result = await pool.request().input("userId", userId).query(`
-        SELECT 
-          Id, 
-          CompanyID, 
-          MemberId, 
-          TransDate, 
-          UploadDate, 
-          DocTitle, 
-          DocPath, 
-          FileExtenstion, 
-          IsBulletNews, 
-          CreatedOn, 
-          CreatedBy, 
-          LastUpdateOn, 
-          LastUpdateBy
-        FROM tb_BroadCast
-        WHERE MemberId = @userId
-        ORDER BY UploadDate DESC
+        SELECT * FROM tb_BroadCast ORDER BY UploadDate DESC
       `);
 
     // Close DB connection
