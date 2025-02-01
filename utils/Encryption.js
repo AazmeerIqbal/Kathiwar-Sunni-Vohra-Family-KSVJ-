@@ -2,10 +2,14 @@
 export function encrypt(sString) {
   let encryptedString = "";
 
-  for (let i = 0; i < sString.length; i++) {
-    let charCode = sString.charCodeAt(i);
-    let encryptedCharCode = charCode ^ 13;
-    encryptedString += String.fromCharCode(encryptedCharCode);
+  if (sString !== null) {
+    for (let i = 0; i < sString.length; i++) {
+      let charCode = sString.charCodeAt(i);
+      let encryptedCharCode = charCode ^ 13;
+      encryptedString += String.fromCharCode(encryptedCharCode);
+    }
+  } else {
+    encryptedString = "null";
   }
 
   return encryptedString;

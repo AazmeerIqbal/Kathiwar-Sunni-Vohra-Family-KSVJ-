@@ -2,7 +2,7 @@ import { connectToDB, closeConnection, config } from "@/utils/database";
 import { NextResponse } from "next/server";
 
 export async function POST(req, { params }) {
-  const { cnic } = params;
+  const { cnic } = await params;
 
   if (!cnic) {
     return NextResponse.json(

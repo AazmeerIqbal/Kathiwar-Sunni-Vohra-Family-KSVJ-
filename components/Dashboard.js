@@ -12,7 +12,7 @@ import {
   CircleUserRound,
 } from "lucide-react";
 import { IoMdInformationCircleOutline, IoIosDocument } from "react-icons/io";
-
+import { encrypt } from "@/utils/Encryption";
 import { usePathname } from "next/navigation";
 
 import Sidebar, { SidebarItem } from "@/components/Sidebar";
@@ -40,12 +40,12 @@ const Dashboard = ({ children }) => {
               alert
             />
           </Link>
-          <Link href={`/update-information?cnic=${session.user.cnic}`}>
+          <Link href={`/update-information?cnic=${encrypt(session.user.cnic)}`}>
             <SidebarItem
               icon={<IoMdInformationCircleOutline size={20} />}
               text="Update Information"
               active={pathname?.includes(
-                `/update-information?cnic=${session.user.cnic}`
+                `/update-information?cnic=${encrypt(session.user.cnic)}`
               )}
             />
           </Link>
