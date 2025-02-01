@@ -634,15 +634,17 @@ const PersonalInformations = ({
           </div>
         </div>
       </div>
-      <div className="mt-4">
-        <button
-          onClick={handlePersonalInfoSave}
-          className=" flex gap-1 items-center my-2 hover:opacity-70 py-2 px-4 bg-[#213555] text-[#f1f1f1] font-semibold rounded-3xl "
-        >
-          {SaveLoading ? <Loader w={4} h={4} /> : <IoIosSave />}
-          Save
-        </button>
-      </div>
+      {session.user.isAdmin === 1 ? null : (
+        <div className="mt-4">
+          <button
+            onClick={handlePersonalInfoSave}
+            className=" flex gap-1 items-center my-2 hover:opacity-70 py-2 px-4 bg-[#213555] text-[#f1f1f1] font-semibold rounded-3xl "
+          >
+            {SaveLoading ? <Loader w={4} h={4} /> : <IoIosSave />}
+            Save
+          </button>
+        </div>
+      )}
     </div>
   );
 };

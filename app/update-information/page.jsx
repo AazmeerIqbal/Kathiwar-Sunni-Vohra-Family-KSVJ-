@@ -125,6 +125,17 @@ const Page = () => {
   };
 
   const handleFetchData = async () => {
+    const result = await Swal.fire({
+      title: "Are you sure you want to fetch data from the main server?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Confirm!",
+      cancelButtonText: "Cancel",
+    });
+
+    if (!result.isConfirmed) return;
     try {
       setFetchLoading(true);
 
@@ -166,7 +177,7 @@ const Page = () => {
 
   const handleSubmit = async () => {
     const result = await Swal.fire({
-      title: "Are you sure you want to fetch data from the main server?",
+      title: "Are you sure you want to submit data to Admin?",
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#d33",
