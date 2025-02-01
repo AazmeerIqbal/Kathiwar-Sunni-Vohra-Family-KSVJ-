@@ -216,6 +216,7 @@ const DocumentPage = () => {
               onView={() => handleView(doc)}
               onDownload={() => handleDownload(doc.DocPath, doc.DocTitle)}
               onDelete={() => handleDelete(doc.Id)}
+              isAdmin={session.user.isAdmin}
             />
           ))}
       </div>
@@ -272,13 +273,15 @@ const DocumentPage = () => {
                     >
                       <FaCloudDownloadAlt />
                     </button>
-                    <button
-                      onClick={() => handleDelete(doc.Id)}
-                      className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
-                      title="Delete"
-                    >
-                      <MdDelete />
-                    </button>
+                    {session.user.isAdmin === 1 ? (
+                      <button
+                        onClick={() => handleDelete(doc.Id)}
+                        className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+                        title="Delete"
+                      >
+                        <MdDelete />
+                      </button>
+                    ) : null}
                   </td>
                 </tr>
               ))}
