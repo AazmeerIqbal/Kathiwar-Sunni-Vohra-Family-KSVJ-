@@ -5,6 +5,7 @@ import LivingModal from "./LivingModal";
 import { ToastContainer } from "react-toastify";
 import { MdCancel, MdEdit, MdSave } from "react-icons/md";
 import Loader from "../ui/Loader";
+import { motion } from "framer-motion";
 
 const LivingInformation = ({
   MemberId,
@@ -110,19 +111,22 @@ const LivingInformation = ({
   return (
     <>
       <div
-        className="flex justify-between items-center px-4 py-2 bg-[#2E5077] text-white cursor-pointer rounded-t-lg "
+        className="flex justify-between items-center px-4 py-2 bg-[#2E5077] text-white cursor-pointer rounded-t-lg"
         onClick={() => setToggle((prev) => !prev)}
       >
         <h2 className="font-semibold text-lg">Living Information</h2>
         <div className="flex items-center gap-4">
           <button
-            onClick={() => setIsModalOpen(true)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsModalOpen(true);
+            }}
             className="flex gap-1 items-center my-2 hover:opacity-70 py-2 px-3 bg-[#e5e6e7] text-xs md:text-sm text-black font-semibold rounded-3xl"
           >
             <FaPlus /> Add New
           </button>
           <span
-            className={`transform transition-transform bg-[#e5e6e7] p-1 rounded-md text-sm ${
+            className={`transform transition-transform duration-300 bg-[#e5e6e7] p-1 rounded-md text-sm ${
               toggle ? "rotate-180" : "rotate-0"
             }`}
           >
@@ -130,10 +134,15 @@ const LivingInformation = ({
           </span>
         </div>
       </div>
-      <div
-        className={`overflow-hidden transition-all duration-300 ${
-          toggle ? "h-auto" : "max-h-0"
-        }`}
+
+      {/* Smooth dropdown animation */}
+      <motion.div
+        initial={{ height: 0, opacity: 0 }}
+        animate={
+          toggle ? { height: "auto", opacity: 1 } : { height: 0, opacity: 0 }
+        }
+        transition={{ duration: 0.5, ease: "easeInOut" }}
+        className="overflow-hidden"
       >
         <div className="p-4 text-gray-900 overflow-x-auto">
           {" "}
@@ -279,7 +288,7 @@ const LivingInformation = ({
             </tbody>
           </table>
         </div>
-      </div>
+      </motion.div>
       <LivingModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

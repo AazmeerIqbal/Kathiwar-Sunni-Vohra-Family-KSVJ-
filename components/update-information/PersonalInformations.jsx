@@ -1,13 +1,15 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { IoIosSave } from "react-icons/io";
+import { IoIosArrowDown, IoIosSave } from "react-icons/io";
 import { MdOutlineFileUpload, MdDelete } from "react-icons/md";
 import dayjs from "dayjs";
 import { useSession } from "next-auth/react";
+import { motion } from "framer-motion";
 
 // Notification Toaster
 import { toast } from "react-toastify";
 import Loader from "../ui/Loader";
+import { FaPlus } from "react-icons/fa6";
 
 const PersonalInformations = ({
   UserData,
@@ -19,6 +21,9 @@ const PersonalInformations = ({
 }) => {
   const { data: session } = useSession();
   const [SaveLoading, setSaveLoading] = useState(false);
+
+  // Personal Information Toggle
+  const [toggle, setToggle] = useState(false);
 
   // Initialize state for form fields
   const [formData, setFormData] = useState({
@@ -245,404 +250,435 @@ const PersonalInformations = ({
     }
   };
   return (
-    <div className="p-4 text-gray-900">
-      <div>
-        <div className="text-[13px] md:text-[14px] lg:text-[14px] border border-gray-300 font-crimson md:grid md:grid-cols-2 lg:grid lg:grid-cols-2">
-          {/* Left Section */}
-          <div className="flex flex-col justify-between sm:flex-row md:flex-col lg:flex-row border border-gray-300">
-            {/* Profile Image */}
-            <div className="flex order-[-1] sm:order-none md:order-[-1] lg:order-none items-center border border-r-0 lg:w-[50%] md:w-full border-gray-300 justify-center">
-              <img
-                className="rounded-[50%] w-[80px] h-[80px] md:w-[130px] md:h-[130px] mx-2 my-2"
-                src={formData.image == "" ? "DummyUser.png" : formData.image}
-                alt="Profile"
-              />
-              <div className="flex flex-col gap-2">
-                <button className="bg-gray-200 rounded-lg p-1">
-                  <MdOutlineFileUpload />
-                </button>
-                <button className="bg-red-400 text-white rounded-lg p-1">
-                  <MdDelete />
-                </button>
-              </div>
-            </div>
-            {/* Left Sub-Section */}
-            <div className="flex flex-col lg:w-[50%] ">
-              {/* Member Type */}
-              <div className="flex items-center h-full  border border-gray-300">
-                <div className="w-[50%] py-2 px-2">Member Type</div>
-                <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
-                  <select
-                    name="memberType"
-                    disabled
-                    value={formData.memberType}
-                    onChange={handleChange}
-                    className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600 focus:border-2 focus:border-indigo-800"
-                  >
-                    <option>Member</option>
-                    <option>Admin</option>
-                  </select>
-                </div>
-              </div>
-              {/* Active/Inactive */}
-              <div className="flex items-center h-full border border-gray-300">
-                <div className="w-[50%] py-2  px-2">Active/Inactive</div>
-                <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
-                  <select
-                    value={formData.activeStatus}
-                    onChange={handleChange}
-                    name="activeStatus"
-                    className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600 focus:border-2 focus:border-indigo-800"
-                  >
-                    <option value="0">Active</option>
-                    <option value="1">Inactive</option>
-                  </select>
-                </div>
-              </div>
-              {/* Membership Number */}
-              <div className="flex items-center h-full border border-gray-300">
-                <div className="w-[50%] py-2 px-2">Membership #</div>
-                <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
-                  <input
-                    type="text"
-                    name="membershipNumber"
-                    placeholder="0000-000000"
-                    id="membership"
-                    value={formData.membershipNumber}
-                    onChange={handleMembershipChange}
-                    className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col justify-between sm:flex-row md:flex-row lg:flex-row border border-gray-300">
-            <div className="flex flex-col w-full">
-              {/* Membership Date */}
-              <div className="flex items-center h-full border border-gray-300">
-                <div className="w-[50%] py-2 px-2">Membership Date</div>
-                <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
-                  <input
-                    type="date"
-                    name="membershipDate"
-                    value={formData.membershipDate}
-                    onChange={handleChange}
-                    className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600"
-                  />
-                </div>
-              </div>
-              {/* Name*/}
-              <div className="flex items-center h-full border border-gray-300">
-                <div className="w-[30%] py-2 px-2">Name</div>
-                <div className="border-l h-full flex items-center border-gray-300">
-                  <select
-                    name="nameTitle"
-                    value={formData.nameTitle}
-                    onChange={handleChange}
-                    className="border border-gray-300 rounded-2xl my-2 mx-[2px] py-2 px-2 text-gray-600 focus:border-2 focus:border-indigo-800"
-                  >
-                    <option>Mr.</option>
-                    <option>Mrs.</option>
-                  </select>
-                </div>
-
-                <div className="w-[70%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600"
-                  />
-                </div>
-              </div>
-              {/* Father/Husband Name */}
-              <div className="flex items-center h-full border border-gray-300">
-                <div className="w-[50%] py-2 px-2">Father/Husband Name</div>
-                <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
-                  <input
-                    type="text"
-                    name="fatherHusbandName"
-                    value={formData.fatherHusbandName}
-                    onChange={handleChange}
-                    className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col justify-between sm:flex-row md:flex-col lg:flex-row border border-gray-300">
-            <div className="flex flex-col w-full">
-              {/* Date of Birth */}
-              <div className="flex items-center h-full border border-gray-300">
-                <div className="w-[50%] py-2 px-2">DOB</div>
-                <div className="w-[50%] md:w-[60%] lg:w-[60%] relative border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
-                  <input
-                    id="date"
-                    name="dob"
-                    value={formData.dob}
-                    onChange={handleChange}
-                    type="date"
-                    className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600"
-                  />
-                </div>
-              </div>
-              {/* CNIC Number */}
-              <div className="flex items-center h-full border border-gray-300">
-                <div className="w-[50%] py-2 px-2">CNIC NO</div>
-                <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
-                  <input
-                    type="text"
-                    name="cnic"
-                    placeholder="00000-000000-0"
-                    value={formData.cnic} // Use formData.cnic instead of cnic state
-                    id="cnic"
-                    onChange={handleCNICChange} // Only call handleCNICChange
-                    className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600"
-                  />
-                </div>
-              </div>
-              {/* Gender */}
-              <div className="flex items-center h-full border border-gray-300">
-                <div className="w-[50%] py-2 px-2">Gender</div>
-                <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
-                  <select
-                    name="gender"
-                    value={formData.gender}
-                    onChange={handleChange}
-                    className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600 focus:border-2 focus:border-indigo-800"
-                  >
-                    <option>Male</option>
-                    <option>Female</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col justify-between sm:flex-row md:flex-col lg:flex-row border border-gray-300">
-            <div className="flex flex-col w-full">
-              {/* {Cell #} */}
-              <div className="flex items-center h-full border border-gray-300">
-                <div className="w-[50%] py-2 px-2">Cell #</div>
-                <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
-                  <input
-                    type="text"
-                    name="cellNumber"
-                    value={formData.cellNumber} // Use formData.cellNumber instead of cellNumber state
-                    id="cellNumber"
-                    onChange={handleCellNumber} // Only call handleCellNumber
-                    placeholder="####-#######"
-                    className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600"
-                  />
-                </div>
-              </div>
-              {/* E-mail ID */}
-              <div className="flex items-center h-full border border-gray-300">
-                <div className="w-[50%] py-2 px-2">E-mail ID</div>
-                <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
-                  <input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    disabled={false}
-                    className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
-                  />
-                </div>
-              </div>
-              {/* Blood Group */}
-              <div className="flex items-center h-full border border-gray-300">
-                <div className="w-[50%] py-2 px-2">Blood Group</div>
-                <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
-                  <select
-                    name="bloodGroup"
-                    value={formData.bloodGroup}
-                    onChange={handleChange}
-                    className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600 focus:border-2 focus:border-indigo-800"
-                  >
-                    <option value="N/A">N/A</option>
-                    <option value="A+">A+</option>
-                    <option value="A-">A-</option>
-                    <option value="B+">B+</option>
-                    <option value="B-">B-</option>
-                    <option value="O+">O+</option>
-                    <option value="O-">O-</option>
-                    <option value="AB+">AB+</option>
-                    <option value="AB-">AB-</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col justify-between sm:flex-row md:flex-col lg:flex-row border border-gray-300">
-            <div className="flex flex-col w-full">
-              {/* Family Name */}
-              <div className="flex items-center h-full border border-gray-300">
-                <div className="w-[50%] py-2 px-2">Family Name</div>
-                <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
-                  <select
-                    name="familyName"
-                    value={formData.familyName}
-                    onChange={handleChange}
-                    className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600 focus:border-2 focus:border-indigo-800"
-                  >
-                    <option value="0">Select Family</option>
-                    {FamilyDropDown.length > 0
-                      ? FamilyDropDown.map((family, index) => (
-                          <option key={index} value={family.FamilyID}>
-                            {family.FamilyName}
-                          </option>
-                        ))
-                      : null}
-                  </select>
-                </div>
-              </div>
-
-              {/* Marital Status */}
-              <div className="flex items-center h-full border border-gray-300">
-                <div className="w-[50%] py-2 px-2">Marital Status</div>
-                <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
-                  <select
-                    name="maritalStatus"
-                    value={formData.maritalStatus}
-                    onChange={handleChange}
-                    className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600 focus:border-2 focus:border-indigo-800"
-                  >
-                    <option>Married</option>
-                    <option>Unmarried</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Address */}
-              <div className="flex items-center h-full border border-gray-300">
-                <div className="w-[50%] py-2 px-2">Address</div>
-                <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
-                  <input
-                    type="text"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleChange}
-                    className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col justify-between sm:flex-row md:flex-col lg:flex-row border border-gray-300">
-            <div className="flex flex-col w-full">
-              {/* Death On */}
-              <div className="flex items-center h-full border border-gray-300">
-                <div className="w-[50%] py-2 px-2">Death On</div>
-                <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
-                  <input
-                    type="text"
-                    name="deathOn"
-                    value={formData.deathOn}
-                    onChange={handleChange}
-                    className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
-                  />
-                </div>
-              </div>
-              {/* Grave # */}
-              <div className="flex items-center h-full border border-gray-300">
-                <div className="w-[50%] py-2 px-2">Grave #</div>
-                <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
-                  <input
-                    type="text"
-                    name="graveNumber"
-                    value={formData.graveNumber}
-                    onChange={handleChange}
-                    className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
-                  />
-                </div>
-              </div>
-
-              {/* Remarks */}
-              <div className="flex items-center h-full border border-gray-300">
-                <div className="w-[50%] py-2 px-2">Remarks</div>
-                <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
-                  <input
-                    type="text"
-                    name="remarks"
-                    value={formData.remarks}
-                    onChange={handleChange}
-                    className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-500"
-                  />
-                </div>
-              </div>
-
-              {/* From Country/State/City */}
-              <div className="flex items-center border border-gray-300">
-                <div className="w-[50%] py-2 px-2">From Country/State/City</div>
-                <div className="w-[50%] md:w-[60%] lg:w-[60%] flex flex-col lg:flex-row border-l border-gray-300">
-                  {/* Country Dropdown */}
-                  <select
-                    name="country"
-                    value={formData.country}
-                    onChange={handleChange}
-                    className="w-[90%] lg:w-[30%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
-                  >
-                    <option value="0">Select Country</option>
-                    {CountryDropDown.map((country) => (
-                      <option key={country.ID} value={country.ID}>
-                        {country.CountryName}
-                      </option>
-                    ))}
-                  </select>
-
-                  {/* State Dropdown */}
-                  <select
-                    name="state"
-                    value={formData.state}
-                    onChange={handleChange}
-                    className="w-[90%] lg:w-[33%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
-                  >
-                    <option value="0">Select State</option>
-                    {StateDropDown.map((state) => (
-                      <option key={state.ID} value={state.ID}>
-                        {state.StateName}
-                      </option>
-                    ))}
-                  </select>
-
-                  {/* City Dropdown */}
-                  <select
-                    name="city"
-                    value={formData.city}
-                    onChange={handleChange}
-                    className="w-[90%] lg:w-[30%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
-                  >
-                    <option value="0">Select City</option>
-                    {CityDropDown.map((city) => (
-                      <option key={city.ID} value={city.ID}>
-                        {city.CityName}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
+    <>
+      <div
+        className="flex justify-between items-center h-16 px-4 py-2 bg-[#2E5077] text-white cursor-pointer rounded-t-lg"
+        onClick={() => setToggle((prev) => !prev)}
+      >
+        <h2 className="font-semibold text-lg">Personal Information</h2>
+        <div className="flex items-center gap-4">
+          <span
+            className={`transform transition-transform duration-300 bg-[#e5e6e7] p-1 rounded-md text-sm ${
+              toggle ? "rotate-180" : "rotate-0"
+            }`}
+          >
+            <IoIosArrowDown className="text-black" />
+          </span>
         </div>
       </div>
-      {session.user.isAdmin === 1 ? null : (
-        <div className="mt-4">
-          <button
-            onClick={handlePersonalInfoSave}
-            className=" flex gap-1 items-center my-2 hover:opacity-70 py-2 px-4 bg-[#213555] text-[#f1f1f1] font-semibold rounded-3xl "
-          >
-            {SaveLoading ? <Loader w={4} h={4} /> : <IoIosSave />}
-            Save
-          </button>
+
+      <motion.div
+        initial={{ height: 0, opacity: 0 }}
+        animate={
+          toggle ? { height: "auto", opacity: 1 } : { height: 0, opacity: 0 }
+        }
+        transition={{ duration: 0.5, ease: "easeInOut" }}
+        className="overflow-hidden"
+      >
+        <div className="p-4 text-gray-900">
+          <div>
+            <div className="text-[13px] md:text-[14px] lg:text-[14px] border border-gray-300 font-crimson md:grid md:grid-cols-2 lg:grid lg:grid-cols-2">
+              {/* Left Section */}
+              <div className="flex flex-col justify-between sm:flex-row md:flex-col lg:flex-row border border-gray-300">
+                {/* Profile Image */}
+                <div className="flex order-[-1] sm:order-none md:order-[-1] lg:order-none items-center border border-r-0 lg:w-[50%] md:w-full border-gray-300 justify-center">
+                  <img
+                    className="rounded-[50%] w-[80px] h-[80px] md:w-[130px] md:h-[130px] mx-2 my-2"
+                    src={
+                      formData.image == "" ? "DummyUser.png" : formData.image
+                    }
+                    alt="Profile"
+                  />
+                  <div className="flex flex-col gap-2">
+                    <button className="bg-gray-200 rounded-lg p-1">
+                      <MdOutlineFileUpload />
+                    </button>
+                    <button className="bg-red-400 text-white rounded-lg p-1">
+                      <MdDelete />
+                    </button>
+                  </div>
+                </div>
+                {/* Left Sub-Section */}
+                <div className="flex flex-col lg:w-[50%] ">
+                  {/* Member Type */}
+                  <div className="flex items-center h-full  border border-gray-300">
+                    <div className="w-[50%] py-2 px-2">Member Type</div>
+                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
+                      <select
+                        name="memberType"
+                        disabled
+                        value={formData.memberType}
+                        onChange={handleChange}
+                        className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600 focus:border-2 focus:border-indigo-800"
+                      >
+                        <option>Member</option>
+                        <option>Admin</option>
+                      </select>
+                    </div>
+                  </div>
+                  {/* Active/Inactive */}
+                  <div className="flex items-center h-full border border-gray-300">
+                    <div className="w-[50%] py-2  px-2">Active/Inactive</div>
+                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
+                      <select
+                        value={formData.activeStatus}
+                        onChange={handleChange}
+                        name="activeStatus"
+                        className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600 focus:border-2 focus:border-indigo-800"
+                      >
+                        <option value="0">Active</option>
+                        <option value="1">Inactive</option>
+                      </select>
+                    </div>
+                  </div>
+                  {/* Membership Number */}
+                  <div className="flex items-center h-full border border-gray-300">
+                    <div className="w-[50%] py-2 px-2">Membership #</div>
+                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
+                      <input
+                        type="text"
+                        name="membershipNumber"
+                        placeholder="0000-000000"
+                        id="membership"
+                        value={formData.membershipNumber}
+                        onChange={handleMembershipChange}
+                        className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col justify-between sm:flex-row md:flex-row lg:flex-row border border-gray-300">
+                <div className="flex flex-col w-full">
+                  {/* Membership Date */}
+                  <div className="flex items-center h-full border border-gray-300">
+                    <div className="w-[50%] py-2 px-2">Membership Date</div>
+                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
+                      <input
+                        type="date"
+                        name="membershipDate"
+                        value={formData.membershipDate}
+                        onChange={handleChange}
+                        className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600"
+                      />
+                    </div>
+                  </div>
+                  {/* Name*/}
+                  <div className="flex items-center h-full border border-gray-300">
+                    <div className="w-[30%] py-2 px-2">Name</div>
+                    <div className="border-l h-full flex items-center border-gray-300">
+                      <select
+                        name="nameTitle"
+                        value={formData.nameTitle}
+                        onChange={handleChange}
+                        className="border border-gray-300 rounded-2xl my-2 mx-[2px] py-2 px-2 text-gray-600 focus:border-2 focus:border-indigo-800"
+                      >
+                        <option>Mr.</option>
+                        <option>Mrs.</option>
+                      </select>
+                    </div>
+
+                    <div className="w-[70%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
+                      <input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600"
+                      />
+                    </div>
+                  </div>
+                  {/* Father/Husband Name */}
+                  <div className="flex items-center h-full border border-gray-300">
+                    <div className="w-[50%] py-2 px-2">Father/Husband Name</div>
+                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
+                      <input
+                        type="text"
+                        name="fatherHusbandName"
+                        value={formData.fatherHusbandName}
+                        onChange={handleChange}
+                        className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col justify-between sm:flex-row md:flex-col lg:flex-row border border-gray-300">
+                <div className="flex flex-col w-full">
+                  {/* Date of Birth */}
+                  <div className="flex items-center h-full border border-gray-300">
+                    <div className="w-[50%] py-2 px-2">DOB</div>
+                    <div className="w-[50%] md:w-[60%] lg:w-[60%] relative border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
+                      <input
+                        id="date"
+                        name="dob"
+                        value={formData.dob}
+                        onChange={handleChange}
+                        type="date"
+                        className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600"
+                      />
+                    </div>
+                  </div>
+                  {/* CNIC Number */}
+                  <div className="flex items-center h-full border border-gray-300">
+                    <div className="w-[50%] py-2 px-2">CNIC NO</div>
+                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
+                      <input
+                        type="text"
+                        name="cnic"
+                        placeholder="00000-000000-0"
+                        value={formData.cnic} // Use formData.cnic instead of cnic state
+                        id="cnic"
+                        onChange={handleCNICChange} // Only call handleCNICChange
+                        className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600"
+                      />
+                    </div>
+                  </div>
+                  {/* Gender */}
+                  <div className="flex items-center h-full border border-gray-300">
+                    <div className="w-[50%] py-2 px-2">Gender</div>
+                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
+                      <select
+                        name="gender"
+                        value={formData.gender}
+                        onChange={handleChange}
+                        className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600 focus:border-2 focus:border-indigo-800"
+                      >
+                        <option>Male</option>
+                        <option>Female</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col justify-between sm:flex-row md:flex-col lg:flex-row border border-gray-300">
+                <div className="flex flex-col w-full">
+                  {/* {Cell #} */}
+                  <div className="flex items-center h-full border border-gray-300">
+                    <div className="w-[50%] py-2 px-2">Cell #</div>
+                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
+                      <input
+                        type="text"
+                        name="cellNumber"
+                        value={formData.cellNumber} // Use formData.cellNumber instead of cellNumber state
+                        id="cellNumber"
+                        onChange={handleCellNumber} // Only call handleCellNumber
+                        placeholder="####-#######"
+                        className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600"
+                      />
+                    </div>
+                  </div>
+                  {/* E-mail ID */}
+                  <div className="flex items-center h-full border border-gray-300">
+                    <div className="w-[50%] py-2 px-2">E-mail ID</div>
+                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
+                      <input
+                        id="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        disabled={false}
+                        className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
+                      />
+                    </div>
+                  </div>
+                  {/* Blood Group */}
+                  <div className="flex items-center h-full border border-gray-300">
+                    <div className="w-[50%] py-2 px-2">Blood Group</div>
+                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
+                      <select
+                        name="bloodGroup"
+                        value={formData.bloodGroup}
+                        onChange={handleChange}
+                        className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600 focus:border-2 focus:border-indigo-800"
+                      >
+                        <option value="N/A">N/A</option>
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col justify-between sm:flex-row md:flex-col lg:flex-row border border-gray-300">
+                <div className="flex flex-col w-full">
+                  {/* Family Name */}
+                  <div className="flex items-center h-full border border-gray-300">
+                    <div className="w-[50%] py-2 px-2">Family Name</div>
+                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
+                      <select
+                        name="familyName"
+                        value={formData.familyName}
+                        onChange={handleChange}
+                        className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600 focus:border-2 focus:border-indigo-800"
+                      >
+                        <option value="0">Select Family</option>
+                        {FamilyDropDown.length > 0
+                          ? FamilyDropDown.map((family, index) => (
+                              <option key={index} value={family.FamilyID}>
+                                {family.FamilyName}
+                              </option>
+                            ))
+                          : null}
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Marital Status */}
+                  <div className="flex items-center h-full border border-gray-300">
+                    <div className="w-[50%] py-2 px-2">Marital Status</div>
+                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
+                      <select
+                        name="maritalStatus"
+                        value={formData.maritalStatus}
+                        onChange={handleChange}
+                        className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600 focus:border-2 focus:border-indigo-800"
+                      >
+                        <option>Married</option>
+                        <option>Unmarried</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Address */}
+                  <div className="flex items-center h-full border border-gray-300">
+                    <div className="w-[50%] py-2 px-2">Address</div>
+                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
+                      <input
+                        type="text"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleChange}
+                        className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col justify-between sm:flex-row md:flex-col lg:flex-row border border-gray-300">
+                <div className="flex flex-col w-full">
+                  {/* Death On */}
+                  <div className="flex items-center h-full border border-gray-300">
+                    <div className="w-[50%] py-2 px-2">Death On</div>
+                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
+                      <input
+                        type="text"
+                        name="deathOn"
+                        value={formData.deathOn}
+                        onChange={handleChange}
+                        className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
+                      />
+                    </div>
+                  </div>
+                  {/* Grave # */}
+                  <div className="flex items-center h-full border border-gray-300">
+                    <div className="w-[50%] py-2 px-2">Grave #</div>
+                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
+                      <input
+                        type="text"
+                        name="graveNumber"
+                        value={formData.graveNumber}
+                        onChange={handleChange}
+                        className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Remarks */}
+                  <div className="flex items-center h-full border border-gray-300">
+                    <div className="w-[50%] py-2 px-2">Remarks</div>
+                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
+                      <input
+                        type="text"
+                        name="remarks"
+                        value={formData.remarks}
+                        onChange={handleChange}
+                        className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* From Country/State/City */}
+                  <div className="flex items-center border border-gray-300">
+                    <div className="w-[50%] py-2 px-2">
+                      From Country/State/City
+                    </div>
+                    <div className="w-[50%] md:w-[60%] lg:w-[60%] flex flex-col lg:flex-row border-l border-gray-300">
+                      {/* Country Dropdown */}
+                      <select
+                        name="country"
+                        value={formData.country}
+                        onChange={handleChange}
+                        className="w-[90%] lg:w-[30%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
+                      >
+                        <option value="0">Select Country</option>
+                        {CountryDropDown.map((country) => (
+                          <option key={country.ID} value={country.ID}>
+                            {country.CountryName}
+                          </option>
+                        ))}
+                      </select>
+
+                      {/* State Dropdown */}
+                      <select
+                        name="state"
+                        value={formData.state}
+                        onChange={handleChange}
+                        className="w-[90%] lg:w-[33%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
+                      >
+                        <option value="0">Select State</option>
+                        {StateDropDown.map((state) => (
+                          <option key={state.ID} value={state.ID}>
+                            {state.StateName}
+                          </option>
+                        ))}
+                      </select>
+
+                      {/* City Dropdown */}
+                      <select
+                        name="city"
+                        value={formData.city}
+                        onChange={handleChange}
+                        className="w-[90%] lg:w-[30%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
+                      >
+                        <option value="0">Select City</option>
+                        {CityDropDown.map((city) => (
+                          <option key={city.ID} value={city.ID}>
+                            {city.CityName}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {session.user.isAdmin === 1 ? null : (
+            <div className="mt-4">
+              <button
+                onClick={handlePersonalInfoSave}
+                className=" flex gap-1 items-center my-2 hover:opacity-70 py-2 px-4 bg-[#213555] text-[#f1f1f1] font-semibold rounded-3xl "
+              >
+                {SaveLoading ? <Loader w={4} h={4} /> : <IoIosSave />}
+                Save
+              </button>
+            </div>
+          )}
         </div>
-      )}
-    </div>
+      </motion.div>
+    </>
   );
 };
 

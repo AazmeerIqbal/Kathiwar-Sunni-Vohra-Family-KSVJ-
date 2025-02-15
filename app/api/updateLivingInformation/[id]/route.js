@@ -1,5 +1,5 @@
-import { sqlConfig } from "@/config/db";
-import sql from "mssql";
+import { connectToDB, closeConnection, config } from "@/utils/database";
+import { NextResponse } from "next/server";
 
 export default async function handler(req, res) {
   if (req.method !== "PUT") {
@@ -25,7 +25,7 @@ export default async function handler(req, res) {
 
   try {
     // Connect to the database
-    await sql.connect(sqlConfig);
+    const pool = await connectToDB(config);
 
     // Update query
     const result = await sql.query`
@@ -43,6 +43,7 @@ export default async function handler(req, res) {
       WHERE MemberProID = ${MemberProID}
     `;
 
+    await closeConnection(pool);
     if (result.rowsAffected[0] > 0) {
       return res
         .status(200)

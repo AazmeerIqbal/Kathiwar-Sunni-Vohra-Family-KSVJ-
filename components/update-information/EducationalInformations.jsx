@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import EducationModal from "./EducationModal";
 import Loader from "../ui/Loader";
 import { IoIosArrowDown, IoIosSave } from "react-icons/io";
+import { motion } from "framer-motion";
 
 const EducationalInformations = ({ MemberId }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -154,32 +155,38 @@ const EducationalInformations = ({ MemberId }) => {
   return (
     <>
       <div
-        className="flex justify-between items-center px-4 py-2 bg-[#2E5077] text-white cursor-pointer rounded-t-lg "
+        className="flex justify-between items-center px-4 py-2 bg-[#2E5077] text-white cursor-pointer rounded-t-lg"
         onClick={() => setToggle((prev) => !prev)}
       >
         <h2 className="font-semibold text-lg">Educational Information</h2>
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="flex gap-1 items-center my-2 hover:opacity-70 py-2 px-3 bg-[#e5e6e7] text-xs md:text-sm text-black font-semibold rounded-3xl"
-            >
-              <FaPlus /> Add New
-            </button>
-            <span
-              className={`transform transition-transform bg-[#e5e6e7] p-1 rounded-md text-sm ${
-                toggle ? "rotate-180" : "rotate-0"
-              }`}
-            >
-              <IoIosArrowDown className="text-black" />
-            </span>
-          </div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsModalOpen(true);
+            }}
+            className="flex gap-1 items-center my-2 hover:opacity-70 py-2 px-3 bg-[#e5e6e7] text-xs md:text-sm text-black font-semibold rounded-3xl"
+          >
+            <FaPlus /> Add New
+          </button>
+          <span
+            className={`transform transition-transform duration-300 bg-[#e5e6e7] p-1 rounded-md text-sm ${
+              toggle ? "rotate-180" : "rotate-0"
+            }`}
+          >
+            <IoIosArrowDown className="text-black" />
+          </span>
         </div>
       </div>
-      <div
-        className={`overflow-hidden transition-all duration-300 ${
-          toggle ? "h-auto" : "max-h-0"
-        }`}
+
+      {/* Smooth dropdown animation */}
+      <motion.div
+        initial={{ height: 0, opacity: 0 }}
+        animate={
+          toggle ? { height: "auto", opacity: 1 } : { height: 0, opacity: 0 }
+        }
+        transition={{ duration: 0.5, ease: "easeInOut" }}
+        className="overflow-hidden"
       >
         <div className="p-4 text-gray-900 overflow-x-auto">
           <table className="min-w-full border text-sm border-gray-300 bg-white table-fixed">
@@ -362,7 +369,7 @@ const EducationalInformations = ({ MemberId }) => {
             </tbody>
           </table>
         </div>
-      </div>
+      </motion.div>
       <EducationModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

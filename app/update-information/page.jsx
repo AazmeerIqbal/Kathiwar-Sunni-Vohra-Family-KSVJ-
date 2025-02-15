@@ -10,6 +10,7 @@ import Loader from "@/components/ui/Loader";
 import { useSearchParams } from "next/navigation";
 import Swal from "sweetalert2";
 import { decrypt } from "@/utils/Encryption";
+import WifeInformation from "@/components/update-information/WifeInformation";
 
 // Notification Toaster
 import { ToastContainer, toast } from "react-toastify";
@@ -20,6 +21,7 @@ import PersonalInformations from "@/components/update-information/PersonalInform
 import EducationalInformations from "@/components/update-information/EducationalInformations";
 import ProfessionalInformation from "@/components/update-information/ProfessionalInformation";
 import LivingInformation from "@/components/update-information/LivingInformation";
+import ChildrenInformation from "@/components/update-information/ChildrenInformation";
 
 const Page = () => {
   const router = useRouter();
@@ -30,9 +32,6 @@ const Page = () => {
   const [SbumitLoading, setSbumitLoading] = useState(false);
   const [UserData, setUserData] = useState([]);
   const [MemberId, setMemberId] = useState(null);
-
-  // Personal Information Toggle
-  const [toggle, setToggle] = useState(false);
 
   //state and city
   const [StateDropDown, setStateDropDown] = useState([]);
@@ -58,6 +57,7 @@ const Page = () => {
       // Check if the response is successful
       if (response.ok) {
         if (result.data.length > 0) {
+          console.log("Member Data: ", result.data);
           setUserData(result.data[0]);
           fetchStateData(result.data[0].FromCountryID);
           fetchCityData(result.data[0].FromStateID);
@@ -303,38 +303,17 @@ const Page = () => {
 
         {/* Personal Information */}
         <div className="w-full mt-4 bg-white shadow-lg rounded-lg border border-gray-300">
-          <div
-            className="flex justify-between items-center p-4 bg-[#2E5077] text-white cursor-pointer rounded-t-lg"
-            onClick={() => setToggle((prev) => !prev)}
-          >
-            <h2 className="font-semibold text-lg">Personal Information</h2>
-            <span
-              className={`transform transition-transform ${
-                toggle ? "rotate-45" : "rotate-0"
-              }`}
-            >
-              <FaPlus />
-            </span>
-          </div>
-
-          {/* Collapsible Content - Personal Information */}
-          <div
-            className={`overflow-hidden transition-all duration-300 ${
-              toggle ? "h-auto" : "max-h-0"
-            }`}
-          >
-            <PersonalInformations
-              UserData={UserData}
-              CountryDropDown={CountryDropDown}
-              StateDropDown={StateDropDown}
-              CityDropDown={CityDropDown}
-              fetchStateData={fetchStateData}
-              fetchCityData={fetchCityData}
-            />
-          </div>
+          <PersonalInformations
+            UserData={UserData}
+            CountryDropDown={CountryDropDown}
+            StateDropDown={StateDropDown}
+            CityDropDown={CityDropDown}
+            fetchStateData={fetchStateData}
+            fetchCityData={fetchCityData}
+          />
         </div>
 
-        {/* Personal Information */}
+        {/* Educational Information */}
         <div className="w-full mt-4 bg-white shadow-lg rounded-lg border border-gray-300">
           <EducationalInformations MemberId={MemberId} />
         </div>
@@ -354,6 +333,16 @@ const Page = () => {
             fetchStateData={fetchStateData}
             fetchCityData={fetchCityData}
           />
+        </div>
+
+        {/* Wife Information */}
+        <div className="w-full mt-4 bg-white shadow-lg rounded-lg border border-gray-300">
+          <WifeInformation MemberId={MemberId} />
+        </div>
+
+        {/* Children Information */}
+        <div className="w-full mt-4 bg-white shadow-lg rounded-lg border border-gray-300">
+          <ChildrenInformation MemberId={MemberId} />
         </div>
       </div>
 
