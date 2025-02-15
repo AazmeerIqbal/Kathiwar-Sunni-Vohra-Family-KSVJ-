@@ -21,7 +21,7 @@ const connectToDB = async () => {
       pool = await sql.connect(config);
       console.log("Database connected successfully.");
     } catch (error) {
-      console.error("Database connection failed:", error);
+      console.log("Database connection failed:", error);
       throw error;
     }
   }
@@ -35,7 +35,7 @@ const closeConnection = async () => {
       pool = null;
       console.log("Database connection closed.");
     } catch (error) {
-      console.error("Failed to close the database connection:", error);
+      console.log("Failed to close the database connection:", error);
     }
   }
 };

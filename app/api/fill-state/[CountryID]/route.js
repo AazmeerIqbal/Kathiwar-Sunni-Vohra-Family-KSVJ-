@@ -2,7 +2,7 @@ import { connectToDB, closeConnection, config } from "@/utils/database";
 import { NextResponse } from "next/server";
 
 export async function GET(req, { params }) {
-  const { cnic, CountryID } = params;
+  const { cnic, CountryID } = await params;
 
   console.log("Incoming request for CNIC:", cnic);
   console.log("Selected country ID:", CountryID);

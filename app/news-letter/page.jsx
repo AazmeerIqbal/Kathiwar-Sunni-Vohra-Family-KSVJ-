@@ -45,7 +45,7 @@ const DocumentPage = () => {
       setDocuments(data.documents);
       console.log(data.documents);
     } catch (error) {
-      console.error("Error fetching documents:", error);
+      console.log("Error fetching documents:", error);
     }
   };
 
@@ -141,7 +141,7 @@ const DocumentPage = () => {
         alert(data.message);
       }
     } catch (error) {
-      console.error("Delete error:", error);
+      console.log("Delete error:", error);
       alert("Error deleting document!");
     }
   };

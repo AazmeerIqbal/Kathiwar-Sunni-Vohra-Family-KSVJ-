@@ -2,7 +2,7 @@ import { connectToDB, closeConnection, config } from "@/utils/database";
 import { NextResponse } from "next/server";
 
 export async function GET(req, { params }) {
-  const { cnic } = params;
+  const { cnic } = await params;
 
   try {
     // Establish database connection
@@ -12,10 +12,6 @@ export async function GET(req, { params }) {
     const familyResult = await pool
       .request()
       .query("SELECT * FROM tb_member_family_mst");
-    const countryResult = await pool
-      .request()
-      .query("SELECT * FROM CountryMaster");
-
     // Close the database connection
     await closeConnection(pool);
 
@@ -23,7 +19,6 @@ export async function GET(req, { params }) {
     return NextResponse.json({
       message: "Query executed successfully.",
       family: familyResult.recordset,
-      countries: countryResult.recordset,
     });
   } catch (error) {
     // Handle and log errors

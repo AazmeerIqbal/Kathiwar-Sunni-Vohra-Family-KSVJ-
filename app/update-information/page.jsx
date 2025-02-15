@@ -17,16 +17,19 @@ import { IoPrintSharp } from "react-icons/io5";
 import "react-toastify/dist/ReactToastify.css";
 
 import PersonalInformations from "@/components/update-information/PersonalInformations";
+import EducationalInformations from "@/components/update-information/EducationalInformations";
+import ProfessionalInformation from "@/components/update-information/ProfessionalInformation";
+import LivingInformation from "@/components/update-information/LivingInformation";
 
 const Page = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const cnic = decrypt(searchParams.get("cnic"));
-  console.log(cnic);
   const { data: session } = useSession();
   const [FetchLoading, setFetchLoading] = useState(false);
   const [SbumitLoading, setSbumitLoading] = useState(false);
   const [UserData, setUserData] = useState([]);
+  const [MemberId, setMemberId] = useState(null);
 
   // Personal Information Toggle
   const [toggle, setToggle] = useState(false);
@@ -34,11 +37,11 @@ const Page = () => {
   //state and city
   const [StateDropDown, setStateDropDown] = useState([]);
   const [CityDropDown, setCityDropDown] = useState([]);
+  const [CountryDropDown, setCountryDropDown] = useState([]);
 
   // Get Member Data from Temp Table
   const getMemberData = async () => {
     try {
-      console.log("CNIC FOR GET MEMBER DATA", cnic);
       const apiUrl = `/api/getMemberUpdatedData_onload-updateInformation/${cnic}`;
 
       // Make the API call
@@ -54,27 +57,51 @@ const Page = () => {
 
       // Check if the response is successful
       if (response.ok) {
-        console.log("Member Upadated data:", result);
         if (result.data.length > 0) {
           setUserData(result.data[0]);
           fetchStateData(result.data[0].FromCountryID);
           fetchCityData(result.data[0].FromStateID);
+          setMemberId(result.data[0].memberId);
         }
-        console.log("Data fetched successfully:", UserData);
       } else {
-        console.error("Error fetching data:", result.message);
+        console.log("Error fetching data:", result.message);
         // Handle error (e.g., show an error message to the user)
       }
     } catch (error) {
-      console.error("Error calling API:", error);
+      console.log("Error calling API:", error);
     }
   };
 
   useEffect(() => {
     getMemberData();
+    fetchCountryData();
   }, []);
 
-  // Fetch Country
+  // Fetch State
+  const fetchCountryData = async () => {
+    try {
+      const apiUrl = `/api/fill-country`;
+
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setCountryDropDown(result.data);
+      } else {
+        console.log("Error fetching state data:", result.message);
+      }
+    } catch (error) {
+      console.log("Error calling state API:", error);
+    }
+  };
+
+  // Fetch State
   const fetchStateData = async (selectedCountry) => {
     try {
       const apiUrl = `/api/fill-state/${selectedCountry}`;
@@ -90,12 +117,11 @@ const Page = () => {
 
       if (response.ok) {
         setStateDropDown(result.data);
-        console.log("State data fetched:", result.data);
       } else {
-        console.error("Error fetching state data:", result.message);
+        console.log("Error fetching state data:", result.message);
       }
     } catch (error) {
-      console.error("Error calling state API:", error);
+      console.log("Error calling state API:", error);
     }
   };
 
@@ -115,12 +141,11 @@ const Page = () => {
 
       if (response.ok) {
         setCityDropDown(result.data);
-        console.log("City data fetched:", result.data);
       } else {
-        console.error("Error fetching City data:", result.message);
+        console.log("Error fetching City data:", result.message);
       }
     } catch (error) {
-      console.error("Error calling City API:", error);
+      console.log("Error calling City API:", error);
     }
   };
 
@@ -159,19 +184,20 @@ const Page = () => {
         toast.success("User Data Fetched Successfully", {
           position: "top-right",
         });
+        console.log(result.data.recordset[0]);
         setUserData(result.data.recordset[0]);
-        console.log("Data fetched successfully:", UserData);
         fetchStateData(result.data.recordset[0].FromCountryID);
         fetchCityData(result.data.recordset[0].FromStateID);
-        // Handle success (e.g., update state, display a message, etc.)
+
+        setMemberId(result.data.recordset[0].memberId);
       } else {
         setFetchLoading(false);
-        console.error("Error fetching data:", result.message);
+        console.log("Error fetching data:", result.message);
         // Handle error (e.g., show an error message to the user)
       }
     } catch (error) {
       setFetchLoading(false);
-      console.error("Error calling API:", error);
+      console.log("Error calling API:", error);
     }
   };
 
@@ -201,15 +227,14 @@ const Page = () => {
 
       if (response.ok) {
         setSbumitLoading(false);
-        console.log("Data saved successfully:", result);
         toast.success("Saved Successfully", { position: "top-right" });
       } else {
         setSbumitLoading(false);
-        console.error("Error saving data:", result.message);
+        console.log("Error saving data:", result.message);
       }
     } catch (error) {
       setSbumitLoading(false);
-      console.error("Error calling save API:", error);
+      console.log("Error calling save API:", error);
     }
   };
 
@@ -219,7 +244,7 @@ const Page = () => {
 
   return (
     <>
-      <div className="m-4">
+      <div className="m-4 mb-24">
         <div className="flex sm:flex-row flex-col justify-between sm:items-center">
           <div>
             <h1 className="text-xl font-bold">Update Information</h1>
@@ -300,6 +325,7 @@ const Page = () => {
           >
             <PersonalInformations
               UserData={UserData}
+              CountryDropDown={CountryDropDown}
               StateDropDown={StateDropDown}
               CityDropDown={CityDropDown}
               fetchStateData={fetchStateData}
@@ -307,7 +333,30 @@ const Page = () => {
             />
           </div>
         </div>
+
+        {/* Personal Information */}
+        <div className="w-full mt-4 bg-white shadow-lg rounded-lg border border-gray-300">
+          <EducationalInformations MemberId={MemberId} />
+        </div>
+
+        {/* Personal Information */}
+        <div className="w-full mt-4 bg-white shadow-lg rounded-lg border border-gray-300">
+          <ProfessionalInformation MemberId={MemberId} />
+        </div>
+
+        {/* Living Information */}
+        <div className="w-full mt-4 bg-white shadow-lg rounded-lg border border-gray-300">
+          <LivingInformation
+            MemberId={MemberId}
+            CountryDropDown={CountryDropDown}
+            StateDropDown={StateDropDown}
+            CityDropDown={CityDropDown}
+            fetchStateData={fetchStateData}
+            fetchCityData={fetchCityData}
+          />
+        </div>
       </div>
+
       <ToastContainer />
     </>
   );

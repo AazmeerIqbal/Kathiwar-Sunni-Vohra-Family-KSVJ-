@@ -11,6 +11,7 @@ import Loader from "../ui/Loader";
 
 const PersonalInformations = ({
   UserData,
+  CountryDropDown,
   StateDropDown,
   CityDropDown,
   fetchStateData,
@@ -99,13 +100,9 @@ const PersonalInformations = ({
 
   // State for dropdowns
   const [FamilyDropDown, setFamilyDropDown] = useState([]);
-  const [CountryDropDown, setCountryDropDown] = useState([]);
 
   const fetchDropdownData = async () => {
     try {
-      // Log the CNIC from the session
-      console.log("Fetching data for CNIC:", session.user.cnic);
-
       // Construct the API URL
       const apiUrl = `/api/update-information/${session.user.cnic}/fill-dropDown`;
 
@@ -123,7 +120,6 @@ const PersonalInformations = ({
       // Check if the response is successful
       if (response.ok) {
         setFamilyDropDown(result.family); // Family dropdown data
-        setCountryDropDown(result.countries);
         console.log("Dropdown data fetched:", result.data);
       } else {
         console.log("Error fetching dropdown data:", result.message);
@@ -241,11 +237,11 @@ const PersonalInformations = ({
         });
       } else {
         setSaveLoading(false);
-        console.error("Error saving data:", result.message);
+        console.log("Error saving data:", result.message);
       }
     } catch (error) {
       setSaveLoading(false);
-      console.error("Error calling save API:", error);
+      console.log("Error calling save API:", error);
     }
   };
   return (
@@ -452,6 +448,7 @@ const PersonalInformations = ({
                     type="email"
                     value={formData.email}
                     onChange={handleChange}
+                    disabled={false}
                     className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
                   />
                 </div>

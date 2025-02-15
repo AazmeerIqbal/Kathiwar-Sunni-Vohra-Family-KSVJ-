@@ -2,7 +2,7 @@ import { connectToDB, closeConnection, config } from "@/utils/database";
 import { NextResponse } from "next/server";
 
 export async function GET(req, { params }) {
-  const { cnic, StateID } = params;
+  const { cnic, StateID } = await params;
 
   console.log("Incoming request for CNIC:", cnic);
   console.log("Selected country ID:", StateID);
@@ -24,8 +24,6 @@ export async function GET(req, { params }) {
       .request()
       .input("StateID", StateID) // ✅ Corrected parameter name
       .query("SELECT * FROM CityMaster WHERE StateID = @StateID");
-
-    console.log("Query executed successfully:", result.recordset);
 
     await closeConnection(pool);
 

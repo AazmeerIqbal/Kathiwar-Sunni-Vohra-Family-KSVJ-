@@ -47,7 +47,7 @@ export async function POST(req) {
   `;
 
   const checkCnicQuery = `
-    SELECT CNICNo 
+    SELECT CNICNo, memberId
     FROM tb_member_mst
     WHERE CNICNo = @CNICNo;
   `;
