@@ -53,7 +53,7 @@ const ProfessionalModel = ({ isOpen, onClose, MemberId, getMemberData }) => {
       });
     } catch (error) {
       setSubmitLoading(false);
-      console.error("Error inserting Professional detail:", error);
+      console.log("Error inserting Professional detail:", error);
     }
   };
 

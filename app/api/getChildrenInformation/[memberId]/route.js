@@ -5,6 +5,7 @@ export async function GET(req, { params }) {
   let pool;
   try {
     const { memberId } = await params;
+    console.log("Received MemberID in children information:", memberId); // Debugging line
 
     if (!memberId) {
       return NextResponse.json(
@@ -17,12 +18,11 @@ export async function GET(req, { params }) {
     pool = await connectToDB(config);
     console.log("Database connected successfully");
 
-    console.log("Executing query for MemberID:", memberId);
     const result = await pool
       .request()
       .input("MemberID", parseInt(memberId)) // Convert to integer
       .query(
-        "SELECT * FROM tb_member_living_det_test WHERE MemberID = @MemberID"
+        "SELECT * FROM tb_member_child_det_test WHERE MemberID = @MemberID"
       );
     console.log("Query executed successfully");
 
@@ -37,7 +37,7 @@ export async function GET(req, { params }) {
       code: error.code,
     });
     return NextResponse.json(
-      { message: "Internal Server Error Living", error: error.message },
+      { message: "Internal Server Error Children", error: error.message },
       { status: 500 }
     );
   } finally {

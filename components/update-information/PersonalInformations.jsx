@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import Loader from "../ui/Loader";
 import { FaPlus } from "react-icons/fa6";
+import { FaInfoCircle } from "react-icons/fa";
 
 const PersonalInformations = ({
   UserData,
@@ -255,7 +256,10 @@ const PersonalInformations = ({
         className="flex justify-between items-center h-16 px-4 py-2 bg-[#2E5077] text-white cursor-pointer rounded-t-lg"
         onClick={() => setToggle((prev) => !prev)}
       >
-        <h2 className="font-semibold text-lg">Personal Information</h2>
+        <h2 className="font-semibold text-lg flex items-center">
+          <FaInfoCircle className="mr-2" />
+          <p>Personal Information</p>
+        </h2>
         <div className="flex items-center gap-4">
           <span
             className={`transform transition-transform duration-300 bg-[#e5e6e7] p-1 rounded-md text-sm ${
@@ -478,9 +482,9 @@ const PersonalInformations = ({
                       <input
                         id="email"
                         type="email"
+                        name="email"
                         value={formData.email}
                         onChange={handleChange}
-                        disabled={false}
                         className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
                       />
                     </div>

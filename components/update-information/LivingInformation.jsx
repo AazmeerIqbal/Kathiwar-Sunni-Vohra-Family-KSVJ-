@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { FaPlus, FaTrash } from "react-icons/fa6";
 import { IoIosArrowDown } from "react-icons/io";
 import LivingModal from "./LivingModal";
-import { ToastContainer } from "react-toastify";
 import { MdCancel, MdEdit, MdSave } from "react-icons/md";
 import Loader from "../ui/Loader";
 import { motion } from "framer-motion";
+
+//Notification Toaster
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { IoHome } from "react-icons/io5";
 
 const LivingInformation = ({
   MemberId,
@@ -18,6 +22,11 @@ const LivingInformation = ({
   const [toggle, setToggle] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [LivingDetail, setLivingDetail] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+  const [editedData, setEditedData] = useState({});
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
     if (MemberId !== null) {
@@ -25,87 +34,93 @@ const LivingInformation = ({
     }
   }, [MemberId]);
 
-  const getMemberData = async () => {
+  const getMemberData = useCallback(async () => {
     try {
+      console.log("Fetching data for MemberID:", MemberId);
       const response = await fetch(`/api/getLivingInformation/${MemberId}`, {
-        method: "GET", // Changed from POST to GET
+        method: "GET",
       });
 
-      const result = await response.json();
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.log("Server error:", errorData);
+        throw new Error(
+          errorData.message || "Failed to fetch living information"
+        );
+      }
 
+      const result = await response.json();
+      setLivingDetail(result.data || []);
+      console.log("Living data fetched successfully:", result.data);
+    } catch (error) {
+      console.log("Error in getMemberData:", error);
+      setLivingDetail([]); // Set empty array on error
+      // Optionally show error to user
+      toast.error("Failed to fetch living information");
+    }
+  }, [MemberId]);
+
+  // Handle Input Change
+  const handleChange = useCallback((e, field) => {
+    setEditedData((prev) => ({ ...prev, [field]: e.target.value }));
+  }, []);
+
+  // Handle Edit Click
+  const handleEdit = useCallback((id, item) => {
+    setEditingId(id);
+    setEditedData({ ...item }); // Pre-fill data
+  }, []);
+
+  const handleSave = async (id) => {
+    setSaveLoading(true);
+    console.log("Clicked");
+    try {
+      const response = await fetch(`/api/updateLivingInformation/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editedData),
+      });
+      const result = await response.json();
       if (response.ok) {
-        setLivingDetail(result.data);
-        console.log("Living data: ", result.data);
+        await getMemberData(); // Ensure data refresh before UI update
+        toast.success("Updated successfully!", {
+          position: "top-right",
+        });
+        setEditingId(null);
       } else {
-        console.error("Error fetching Living data:", result.message);
+        console.log("Error updating data:", result.message);
       }
     } catch (error) {
-      console.error("Error fetching Living data:", error);
+      console.log("Error updating data:", error);
+    } finally {
+      setSaveLoading(false); // Ensure loading state is reset
     }
   };
 
-  const [editingId, setEditingId] = useState(null);
-  const [editedData, setEditedData] = useState({});
-  const [deleteLoading, setDeleteLoading] = useState(false);
-  const [saveLoading, setSaveLoading] = useState(false);
-  const [deletingId, setDeletingId] = useState(null);
-
-  // Handle Input Change
-  const handleChange = (e, field) => {
-    setEditedData({ ...editedData, [field]: e.target.value });
-  };
-
-  // Handle Edit Click
-  const handleEdit = (id, item) => {
-    setEditingId(id);
-    setEditedData({ ...item }); // Pre-fill data
-  };
-
-  const handleSave = async (id) => {
-    // setSaveLoading(true);
-    // try {
-    //   const response = await fetch(`/api/updateLivingInformation/${id}`, {
-    //     method: "PUT",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify(editedData),
-    //   });
-    //   const result = await response.json();
-    //   if (response.ok) {
-    //     getMemberData(); // Refresh data
-    //     setEditingId(null);
-    //   } else {
-    //     console.error("Error updating data:", result.message);
-    //   }
-    // } catch (error) {
-    //   console.error("Error updating data:", error);
-    // }
-    // setSaveLoading(false);
-  };
-
   // Handle Cancel Edit
-  const onCancelEdit = () => {
+  const onCancelEdit = useCallback(() => {
     setEditingId(null);
     setEditedData({});
-  };
+  }, []);
 
-  //Handle Delete
   const handleDelete = async (id) => {
-    // setDeleteLoading(true);
-    // setDeletingId(id);
-    // try {
-    //   const response = await fetch(`/api/deleteLivingInformation/${id}`, {
-    //     method: "DELETE",
-    //   });
-    //   if (response.ok) {
-    //     getMemberData(); // Refresh after delete
-    //   } else {
-    //     console.error("Error deleting data");
-    //   }
-    // } catch (error) {
-    //   console.error("Error deleting data:", error);
-    // }
-    // setDeleteLoading(false);
-    // setDeletingId(null);
+    setDeleteLoading(true);
+    setDeletingId(id);
+    try {
+      const response = await fetch(`/api/deleteLivingInformation/${id}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        getMemberData();
+        toast.success("Deleted successfully!", { position: "top-right" });
+      } else {
+        console.log("Error deleting data");
+      }
+    } catch (error) {
+      console.log("Error deleting data:", error);
+    }
+    setDeleteLoading(false);
+    setDeletingId(null);
   };
 
   return (
@@ -114,16 +129,19 @@ const LivingInformation = ({
         className="flex justify-between items-center px-4 py-2 bg-[#2E5077] text-white cursor-pointer rounded-t-lg"
         onClick={() => setToggle((prev) => !prev)}
       >
-        <h2 className="font-semibold text-lg">Living Information</h2>
+        <h2 className="font-semibold text-lg flex items-center">
+          <IoHome className="mr-2" />
+          <p>Living Information</p>
+        </h2>
         <div className="flex items-center gap-4">
           <button
             onClick={(e) => {
               e.stopPropagation();
               setIsModalOpen(true);
             }}
-            className="flex gap-1 items-center my-2 hover:opacity-70 py-2 px-3 bg-[#e5e6e7] text-xs md:text-sm text-black font-semibold rounded-3xl"
+            className="flex gap-1 items-center my-2 hover:opacity-70 py-1 px-2 bg-[#e5e6e7] text-xs md:text-sm text-black font-semibold rounded-3xl"
           >
-            <FaPlus /> Add New
+            <FaPlus className="text-sm" /> Add New
           </button>
           <span
             className={`transform transition-transform duration-300 bg-[#e5e6e7] p-1 rounded-md text-sm ${
@@ -145,30 +163,42 @@ const LivingInformation = ({
         className="overflow-hidden"
       >
         <div className="p-4 text-gray-900 overflow-x-auto">
-          {" "}
-          <table className="min-w-full border text-sm border-gray-300 bg-white table-fixed">
-            <thead className="bg-blue-500 text-white">
-              <tr>
-                <th className="py-1 border w-[22%]">Country</th>
-                <th className="py-1 border w-[22%]">State</th>
-                <th className="py-1 border w-[22%]">City</th>
-                <th className="py-1 border w-[22%]">Address</th>
-                <th className="py-1 border w-[12%]">Actions</th>
+          <table className="min-w-full bg-white rounded-lg overflow-hidden">
+            <thead className="bg-gray-100 text-gray-700">
+              <tr className="hidden md:table-row">
+                <th className="px-1 py-2 text-left text-xs font-bold">
+                  Country
+                </th>
+                <th className="px-1 py-2 text-left text-xs font-bold">State</th>
+                <th className="px-1 py-2 text-left text-xs font-bold">City</th>
+                <th className="px-1 py-2 text-left text-xs font-bold">
+                  Address
+                </th>
+                <th className="px-1 py-2 text-left text-xs font-bold">
+                  Actions
+                </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-200">
               {LivingDetail.map((item) => (
-                <tr key={item.LivingId} className="text-center border">
+                <tr
+                  key={item.LivingId}
+                  className="flex flex-col md:table-row hover:bg-gray-50"
+                >
+                  <div className="block md:hidden text-xs font-bold">
+                    Country:
+                  </div>
                   {/* Country Dropdown */}
-                  <td className="p-1 border w-[150px]">
+                  <td className="px-1 py-2 text-xs md:min-w-[150px]">
                     {editingId === item.LivingId ? (
                       <select
                         value={editedData.LivingCountryID || ""}
+                        onLoad={fetchStateData(item.LivingCountryID)}
                         onChange={(e) => {
                           handleChange(e, "LivingCountryID");
                           fetchStateData(e.target.value);
                         }}
-                        className="w-full p-1 border"
+                        className="w-full border border-gray-300 px- py-1 text-sm"
                       >
                         <option value="">Select Country</option>
                         {CountryDropDown.map((country) => (
@@ -182,17 +212,20 @@ const LivingInformation = ({
                         ?.CountryName || "N/A"
                     )}
                   </td>
-
+                  <div className="block md:hidden text-xs font-bold">
+                    State:
+                  </div>
                   {/* State Dropdown */}
-                  <td className="p-1 border w-[150px]">
+                  <td className="px-1 py-2 text-xs md:min-w-[150px]">
                     {editingId === item.LivingId ? (
                       <select
                         value={editedData.LivingStateID || ""}
+                        onLoad={fetchCityData(item.LivingStateID)}
                         onChange={(e) => {
                           handleChange(e, "LivingStateID");
                           fetchCityData(e.target.value);
                         }}
-                        className="w-full p-1 border"
+                        className="w-full border border-gray-300 px- py-1 text-sm"
                       >
                         <option value="">Select State</option>
                         {StateDropDown.map((state) => (
@@ -206,14 +239,14 @@ const LivingInformation = ({
                         ?.StateName || "N/A"
                     )}
                   </td>
-
+                  <div className="block md:hidden text-xs font-bold">City:</div>
                   {/* City Dropdown */}
-                  <td className="p-1 border w-[150px]">
+                  <td className="px-1 py-2 text-xs md:min-w-[150px]">
                     {editingId === item.LivingId ? (
                       <select
                         value={editedData.LivingCityID || ""}
                         onChange={(e) => handleChange(e, "LivingCityID")}
-                        className="w-full p-1 border"
+                        className="w-full border border-gray-300 px- py-1 text-sm"
                       >
                         <option value="">Select City</option>
                         {CityDropDown.map((city) => (
@@ -227,15 +260,17 @@ const LivingInformation = ({
                         ?.CityName || "N/A"
                     )}
                   </td>
-
+                  <div className="block md:hidden text-xs font-bold">
+                    Address:
+                  </div>
                   {/* Address Column */}
-                  <td className="p-1 border w-[150px]">
+                  <td className="px-1 py-2 text-xs md:min-w-[150px]">
                     {editingId === item.LivingId ? (
                       <input
                         type="text"
                         value={editedData.Address}
                         onChange={(e) => handleChange(e, "Address")}
-                        className="border p-1 w-full"
+                        className="border border-gray-300 px- py-1 w-full"
                       />
                     ) : (
                       item.Address
@@ -243,11 +278,11 @@ const LivingInformation = ({
                   </td>
 
                   {/* Actions */}
-                  <td className="p-1 border flex justify-center gap-1 text-xs">
+                  <td className="px-1 py-2 text-xs flex justify-center space-x-2 md:table-cell">
                     {editingId === item.LivingId ? (
                       <>
                         <button
-                          className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded"
+                          className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded mr-2"
                           onClick={() => handleSave(item.LivingId)}
                         >
                           {saveLoading ? <Loader w={3} h={3} /> : <MdSave />}
@@ -262,7 +297,7 @@ const LivingInformation = ({
                     ) : (
                       <>
                         <button
-                          className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded"
+                          className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded mr-2"
                           onClick={() => handleEdit(item.LivingId, item)}
                         >
                           <MdEdit />

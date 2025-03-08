@@ -1,60 +1,53 @@
+import sql from "mssql";
 import { connectToDB, closeConnection, config } from "@/utils/database";
-import { NextResponse } from "next/server";
 
-export default async function handler(req, res) {
-  if (req.method !== "PUT") {
-    return res.status(405).json({ message: "Method Not Allowed" });
-  }
-
-  const {
-    MemberProID,
-    CompanyID,
-    MemberID,
-    MemberWifeID,
-    MemberChildID,
-    CurrentProfession,
-    CompanyName,
-    CurrentPosition,
-    ProfessionalExperience,
-    EmployeeUnEmployeed,
-  } = req.body;
-
-  if (!MemberProID) {
-    return res.status(400).json({ message: "MemberProID is required" });
-  }
-
+export async function PUT(req, { params }) {
   try {
-    // Connect to the database
-    const pool = await connectToDB(config);
+    const { id } = params; // Get Living ID from dynamic route params
+    const data = await req.json(); // Parse request body
 
-    // Update query
-    const result = await sql.query`
-      UPDATE tb_member_professional_det_test
-      SET 
-        CompanyID = ${CompanyID},
-        MemberID = ${MemberID},
-        MemberWifeID = ${MemberWifeID},
-        MemberChildID = ${MemberChildID},
-        CurrentProfession = ${CurrentProfession},
-        CompanyName = ${CompanyName},
-        CurrentPosition = ${CurrentPosition},
-        ProfessionalExperience = ${ProfessionalExperience},
-        EmployeeUnEmployeed = ${EmployeeUnEmployeed}
-      WHERE MemberProID = ${MemberProID}
-    `;
+    let pool = await connectToDB(config);
+
+    const updateResult = await pool
+      .request()
+      .input("MemberId", sql.Int, data.MemberId)
+      .input("LivingCountryID", sql.Int, data.LivingCountryID)
+      .input("LivingStateID", sql.Int, data.LivingStateID)
+      .input("LivingCityID", sql.Int, data.LivingCityID)
+      .input("DateFrom", sql.Date, data.DateFrom)
+      .input("DateTo", sql.Date, data.DateTo)
+      .input("Remarks", sql.NVarChar, data.Remarks)
+      .input("Address", sql.NVarChar, data.Address)
+      .input("LivingId", sql.Int, id) // Use ID from params
+      .query(`
+        UPDATE tb_member_living_det_test
+        SET LivingCountryID = @LivingCountryID, 
+            LivingStateID = @LivingStateID, 
+            LivingCityID = @LivingCityID, 
+            DateFrom = @DateFrom, 
+            DateTo = @DateTo, 
+            Remarks = @Remarks, 
+            Address = @Address
+        WHERE LivingId = @LivingId
+      `);
 
     await closeConnection(pool);
-    if (result.rowsAffected[0] > 0) {
-      return res
-        .status(200)
-        .json({ message: "Member professional details updated successfully" });
+
+    if (updateResult.rowsAffected[0] > 0) {
+      return new Response(
+        JSON.stringify({ message: "Living details updated successfully" }),
+        { status: 200 }
+      );
     } else {
-      return res
-        .status(404)
-        .json({ message: "Member professional details not found" });
+      return new Response(
+        JSON.stringify({ message: "Living details not found in database" }),
+        { status: 404 }
+      );
     }
   } catch (error) {
-    console.error("Database update error:", error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    return new Response(
+      JSON.stringify({ error: "PUT request failed", details: error.message }),
+      { status: 500 }
+    );
   }
 }

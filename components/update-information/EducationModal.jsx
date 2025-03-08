@@ -62,7 +62,7 @@ export default function EducationModal({
       });
     } catch (error) {
       setSubmitLoading(false);
-      console.error("Error inserting education detail:", error);
+      console.log("Error inserting education detail:", error);
     }
   };
   //   console.log("Session: ", session.user);

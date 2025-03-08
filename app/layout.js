@@ -8,6 +8,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Login from "./login/page";
 import ResetPassword from "./reset-password/page";
 import Dashboard from "@/components/Dashboard";
+import { Loader } from "lucide-react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,7 +33,11 @@ function AuthWrapper({ children }) {
 
   // If session status is still loading, show a loading message
   if (status === "loading") {
-    return <p>Loading...</p>;
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Loader className="animate-spin" />
+      </div>
+    );
   }
 
   // If no session and not authenticated, render nothing
@@ -54,9 +59,7 @@ export default function RootLayout({ children }) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>KSVJ</title>
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body>
         <SessionProvider>
           <div className="main">
             <main className="app">

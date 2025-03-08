@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 // Notification Toaster
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { LuBriefcaseBusiness } from "react-icons/lu";
 
 const ProfessionalInformation = ({ MemberId }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -40,7 +41,7 @@ const ProfessionalInformation = ({ MemberId }) => {
       );
       const result = await response.json();
       if (response.ok) {
-        setProfessionalDetail(result.data); 
+        setProfessionalDetail(result.data);
       }
     } catch (error) {
       console.log("Error fetching professional data:", error);
@@ -118,16 +119,19 @@ const ProfessionalInformation = ({ MemberId }) => {
         className="flex justify-between items-center px-4 py-2 bg-[#2E5077] text-white cursor-pointer rounded-t-lg"
         onClick={() => setToggle((prev) => !prev)}
       >
-        <h2 className="font-semibold text-lg">Educational Information</h2>
+        <h2 className="font-semibold text-lg flex items-center">
+          <LuBriefcaseBusiness className="mr-2" />
+          <p>Professional Information</p>
+        </h2>
         <div className="flex items-center gap-4">
           <button
             onClick={(e) => {
               e.stopPropagation();
               setIsModalOpen(true);
             }}
-            className="flex gap-1 items-center my-2 hover:opacity-70 py-2 px-3 bg-[#e5e6e7] text-xs md:text-sm text-black font-semibold rounded-3xl"
+            className="flex gap-1 items-center my-2 hover:opacity-70 py-1 px-2 bg-[#e5e6e7] text-xs md:text-sm text-black font-semibold rounded-3xl"
           >
-            <FaPlus /> Add New
+            <FaPlus className="text-sm" /> Add New
           </button>
           <span
             className={`transform transition-transform duration-300 bg-[#e5e6e7] p-1 rounded-md text-sm ${
@@ -149,21 +153,39 @@ const ProfessionalInformation = ({ MemberId }) => {
         className="overflow-hidden"
       >
         <div className="p-4 text-gray-900 overflow-x-auto">
-          <table className="min-w-full border text-sm border-gray-300 bg-white table-fixed">
-            <thead className="bg-blue-500 text-white">
-              <tr>
-                <th className="py-1 border w-[20%]">Company Name</th>
-                <th className="py-1 border w-[20%]">Current Position</th>
-                <th className="py-1 border w-[20%]">Profession</th>
-                <th className="py-1 border w-[20%]">Experience</th>
-                <th className="py-1 border w-[20%]">Employeed Status</th>
-                <th className="py-1 border w-[15%]">Actions</th>
+          <table className="min-w-full bg-white rounded-lg overflow-hidden">
+            <thead className="bg-gray-100 text-gray-700">
+              <tr className="hidden md:table-row">
+                <th className="px-1 py-2 text-left text-xs font-bold">
+                  Company Name
+                </th>
+                <th className="px-1 py-2 text-left text-xs font-bold">
+                  Current Position
+                </th>
+                <th className="px-1 py-2 text-left text-xs font-bold">
+                  Profession
+                </th>
+                <th className="px-1 py-2 text-left text-xs font-bold">
+                  Experience
+                </th>
+                <th className="px-1 py-2 text-left text-xs font-bold">
+                  Employeed Status
+                </th>
+                <th className="px-1 py-2 text-left text-xs font-bold">
+                  Actions
+                </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-200">
               {ProfessionalDetail.map((item) => (
-                <tr key={item.MemberProID} className="text-center border">
-                  <td className="p-1 border w-[150px]">
+                <tr
+                  key={item.MemberProID}
+                  className="flex flex-col md:table-row hover:bg-gray-50"
+                >
+                  <div className="block md:hidden text-xs font-bold">
+                    Company Name:
+                  </div>
+                  <td className="px-1 py-2 text-xs md:min-w-[150px]">
                     {editingId === item.MemberProID ? (
                       <input
                         type="text"
@@ -174,13 +196,16 @@ const ProfessionalInformation = ({ MemberId }) => {
                             CompanyName: e.target.value,
                           })
                         }
-                        className="border p-1 w-full"
+                        className="border border-gray-300 px- py-1 w-full"
                       />
                     ) : (
                       item.CompanyName
                     )}
                   </td>
-                  <td className="p-1 border w-[150px]">
+                  <div className="block md:hidden text-xs font-bold">
+                    Current Position:
+                  </div>
+                  <td className="px-1 py-2 text-xs md:min-w-[150px]">
                     {editingId === item.MemberProID ? (
                       <input
                         type="text"
@@ -191,18 +216,21 @@ const ProfessionalInformation = ({ MemberId }) => {
                             CurrentPosition: e.target.value,
                           })
                         }
-                        className="border p-1 w-full"
+                        className="border border-gray-300 px- py-1 w-full"
                       />
                     ) : (
                       item.CurrentPosition
                     )}
                   </td>
-                  <td className="p-1 border w-[150px]">
+                  <div className="block md:hidden text-xs font-bold">
+                    Current Profession:
+                  </div>
+                  <td className="px-1 py-2 text-xs md:min-w-[150px]">
                     {editingId === item.MemberProID ? (
                       <select
                         value={editedData.CurrentProfession || ""}
                         onChange={(e) => handleChange(e, "CurrentProfession")}
-                        className="w-full p-1 border"
+                        className="w-full border border-gray-300 px- py-1"
                       >
                         <option value="Salaried Person">Salaried Person</option>
                         <option value="Business Owner">Business Owner</option>
@@ -214,14 +242,17 @@ const ProfessionalInformation = ({ MemberId }) => {
                       item.CurrentProfession
                     )}
                   </td>
-                  <td className="p-1 border w-[150px]">
+                  <div className="block md:hidden text-xs font-bold">
+                    Professional Experience:
+                  </div>
+                  <td className="px-1 py-2 text-xs md:min-w-[150px]">
                     {editingId === item.MemberProID ? (
                       <select
                         value={editedData.ProfessionalExperience || ""}
                         onChange={(e) =>
                           handleChange(e, "ProfessionalExperience")
                         }
-                        className="w-full p-1 border"
+                        className="w-full border border-gray-300 px- py-1"
                       >
                         <option value="1-2 Years">1-2 Years</option>
                         <option value="3-5 Years">3-5 Years</option>
@@ -233,12 +264,15 @@ const ProfessionalInformation = ({ MemberId }) => {
                       item.ProfessionalExperience
                     )}
                   </td>
-                  <td className="p-1 border w-[150px]">
+                  <div className="block md:hidden text-xs font-bold">
+                    Employeed Status:
+                  </div>
+                  <td className="px-1 py-2 text-xs md:min-w-[150px]">
                     {editingId === item.MemberProID ? (
                       <select
                         value={editedData.EmployeeUnEmployeed || ""}
                         onChange={(e) => handleChange(e, "EmployeeUnEmployeed")}
-                        className="w-full p-1 border"
+                        className="w-full border border-gray-300 px- py-1"
                       >
                         <option value="Under Employement">
                           Under Employement
@@ -249,17 +283,17 @@ const ProfessionalInformation = ({ MemberId }) => {
                       item.EmployeeUnEmployeed
                     )}
                   </td>
-                  <td className="p-1 border flex justify-center gap-1 text-xs">
+                  <td className="px-1 py-2 text-xs flex justify-center space-x-2 md:table-cell">
                     {editingId === item.MemberProID ? (
                       <button
-                        className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded "
+                        className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded mr-2"
                         onClick={() => handleEditSave(item.MemberProID)}
                       >
                         {SaveLoading ? <Loader w={3} h={3} /> : <MdSave />}
                       </button>
                     ) : (
                       <button
-                        className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded "
+                        className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded mr-2"
                         onClick={() => handleEdit(item.MemberProID)}
                       >
                         <MdEdit />
@@ -278,10 +312,10 @@ const ProfessionalInformation = ({ MemberId }) => {
                         onClick={() => handleDelete(item.MemberProID)}
                         disabled={
                           DeleteLoading && deletingId === item.MemberProID
-                        } // Disable button during deletion
+                        }
                       >
                         {DeleteLoading && deletingId === item.MemberProID ? (
-                          <Loader w={3} h={3} /> // Show loader only for the row being deleted
+                          <Loader w={3} h={3} />
                         ) : (
                           <FaTrash />
                         )}

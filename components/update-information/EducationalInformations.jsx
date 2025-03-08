@@ -8,6 +8,7 @@ import EducationModal from "./EducationModal";
 import Loader from "../ui/Loader";
 import { IoIosArrowDown, IoIosSave } from "react-icons/io";
 import { motion } from "framer-motion";
+import { PiStudentFill } from "react-icons/pi";
 
 const EducationalInformations = ({ MemberId }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -158,14 +159,16 @@ const EducationalInformations = ({ MemberId }) => {
         className="flex justify-between items-center px-4 py-2 bg-[#2E5077] text-white cursor-pointer rounded-t-lg"
         onClick={() => setToggle((prev) => !prev)}
       >
-        <h2 className="font-semibold text-lg">Educational Information</h2>
+        <h2 className="font-semibold text-lg flex items-center">
+          <PiStudentFill className="mr-2" /> <p>Educational Information</p>
+        </h2>
         <div className="flex items-center gap-4">
           <button
             onClick={(e) => {
               e.stopPropagation();
               setIsModalOpen(true);
             }}
-            className="flex gap-1 items-center my-2 hover:opacity-70 py-2 px-3 bg-[#e5e6e7] text-xs md:text-sm text-black font-semibold rounded-3xl"
+            className="flex gap-1 items-center my-2 hover:opacity-70 py-1 px-2 bg-[#e5e6e7] text-xs md:text-sm text-black font-semibold rounded-3xl"
           >
             <FaPlus /> Add New
           </button>
