@@ -19,7 +19,7 @@ export async function GET(req, { params }) {
       .request()
       .input("MemberID", id)
       .query(
-        "SELECT * FROM tb_member_wife_det_test where memberwifeId = @MemberID"
+        "SELECT * FROM tb_member_wife_det_test where memberId = @MemberID"
       );
 
     await closeConnection(pool);
