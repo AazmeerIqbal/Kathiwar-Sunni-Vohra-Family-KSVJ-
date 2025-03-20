@@ -178,9 +178,11 @@ const ProfessionalInformation = ({
                 <th className="px-1 py-2 text-left text-xs font-bold">
                   Employeed Status
                 </th>
-                <th className="px-1 py-2 text-left text-xs font-bold">
-                  Actions
-                </th>
+                {session.user.isAdmin !== 1 ? (
+                  <th className="px-1 py-2 text-left text-xs font-bold">
+                    Actions
+                  </th>
+                ) : null}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -290,45 +292,47 @@ const ProfessionalInformation = ({
                       item.EmployeeUnEmployeed
                     )}
                   </td>
-                  <td className="px-1 py-2 text-xs flex justify-center space-x-2 md:table-cell">
-                    {editingId === item.MemberProID ? (
-                      <button
-                        className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded mr-2"
-                        onClick={() => handleEditSave(item.MemberProID)}
-                      >
-                        {SaveLoading ? <Loader w={3} h={3} /> : <MdSave />}
-                      </button>
-                    ) : (
-                      <button
-                        className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded mr-2"
-                        onClick={() => handleEdit(item.MemberProID)}
-                      >
-                        <MdEdit />
-                      </button>
-                    )}
-                    {editingId === item.MemberProID ? (
-                      <button
-                        className="bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded"
-                        onClick={onCancelEdit}
-                      >
-                        <MdCancel />
-                      </button>
-                    ) : (
-                      <button
-                        className="bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded"
-                        onClick={() => handleDelete(item.MemberProID)}
-                        disabled={
-                          DeleteLoading && deletingId === item.MemberProID
-                        }
-                      >
-                        {DeleteLoading && deletingId === item.MemberProID ? (
-                          <Loader w={3} h={3} />
-                        ) : (
-                          <FaTrash />
-                        )}
-                      </button>
-                    )}
-                  </td>
+                  {session.user.isAdmin !== 1 ? (
+                    <td className="px-1 py-2 text-xs flex justify-center space-x-2 md:table-cell">
+                      {editingId === item.MemberProID ? (
+                        <button
+                          className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded mr-2"
+                          onClick={() => handleEditSave(item.MemberProID)}
+                        >
+                          {SaveLoading ? <Loader w={3} h={3} /> : <MdSave />}
+                        </button>
+                      ) : (
+                        <button
+                          className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded mr-2"
+                          onClick={() => handleEdit(item.MemberProID)}
+                        >
+                          <MdEdit />
+                        </button>
+                      )}
+                      {editingId === item.MemberProID ? (
+                        <button
+                          className="bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded"
+                          onClick={onCancelEdit}
+                        >
+                          <MdCancel />
+                        </button>
+                      ) : (
+                        <button
+                          className="bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded"
+                          onClick={() => handleDelete(item.MemberProID)}
+                          disabled={
+                            DeleteLoading && deletingId === item.MemberProID
+                          }
+                        >
+                          {DeleteLoading && deletingId === item.MemberProID ? (
+                            <Loader w={3} h={3} />
+                          ) : (
+                            <FaTrash />
+                          )}
+                        </button>
+                      )}
+                    </td>
+                  ) : null}
                 </tr>
               ))}
             </tbody>

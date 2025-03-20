@@ -2,7 +2,7 @@ import { connectToDB, closeConnection, config } from "@/utils/database";
 import { NextResponse } from "next/server";
 
 export async function POST(req, { params }) {
-  const { MemberId } = params;
+  const { id } = params;
   const {
     fatherFamilyName,
     marriageDate,
@@ -31,7 +31,7 @@ export async function POST(req, { params }) {
 
   try {
     const pool = await connectToDB(config);
-    console.log("Incoming wife details for MemberId: ", MemberId);
+    console.log("Incoming wife details for MemberId: ", id);
 
     const insertQuery = `
       INSERT INTO [KSVJ].[dbo].[tb_member_wife_det_test] (
@@ -49,7 +49,7 @@ export async function POST(req, { params }) {
 
     await pool
       .request()
-      .input("MemberId", MemberId)
+      .input("MemberId", id)
       .input("CompanyID", config.companyId)
       .input("FamilyID", fatherFamilyName)
       .input("MarriageDt", marriageDate)

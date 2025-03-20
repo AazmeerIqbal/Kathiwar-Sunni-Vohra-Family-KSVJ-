@@ -18,7 +18,9 @@ export async function GET(req, { params }) {
     const result = await pool
       .request()
       .input("MemberID", id)
-      .query("SELECT * FROM tb_member_wife_det_test");
+      .query(
+        "SELECT * FROM tb_member_wife_det_test where memberwifeId = @MemberID"
+      );
 
     await closeConnection(pool);
 
