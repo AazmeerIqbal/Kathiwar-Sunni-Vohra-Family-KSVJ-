@@ -10,13 +10,18 @@ import "react-toastify/dist/ReactToastify.css";
 import Loader from "../ui/Loader";
 import Select from "react-select";
 
-const WifeInformation = ({ MemberId }) => {
+const WifeInformation = ({
+  MemberId,
+  wifeData,
+  setWifeData,
+  WifeFamilyDropDown,
+  setWifeFamilyDropDown,
+  FatherNames,
+  setFatherNames,
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [toggle, setToggle] = useState(false);
-  const [wifeData, setWifeData] = useState([]);
-  // State for dropdowns
-  const [FamilyDropDown, setFamilyDropDown] = useState([]);
-  const [FatherNames, setFatherNames] = useState([]);
+
   const [editIndex, setEditIndex] = useState(null);
   const [editRow, setEditRow] = useState({});
   const [Loading, setLoading] = useState(false);
@@ -51,7 +56,7 @@ const WifeInformation = ({ MemberId }) => {
 
       // Check if the response is successful
       if (response.ok) {
-        setFamilyDropDown(result.family); // Family dropdown data
+        setWifeFamilyDropDown(result.family); // Family dropdown data
         console.log("Family data fetched:", result.family);
       } else {
         console.log("Error fetching dropdown data:", result.message);
@@ -196,15 +201,17 @@ const WifeInformation = ({ MemberId }) => {
           <p>Wife Information</p>
         </h2>
         <div className="flex items-center gap-4">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsModalOpen(true);
-            }}
-            className="flex gap-1 items-center my-2 hover:opacity-70 py-1 px-2 bg-[#e5e6e7] text-xs md:text-sm text-black font-semibold rounded-3xl"
-          >
-            <FaPlus className="text-sm" /> Add New
-          </button>
+          {session.user.isAdmin !== 1 ? (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsModalOpen(true);
+              }}
+              className="flex gap-1 items-center my-2 hover:opacity-70 py-1 px-2 bg-[#e5e6e7] text-xs md:text-sm text-black font-semibold rounded-3xl"
+            >
+              <FaPlus className="text-sm" /> Add New
+            </button>
+          ) : null}
           <span
             className={`transform transition-transform duration-300 bg-[#e5e6e7] p-1 rounded-md text-sm ${
               toggle ? "rotate-180" : "rotate-0"
@@ -263,9 +270,11 @@ const WifeInformation = ({ MemberId }) => {
                   <th className="px-1 py-2 text-left text-xs font-bold">
                     Grave Number
                   </th>
-                  <th className="px-1 py-2 text-left text-xs font-bold ">
-                    Actions
-                  </th>
+                  {session.user.isAdmin !== 1 ? (
+                    <th className="px-1 py-2 text-left text-xs font-bold ">
+                      Actions
+                    </th>
+                  ) : null}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -341,7 +350,9 @@ const WifeInformation = ({ MemberId }) => {
                             className="w-full border border-gray-300 px-2 py-1 text-sm"
                           />
                         ) : (
-                          wife.FamilyID
+                          WifeFamilyDropDown.find(
+                            (family) => family.FamilyID === wife.FamilyID
+                          )?.FamilyName || "N/A"
                         )}
                       </td>
                       <td className="px-1 py-2 text-xs ">
@@ -525,43 +536,45 @@ const WifeInformation = ({ MemberId }) => {
                           wife.GraveNumber || "N/A"
                         )}
                       </td>
-                      <td className="px-1 py-2 text-xs flex justify-center gap-2 md:table-cell">
-                        {editIndex === index ? (
-                          <>
-                            <button
-                              className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded mr-2"
-                              onClick={() => onSaveEdit(index)}
-                            >
-                              {Loading ? <Loader w={4} h={4} /> : <MdSave />}
-                            </button>
-                            <button
-                              className="bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded"
-                              onClick={onCancelEdit}
-                            >
-                              <MdCancel />
-                            </button>
-                          </>
-                        ) : (
-                          <>
-                            <button
-                              className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded mr-2"
-                              onClick={() => onEdit(index)}
-                            >
-                              <MdEdit />
-                            </button>
-                            <button
-                              className="bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded"
-                              onClick={() => onDelete(wife.memberwifeId)}
-                            >
-                              {deletingId === wife.memberwifeId && Loading ? (
-                                <Loader w={4} h={4} />
-                              ) : (
-                                <MdDelete />
-                              )}
-                            </button>
-                          </>
-                        )}
-                      </td>
+                      {session.user.isAdmin !== 1 ? (
+                        <td className="px-1 py-2 text-xs flex justify-center gap-2 md:table-cell">
+                          {editIndex === index ? (
+                            <>
+                              <button
+                                className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded mr-2"
+                                onClick={() => onSaveEdit(index)}
+                              >
+                                {Loading ? <Loader w={4} h={4} /> : <MdSave />}
+                              </button>
+                              <button
+                                className="bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded"
+                                onClick={onCancelEdit}
+                              >
+                                <MdCancel />
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded mr-2"
+                                onClick={() => onEdit(index)}
+                              >
+                                <MdEdit />
+                              </button>
+                              <button
+                                className="bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded"
+                                onClick={() => onDelete(wife.memberwifeId)}
+                              >
+                                {deletingId === wife.memberwifeId && Loading ? (
+                                  <Loader w={4} h={4} />
+                                ) : (
+                                  <MdDelete />
+                                )}
+                              </button>
+                            </>
+                          )}
+                        </td>
+                      ) : null}
                     </tr>
                   ))
                 )}
@@ -575,7 +588,7 @@ const WifeInformation = ({ MemberId }) => {
         isOpen={isModalOpen}
         onClose={handleModalClose}
         MemberId={MemberId}
-        FamilyDropDown={FamilyDropDown}
+        WifeFamilyDropDown={WifeFamilyDropDown}
         FatherNames={FatherNames}
         getWifeData={getWifeData}
       />

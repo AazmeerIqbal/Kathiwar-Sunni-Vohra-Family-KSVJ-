@@ -10,13 +10,13 @@ export default function Home() {
   const { data: session, status } = useSession();
 
   const fetchUpdatedMembers = async () => {
-    if (!session?.user?.cnic) return;
+    if (session.user.isAdmin !== 1) return;
     try {
       // Log the CNIC from the session
-      console.log("Fetching data for CNIC:", session.user.cnic);
+      console.log("Fetching data for Admin:", session.user.isAdmin);
 
       // Construct the API URL
-      const apiUrl = `/api/get-updatedMembers/${session.user.cnic}`;
+      const apiUrl = `/api/get-updatedMembers/${session.user.isAdmin}`;
 
       // Make the API call
       const response = await fetch(apiUrl, {
@@ -42,10 +42,8 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (status === "authenticated") {
-      fetchUpdatedMembers();
-    }
-  }, [status, session]);
+    fetchUpdatedMembers();
+  }, [session]);
 
   useEffect(() => {
     console.log(UpdatedMembers);

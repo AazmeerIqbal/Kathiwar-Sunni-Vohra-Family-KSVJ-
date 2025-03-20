@@ -30,13 +30,64 @@ const Page = () => {
   const { data: session } = useSession();
   const [FetchLoading, setFetchLoading] = useState(false);
   const [SbumitLoading, setSbumitLoading] = useState(false);
-  const [UserData, setUserData] = useState([]);
   const [MemberId, setMemberId] = useState(null);
 
   //state and city
   const [StateDropDown, setStateDropDown] = useState([]);
   const [CityDropDown, setCityDropDown] = useState([]);
   const [CountryDropDown, setCountryDropDown] = useState([]);
+
+  //Personal Information
+  const [UserData, setUserData] = useState([]);
+  const [FamilyDropDown, setFamilyDropDown] = useState([]);
+
+  //Educational Informtaion
+  const [EducationData, setEducationData] = useState([]);
+  const [HQ, setHQ] = useState([]);
+  const [SP, setSP] = useState([]);
+
+  // Professional Informaion
+  const [ProfessionalDetail, setProfessionalDetail] = useState([]);
+
+  // Living Informaion
+  const [LivingDetail, setLivingDetail] = useState([]);
+
+  // Wife Informaion
+  const [wifeData, setWifeData] = useState([]);
+  const [WifeFamilyDropDown, setWifeFamilyDropDown] = useState([]);
+  const [FatherNames, setFatherNames] = useState([]);
+
+  // Children Infotmation
+  const [childrenDetail, setChildrenDetail] = useState([]);
+
+  const printData = {
+    // State, City and Country
+    StateDropDown,
+    CityDropDown,
+    CountryDropDown,
+    // Personal Information
+    UserData,
+    FamilyDropDown,
+
+    //Educational Information
+    EducationData,
+    HQ,
+    SP,
+
+    // Professional Informaion
+    ProfessionalDetail,
+
+    // Living Informaion
+    LivingDetail,
+
+    // Wife Informaion
+    wifeData,
+    WifeFamilyDropDown,
+    FatherNames,
+
+    // Children Informaion
+    childrenDetail,
+  };
 
   // Get Member Data from Temp Table
   const getMemberData = async () => {
@@ -239,7 +290,19 @@ const Page = () => {
   };
 
   const handlePrint = () => {
-    // router.push("update-information/print");
+    console.log("Print Clicked");
+    const printWindow = window.open(
+      "update-information/print",
+      "PrintWindow",
+      "width=800,height=600"
+    );
+
+    // Pass the printData to the new window
+    if (printWindow) {
+      printWindow.onload = () => {
+        printWindow.printData = printData; // Make printData accessible in the new window
+      };
+    }
   };
 
   return (
@@ -305,22 +368,37 @@ const Page = () => {
         <div className="w-full mt-4 bg-white shadow-lg rounded-lg border border-gray-300">
           <PersonalInformations
             UserData={UserData}
+            getMemberData={getMemberData}
             CountryDropDown={CountryDropDown}
             StateDropDown={StateDropDown}
             CityDropDown={CityDropDown}
             fetchStateData={fetchStateData}
             fetchCityData={fetchCityData}
+            FamilyDropDown={FamilyDropDown}
+            setFamilyDropDown={setFamilyDropDown}
           />
         </div>
 
         {/* Educational Information */}
         <div className="w-full mt-4 bg-white shadow-lg rounded-lg border border-gray-300">
-          <EducationalInformations MemberId={MemberId} />
+          <EducationalInformations
+            MemberId={MemberId}
+            EducationData={EducationData}
+            setEducationData={setEducationData}
+            HQ={HQ}
+            setHQ={setHQ}
+            SP={SP}
+            setSP={setSP}
+          />
         </div>
 
         {/* Personal Information */}
         <div className="w-full mt-4 bg-white shadow-lg rounded-lg border border-gray-300">
-          <ProfessionalInformation MemberId={MemberId} />
+          <ProfessionalInformation
+            MemberId={MemberId}
+            ProfessionalDetail={ProfessionalDetail}
+            setProfessionalDetail={setProfessionalDetail}
+          />
         </div>
 
         {/* Living Information */}
@@ -332,17 +410,31 @@ const Page = () => {
             CityDropDown={CityDropDown}
             fetchStateData={fetchStateData}
             fetchCityData={fetchCityData}
+            LivingDetail={LivingDetail}
+            setLivingDetail={setLivingDetail}
           />
         </div>
 
         {/* Wife Information */}
         <div className="w-full mt-4 bg-white shadow-lg rounded-lg border border-gray-300">
-          <WifeInformation MemberId={MemberId} />
+          <WifeInformation
+            MemberId={MemberId}
+            wifeData={wifeData}
+            setWifeData={setWifeData}
+            WifeFamilyDropDown={WifeFamilyDropDown}
+            setWifeFamilyDropDown={setWifeFamilyDropDown}
+            FatherNames={FatherNames}
+            setFatherNames={setFatherNames}
+          />
         </div>
 
         {/* Children Information */}
         <div className="w-full mt-4 bg-white shadow-lg rounded-lg border border-gray-300">
-          <ChildrenInformation MemberId={MemberId} />
+          <ChildrenInformation
+            MemberId={MemberId}
+            childrenDetail={childrenDetail}
+            setChildrenDetail={setChildrenDetail}
+          />
         </div>
       </div>
 

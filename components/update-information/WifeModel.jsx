@@ -12,7 +12,7 @@ const WifeDetailForm = ({
   isOpen,
   onClose,
   MemberId,
-  FamilyDropDown,
+  WifeFamilyDropDown,
   FatherNames,
   getWifeData,
 }) => {
@@ -123,7 +123,9 @@ const WifeDetailForm = ({
               {...register("gender")}
               className="w-full p-2 border rounded-md"
             >
-              <option value="Female">Female</option>
+              <option value="">Select Gender</option>
+              <option value="0">Male</option>
+              <option value="1">Female</option>
             </select>
           </div>
           <div>
@@ -149,7 +151,7 @@ const WifeDetailForm = ({
           <div>
             <label className="text-gray-600">Father Family Name</label>
             <Select
-              options={FamilyDropDown.map((family) => ({
+              options={WifeFamilyDropDown.map((family) => ({
                 value: family.FamilyID,
                 label: family.FamilyName,
               }))}

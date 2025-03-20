@@ -18,6 +18,7 @@ import { usePathname } from "next/navigation";
 import Sidebar, { SidebarItem } from "@/components/Sidebar";
 import GradientText from "./ui/GradientText";
 import { useSession } from "next-auth/react";
+import { FaCircleDollarToSlot } from "react-icons/fa6";
 
 const Dashboard = ({ children }) => {
   const { data: session } = useSession();
@@ -54,6 +55,13 @@ const Dashboard = ({ children }) => {
               icon={<IoIosDocument size={20} />}
               text="News Letter"
               active={pathname?.includes("/news-letter")}
+            />
+          </Link>
+          <Link href="/financial-statistics">
+            <SidebarItem
+              icon={<FaCircleDollarToSlot size={20} />}
+              text="Financial Statistics"
+              active={pathname?.includes("/financial-statistics")}
             />
           </Link>
           <SidebarItem

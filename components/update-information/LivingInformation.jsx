@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { IoHome } from "react-icons/io5";
+import { useSession } from "next-auth/react";
 
 const LivingInformation = ({
   MemberId,
@@ -18,15 +19,17 @@ const LivingInformation = ({
   CityDropDown,
   fetchStateData,
   fetchCityData,
+  LivingDetail,
+  setLivingDetail,
 }) => {
   const [toggle, setToggle] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [LivingDetail, setLivingDetail] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [editedData, setEditedData] = useState({});
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [saveLoading, setSaveLoading] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
+  const { data: session } = useSession();
 
   useEffect(() => {
     if (MemberId !== null) {
@@ -134,15 +137,17 @@ const LivingInformation = ({
           <p>Living Information</p>
         </h2>
         <div className="flex items-center gap-4">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsModalOpen(true);
-            }}
-            className="flex gap-1 items-center my-2 hover:opacity-70 py-1 px-2 bg-[#e5e6e7] text-xs md:text-sm text-black font-semibold rounded-3xl"
-          >
-            <FaPlus className="text-sm" /> Add New
-          </button>
+          {session.user.isAdmin !== 1 ? (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsModalOpen(true);
+              }}
+              className="flex gap-1 items-center my-2 hover:opacity-70 py-1 px-2 bg-[#e5e6e7] text-xs md:text-sm text-black font-semibold rounded-3xl"
+            >
+              <FaPlus className="text-sm" /> Add New
+            </button>
+          ) : null}
           <span
             className={`transform transition-transform duration-300 bg-[#e5e6e7] p-1 rounded-md text-sm ${
               toggle ? "rotate-180" : "rotate-0"
@@ -174,9 +179,11 @@ const LivingInformation = ({
                 <th className="px-1 py-2 text-left text-xs font-bold">
                   Address
                 </th>
-                <th className="px-1 py-2 text-left text-xs font-bold">
-                  Actions
-                </th>
+                {session.user.isAdmin !== 1 ? (
+                  <th className="px-1 py-2 text-left text-xs font-bold">
+                    Actions
+                  </th>
+                ) : null}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -276,48 +283,49 @@ const LivingInformation = ({
                       item.Address
                     )}
                   </td>
-
                   {/* Actions */}
-                  <td className="px-1 py-2 text-xs flex justify-center space-x-2 md:table-cell">
-                    {editingId === item.LivingId ? (
-                      <>
-                        <button
-                          className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded mr-2"
-                          onClick={() => handleSave(item.LivingId)}
-                        >
-                          {saveLoading ? <Loader w={3} h={3} /> : <MdSave />}
-                        </button>
-                        <button
-                          className="bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded"
-                          onClick={onCancelEdit}
-                        >
-                          <MdCancel />
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <button
-                          className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded mr-2"
-                          onClick={() => handleEdit(item.LivingId, item)}
-                        >
-                          <MdEdit />
-                        </button>
-                        <button
-                          className="bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded"
-                          onClick={() => handleDelete(item.LivingId)}
-                          disabled={
-                            deleteLoading && deletingId === item.LivingId
-                          }
-                        >
-                          {deleteLoading && deletingId === item.LivingId ? (
-                            <Loader w={3} h={3} />
-                          ) : (
-                            <FaTrash />
-                          )}
-                        </button>
-                      </>
-                    )}
-                  </td>
+                  {session.user.isAdmin !== 1 ? (
+                    <td className="px-1 py-2 text-xs flex justify-center space-x-2 md:table-cell">
+                      {editingId === item.LivingId ? (
+                        <>
+                          <button
+                            className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded mr-2"
+                            onClick={() => handleSave(item.LivingId)}
+                          >
+                            {saveLoading ? <Loader w={3} h={3} /> : <MdSave />}
+                          </button>
+                          <button
+                            className="bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded"
+                            onClick={onCancelEdit}
+                          >
+                            <MdCancel />
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded mr-2"
+                            onClick={() => handleEdit(item.LivingId, item)}
+                          >
+                            <MdEdit />
+                          </button>
+                          <button
+                            className="bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded"
+                            onClick={() => handleDelete(item.LivingId)}
+                            disabled={
+                              deleteLoading && deletingId === item.LivingId
+                            }
+                          >
+                            {deleteLoading && deletingId === item.LivingId ? (
+                              <Loader w={3} h={3} />
+                            ) : (
+                              <FaTrash />
+                            )}
+                          </button>
+                        </>
+                      )}
+                    </td>
+                  ) : null}
                 </tr>
               ))}
             </tbody>

@@ -10,13 +10,18 @@ import { IoIosArrowDown, IoIosSave } from "react-icons/io";
 import { motion } from "framer-motion";
 import { PiStudentFill } from "react-icons/pi";
 
-const EducationalInformations = ({ MemberId }) => {
+const EducationalInformations = ({
+  MemberId,
+  EducationData,
+  setEducationData,
+  HQ,
+  setHQ,
+  SP,
+  setSP,
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [EducationData, setEducationData] = useState([]);
   const { data: session } = useSession();
   const [toggle, setToggle] = useState(false);
-  const [HQ, setHQ] = useState([]);
-  const [SP, setSP] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
   const [editRow, setEditRow] = useState({});
 
@@ -163,15 +168,17 @@ const EducationalInformations = ({ MemberId }) => {
           <PiStudentFill className="mr-2" /> <p>Educational Information</p>
         </h2>
         <div className="flex items-center gap-4">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsModalOpen(true);
-            }}
-            className="flex gap-1 items-center my-2 hover:opacity-70 py-1 px-2 bg-[#e5e6e7] text-xs md:text-sm text-black font-semibold rounded-3xl"
-          >
-            <FaPlus /> Add New
-          </button>
+          {session.user.isAdmin !== 1 ? (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsModalOpen(true);
+              }}
+              className="flex gap-1 items-center my-2 hover:opacity-70 py-1 px-2 bg-[#e5e6e7] text-xs md:text-sm text-black font-semibold rounded-3xl"
+            >
+              <FaPlus /> Add New
+            </button>
+          ) : null}
           <span
             className={`transform transition-transform duration-300 bg-[#e5e6e7] p-1 rounded-md text-sm ${
               toggle ? "rotate-180" : "rotate-0"
@@ -192,37 +199,70 @@ const EducationalInformations = ({ MemberId }) => {
         className="overflow-hidden"
       >
         <div className="p-4 text-gray-900 overflow-x-auto">
-          <table className="min-w-full border text-sm border-gray-300 bg-white table-fixed">
-            <thead className="bg-blue-500 text-white">
-              <tr>
-                <th className="py-1 border w-[10vw]">Year</th>
-                <th className="py-1 border w-[10vw]">Qualification</th>
-                <th className="py-1 border w-[10vw]">Specialization</th>
-                <th className="py-1 border w-[10vw]">Institute</th>
-                <th className="py-1 border w-[10vw]">Degree Year</th>
-                <th className="py-1 border w-[10vw]">Total Marks</th>
-                <th className="py-1 border w-[10vw]">Obtain Marks</th>
-                <th className="py-1 border w-[10vw]">Percentage</th>
-                <th className="py-1 border w-[10vw]">Actions</th>
+          <table className="min-w-full bg-white rounded-lg overflow-hidden">
+            <thead className="bg-gray-100 text-gray-700">
+              <tr className="hidden md:table-row">
+                <th className="px-1 py-2 text-left text-xs font-bold">Year</th>
+                <th className="px-1 py-2 text-left text-xs font-bold">
+                  Qualification
+                </th>
+                <th className="px-1 py-2 text-left text-xs font-bold">
+                  Specialization
+                </th>
+                <th className="px-1 py-2 text-left text-xs font-bold">
+                  Institute
+                </th>
+                <th className="px-1 py-2 text-left text-xs font-bold">
+                  Degree Year
+                </th>
+                <th className="px-1 py-2 text-left text-xs font-bold">
+                  Total Marks
+                </th>
+                <th className="px-1 py-2 text-left text-xs font-bold">
+                  Obtain Marks
+                </th>
+                <th className="px-1 py-2 text-left text-xs font-bold">
+                  Percentage
+                </th>
+                {session.user.isAdmin !== 1 ? (
+                  <th className="px-1 py-2 text-left text-xs font-bold">
+                    Actions
+                  </th>
+                ) : null}
               </tr>
             </thead>
-            <tbody>
-              {EducationData.map((item, index) => {
-                // Find Qualification Name
-                const qualification = HQ.find(
-                  (hq) => hq.HQID === item.HighestQualificationID
-                );
+            <tbody className="divide-y divide-gray-200">
+              {EducationData.length === 0 ? (
+                <tr className="flex flex-col md:table-row">
+                  <td
+                    colSpan="9"
+                    className="px-1 py-2 text-center text-gray-500"
+                  >
+                    No educational information available
+                  </td>
+                </tr>
+              ) : (
+                EducationData.map((item, index) => {
+                  // Find Qualification Name
+                  const qualification = HQ.find(
+                    (hq) => hq.HQID === item.HighestQualificationID
+                  );
 
-                // Find Specialization Name
-                const specialization = SP.find(
-                  (sp) => sp.HQSPId === item.AreaofSpecializationID
-                );
+                  // Find Specialization Name
+                  const specialization = SP.find(
+                    (sp) => sp.HQSPId === item.AreaofSpecializationID
+                  );
 
-                return (
-                  <tr key={index} className="text-center border">
-                    {editIndex === index ? (
-                      <>
-                        <td className="p-1 border w-[150px]">
+                  return (
+                    <tr
+                      key={index}
+                      className="flex flex-col md:table-row hover:bg-gray-50"
+                    >
+                      <div className="block md:hidden text-xs font-bold">
+                        Year:
+                      </div>
+                      <td className="px-1 py-2 text-xs ">
+                        {editIndex === index ? (
                           <input
                             type="text"
                             value={editRow["AcademicYear"] || ""}
@@ -232,11 +272,18 @@ const EducationalInformations = ({ MemberId }) => {
                                 AcademicYear: e.target.value,
                               })
                             }
-                            className="w-full border border-gray-300 px-2 py-1 text-center text-sm"
+                            className="border border-gray-300 px-2 py-1 w-full"
                           />
-                        </td>
-                        {/* Dropdown for Highest Qualification */}
-                        <td className="p-1 border w-[150px]">
+                        ) : (
+                          item.AcademicYear
+                        )}
+                      </td>
+
+                      <div className="block md:hidden text-xs font-bold">
+                        Qualification:
+                      </div>
+                      <td className="px-1 py-2 text-xs ">
+                        {editIndex === index ? (
                           <select
                             value={editRow.HighestQualificationID || ""}
                             onChange={(e) =>
@@ -245,7 +292,7 @@ const EducationalInformations = ({ MemberId }) => {
                                 HighestQualificationID: e.target.value,
                               })
                             }
-                            className="w-full border border-gray-300 px-2 py-1 text-sm"
+                            className="w-full border border-gray-300 px-2 py-1"
                           >
                             <option value="">Select Qualification</option>
                             {HQ.map((hq) => (
@@ -254,9 +301,18 @@ const EducationalInformations = ({ MemberId }) => {
                               </option>
                             ))}
                           </select>
-                        </td>
-                        {/* Dropdown for Area of Specialization */}
-                        <td className="p-1 border w-[150px]">
+                        ) : qualification ? (
+                          qualification.HighestQualification
+                        ) : (
+                          "N/A"
+                        )}
+                      </td>
+
+                      <div className="block md:hidden text-xs font-bold">
+                        Specialization:
+                      </div>
+                      <td className="px-1 py-2 text-xs ">
+                        {editIndex === index ? (
                           <select
                             value={editRow.AreaofSpecializationID || ""}
                             onChange={(e) =>
@@ -265,7 +321,7 @@ const EducationalInformations = ({ MemberId }) => {
                                 AreaofSpecializationID: e.target.value,
                               })
                             }
-                            className="w-full border border-gray-300 px-2 py-1 text-sm"
+                            className="w-full border border-gray-300 px-2 py-1"
                           >
                             <option value="">Select Specialization</option>
                             {SP.map((sp) => (
@@ -274,101 +330,166 @@ const EducationalInformations = ({ MemberId }) => {
                               </option>
                             ))}
                           </select>
-                        </td>
-                        {[
-                          "Institute",
-                          "DegreeCompleteInYear",
-                          "TotalMarks",
-                          "ObtainMarks",
-                          "Percentage",
-                        ].map((field, i) => (
-                          <td key={i} className="p-1 border w-[150px]">
-                            <input
-                              type="text"
-                              value={editRow[field] || ""}
-                              onChange={(e) =>
-                                setEditRow({
-                                  ...editRow,
-                                  [field]: e.target.value,
-                                })
-                              }
-                              className="w-full border border-gray-300 px-2 py-1 text-center text-sm"
-                            />
-                          </td>
-                        ))}
+                        ) : specialization ? (
+                          specialization.AreaofSpecialization
+                        ) : (
+                          "N/A"
+                        )}
+                      </td>
 
-                        <td className="p-1 border flex justify-center ">
-                          <button
-                            onClick={() => onSaveEdit(index)}
-                            className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded mr-2"
-                          >
-                            {(EditId === index) & Loading ? (
-                              <Loader w={3} h={3} />
-                            ) : (
-                              <MdSave />
-                            )}
-                          </button>
-                          <button
-                            onClick={onCancelEdit}
-                            className="bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded"
-                          >
-                            <MdCancel />
-                          </button>
+                      <div className="block md:hidden text-xs font-bold">
+                        Institute:
+                      </div>
+                      <td className="px-1 py-2 text-xs ">
+                        {editIndex === index ? (
+                          <input
+                            type="text"
+                            value={editRow["Institute"] || ""}
+                            onChange={(e) =>
+                              setEditRow({
+                                ...editRow,
+                                Institute: e.target.value,
+                              })
+                            }
+                            className="border border-gray-300 px-2 py-1 w-full"
+                          />
+                        ) : (
+                          item.Institute
+                        )}
+                      </td>
+
+                      <div className="block md:hidden text-xs font-bold">
+                        Degree Year:
+                      </div>
+                      <td className="px-1 py-2 text-xs ">
+                        {editIndex === index ? (
+                          <input
+                            type="text"
+                            value={editRow["DegreeCompleteInYear"] || ""}
+                            onChange={(e) =>
+                              setEditRow({
+                                ...editRow,
+                                DegreeCompleteInYear: e.target.value,
+                              })
+                            }
+                            className="border border-gray-300 px-2 py-1 w-full"
+                          />
+                        ) : (
+                          item.DegreeCompleteInYear
+                        )}
+                      </td>
+
+                      <div className="block md:hidden text-xs font-bold">
+                        Total Marks:
+                      </div>
+                      <td className="px-1 py-2 text-xs ">
+                        {editIndex === index ? (
+                          <input
+                            type="text"
+                            value={editRow["TotalMarks"] || ""}
+                            onChange={(e) =>
+                              setEditRow({
+                                ...editRow,
+                                TotalMarks: e.target.value,
+                              })
+                            }
+                            className="border border-gray-300 px-2 py-1 w-full"
+                          />
+                        ) : (
+                          item.TotalMarks
+                        )}
+                      </td>
+
+                      <div className="block md:hidden text-xs font-bold">
+                        Obtain Marks:
+                      </div>
+                      <td className="px-1 py-2 text-xs ">
+                        {editIndex === index ? (
+                          <input
+                            type="text"
+                            value={editRow["ObtainMarks"] || ""}
+                            onChange={(e) =>
+                              setEditRow({
+                                ...editRow,
+                                ObtainMarks: e.target.value,
+                              })
+                            }
+                            className="border border-gray-300 px-2 py-1 w-full"
+                          />
+                        ) : (
+                          item.ObtainMarks
+                        )}
+                      </td>
+
+                      <div className="block md:hidden text-xs font-bold">
+                        Percentage:
+                      </div>
+                      <td className="px-1 py-2 text-xs ">
+                        {editIndex === index ? (
+                          <input
+                            type="text"
+                            value={editRow["Percentage"] || ""}
+                            onChange={(e) =>
+                              setEditRow({
+                                ...editRow,
+                                Percentage: e.target.value,
+                              })
+                            }
+                            className="border border-gray-300 px-2 py-1 w-full"
+                          />
+                        ) : (
+                          `${item.Percentage}%`
+                        )}
+                      </td>
+                      {session.user.isAdmin !== 1 ? (
+                        <td className="px-1 py-2 text-xs flex justify-center space-x-2 md:table-cell">
+                          {editIndex === index ? (
+                            <button
+                              onClick={() => onSaveEdit(index)}
+                              className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded mr-2"
+                            >
+                              {(EditId === index) & Loading ? (
+                                <Loader w={3} h={3} />
+                              ) : (
+                                <MdSave />
+                              )}
+                            </button>
+                          ) : (
+                            <button
+                              className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded mr-2"
+                              onClick={() => onEdit(index)}
+                            >
+                              <MdEdit />
+                            </button>
+                          )}
+                          {editIndex === index ? (
+                            <button
+                              onClick={onCancelEdit}
+                              className="bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded"
+                            >
+                              <MdCancel />
+                            </button>
+                          ) : (
+                            <button
+                              className="bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded"
+                              onClick={() => onDelete(item.MemberEduID)}
+                              disabled={
+                                Loading && deletingId === item.MemberEduID
+                              }
+                            >
+                              {(deletingId === item.MemberEduID) & Loading ? (
+                                <Loader w={3} h={3} />
+                              ) : (
+                                <MdDelete />
+                              )}
+                            </button>
+                          )}
                         </td>
-                      </>
-                    ) : (
-                      <>
-                        <td className="p-1 border w-[80px]">
-                          {item.AcademicYear}
-                        </td>
-                        <td className="p-1 border w-[150px]">
-                          {qualification
-                            ? qualification.HighestQualification
-                            : "N/A"}
-                        </td>
-                        <td className="p-1 border w-[150px]">
-                          {specialization
-                            ? specialization.AreaofSpecialization
-                            : "N/A"}
-                        </td>
-                        <td className="p-1 border w-[180px]">
-                          {item.Institute}
-                        </td>
-                        <td className="p-1 border w-[100px]">
-                          {item.DegreeCompleteInYear}
-                        </td>
-                        <td className="p-1 border w-[120px]">
-                          {item.TotalMarks}
-                        </td>
-                        <td className="p-1 border w-[120px]">
-                          {item.ObtainMarks}
-                        </td>
-                        <td className="p-1 border w-[100px]">
-                          {item.Percentage}%
-                        </td>
-                        <td className="p-1 border flex justify-center ">
-                          <button
-                            className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded mr-2"
-                            onClick={() => onEdit(index)}
-                          >
-                            <MdEdit />
-                          </button>
-                          <button
-                            className="bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded"
-                            onClick={() => onDelete(item.MemberEduID)}
-                          >
-                            {(deletingId === item.MemberEduID) & Loading ? (
-                              <Loader w={3} h={3} />
-                            ) : (
-                              <MdDelete />
-                            )}
-                          </button>
-                        </td>
-                      </>
-                    )}
-                  </tr>
-                );
-              })}
+                      ) : null}
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>

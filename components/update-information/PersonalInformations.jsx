@@ -14,11 +14,14 @@ import { FaInfoCircle } from "react-icons/fa";
 
 const PersonalInformations = ({
   UserData,
+  getMemberData,
   CountryDropDown,
   StateDropDown,
   CityDropDown,
   fetchStateData,
   fetchCityData,
+  FamilyDropDown,
+  setFamilyDropDown,
 }) => {
   const { data: session } = useSession();
   const [SaveLoading, setSaveLoading] = useState(false);
@@ -103,9 +106,6 @@ const PersonalInformations = ({
 
     console.log(formData);
   };
-
-  // State for dropdowns
-  const [FamilyDropDown, setFamilyDropDown] = useState([]);
 
   const fetchDropdownData = async () => {
     try {
@@ -237,6 +237,7 @@ const PersonalInformations = ({
 
       if (response.ok) {
         setSaveLoading(false);
+        getMemberData();
         console.log("Data saved successfully:", result);
         toast.success("Saved Successfully", {
           position: "top-right",

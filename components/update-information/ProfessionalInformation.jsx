@@ -10,14 +10,19 @@ import { motion } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { LuBriefcaseBusiness } from "react-icons/lu";
+import { useSession } from "next-auth/react";
 
-const ProfessionalInformation = ({ MemberId }) => {
+const ProfessionalInformation = ({
+  MemberId,
+  ProfessionalDetail,
+  setProfessionalDetail,
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [ProfessionalDetail, setProfessionalDetail] = useState([]);
   const [toggle, setToggle] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [editedData, setEditedData] = useState({});
   const [EditMode, setEditMode] = useState(false);
+  const { data: session } = useSession();
 
   //Loading States
   const [SaveLoading, setSaveLoading] = useState(false);
@@ -124,15 +129,17 @@ const ProfessionalInformation = ({ MemberId }) => {
           <p>Professional Information</p>
         </h2>
         <div className="flex items-center gap-4">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsModalOpen(true);
-            }}
-            className="flex gap-1 items-center my-2 hover:opacity-70 py-1 px-2 bg-[#e5e6e7] text-xs md:text-sm text-black font-semibold rounded-3xl"
-          >
-            <FaPlus className="text-sm" /> Add New
-          </button>
+          {session.user.isAdmin !== 1 ? (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsModalOpen(true);
+              }}
+              className="flex gap-1 items-center my-2 hover:opacity-70 py-1 px-2 bg-[#e5e6e7] text-xs md:text-sm text-black font-semibold rounded-3xl"
+            >
+              <FaPlus className="text-sm" /> Add New
+            </button>
+          ) : null}
           <span
             className={`transform transition-transform duration-300 bg-[#e5e6e7] p-1 rounded-md text-sm ${
               toggle ? "rotate-180" : "rotate-0"

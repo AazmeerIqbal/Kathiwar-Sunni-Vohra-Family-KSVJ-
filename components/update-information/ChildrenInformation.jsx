@@ -7,6 +7,7 @@ import "react-toastify/dist/ReactToastify.css"; // Added toast CSS
 import ChildrenModal from "./ChildrenModal";
 import Loader from "../ui/Loader";
 import { MdCancel, MdEdit, MdSave } from "react-icons/md";
+import { useSession } from "next-auth/react";
 
 const bloodGroupMap = {
   1: "A+",
@@ -20,15 +21,19 @@ const bloodGroupMap = {
   9: "O-",
 };
 
-const ChildrenInformation = ({ MemberId }) => {
+const ChildrenInformation = ({
+  MemberId,
+  childrenDetail,
+  setChildrenDetail,
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [toggle, setToggle] = useState(false);
-  const [childrenDetail, setChildrenDetail] = useState([]); // State for children details
   const [editingId, setEditingId] = useState(null);
   const [editedData, setEditedData] = useState({});
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
   const [saveLoading, setSaveLoading] = useState(false);
+  const { data: session, status } = useSession();
 
   useEffect(() => {
     if (MemberId !== null) {
@@ -144,15 +149,18 @@ const ChildrenInformation = ({ MemberId }) => {
           <p>Children Information</p>
         </h2>
         <div className="flex items-center gap-4">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsModalOpen(true);
-            }}
-            className="flex gap-1 items-center my-2 hover:opacity-70 py-1 px-2 bg-[#e5e6e7] text-xs md:text-sm text-black font-semibold rounded-3xl"
-          >
-            <FaPlus className="text-sm" /> Add New
-          </button>
+          {session.user.isAdmin !== 1 ? (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsModalOpen(true);
+              }}
+              className="flex gap-1 items-center my-2 hover:opacity-70 py-1 px-2 bg-[#e5e6e7] text-xs md:text-sm text-black font-semibold rounded-3xl"
+            >
+              <FaPlus className="text-sm" /> Add New
+            </button>
+          ) : null}
+
           <span
             className={`transform transition-transform duration-300 bg-[#e5e6e7] p-1 rounded-md text-sm ${
               toggle ? "rotate-180" : "rotate-0"
@@ -195,9 +203,11 @@ const ChildrenInformation = ({ MemberId }) => {
                   Date of Birth
                 </th>
                 <th className="px-1 py-2 text-left text-xs font-bold">Age</th>
-                <th className="px-1 py-2 text-left text-xs font-bold">
-                  Actions
-                </th>
+                {session.user.isAdmin !== 1 ? (
+                  <th className="px-1 py-2 text-left text-xs font-bold">
+                    Actions
+                  </th>
+                ) : null}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -206,36 +216,45 @@ const ChildrenInformation = ({ MemberId }) => {
                   key={item.memberChildId}
                   className="flex flex-col md:table-row hover:bg-gray-50"
                 >
+                  <div className="block md:hidden text-xs font-bold">
+                    Membership ID:
+                  </div>
                   <td className="px-1 py-2 text-xs ">
                     {editingId === item.memberChildId ? (
                       <input
                         type="text"
                         value={editedData.ChildMemberShipNo || ""}
                         onChange={(e) => handleChange(e, "ChildMemberShipNo")}
-                        className="border border-gray-300 px- py-1 w-full"
+                        className="border border-gray-300 px-1 py-1 w-full"
                       />
                     ) : (
                       item.ChildMemberShipNo
                     )}
                   </td>
+                  <div className="block md:hidden text-xs font-bold">
+                    Child Name:
+                  </div>
                   <td className="px-1 py-2 text-xs ">
                     {editingId === item.memberChildId ? (
                       <input
                         type="text"
                         value={editedData.ChildName || ""}
                         onChange={(e) => handleChange(e, "ChildName")}
-                        className="border border-gray-300 px- py-1 w-full"
+                        className="border border-gray-300 px-1 py-1 w-full"
                       />
                     ) : (
                       item.ChildName
                     )}
                   </td>
+                  <div className="block md:hidden text-xs font-bold">
+                    Gender:
+                  </div>
                   <td className="px-1 py-2 text-xs ">
                     {editingId === item.memberChildId ? (
                       <select
                         value={editedData.Gender || ""}
                         onChange={(e) => handleChange(e, "Gender")}
-                        className="border border-gray-300 px- py-1 w-full"
+                        className="border border-gray-300 px-1 py-1 w-full"
                       >
                         <option value="0">Male</option>
                         <option value="1">Female</option>
@@ -248,24 +267,30 @@ const ChildrenInformation = ({ MemberId }) => {
                       "Unknown"
                     )}
                   </td>
+                  <div className="block md:hidden text-xs font-bold">
+                    B-Form #:
+                  </div>
                   <td className="px-1 py-2 text-xs ">
                     {editingId === item.memberChildId ? (
                       <input
                         type="text"
                         value={editedData.BFormNo || ""}
                         onChange={(e) => handleChange(e, "BFormNo")}
-                        className="border border-gray-300 px- py-1 w-full"
+                        className="border border-gray-300 px-1 py-1 w-full"
                       />
                     ) : (
                       item.BFormNo
                     )}
                   </td>
+                  <div className="block md:hidden text-xs font-bold">
+                    Blood Group:
+                  </div>
                   <td className="px-1 py-2 text-xs ">
                     {editingId === item.memberChildId ? (
                       <select
                         value={editedData.BloodGroupID || ""}
                         onChange={(e) => handleChange(e, "BloodGroupID")}
-                        className="w-full border border-gray-300 px- py-1 text-sm"
+                        className="w-full border border-gray-300 px-1 py-1 text-sm"
                       >
                         <option value="7">N/A</option>
                         <option value="1">A+</option>
@@ -281,61 +306,67 @@ const ChildrenInformation = ({ MemberId }) => {
                       bloodGroupMap[item.BloodGroupID] || "Unknown"
                     )}
                   </td>
+                  <div className="block md:hidden text-xs font-bold">
+                    Date of Birth:
+                  </div>
                   <td className="px-1 py-2 text-xs ">
                     {editingId === item.memberChildId ? (
                       <input
                         type="date"
                         value={editedData.DOB || ""}
                         onChange={(e) => handleChange(e, "DOB")}
-                        className="border border-gray-300 px- py-1 w-full"
+                        className="border border-gray-300 px-1 py-1 w-full"
                       />
                     ) : (
-                      item.DOB
+                      new Date(item.DOB).toLocaleDateString()
                     )}
                   </td>
+                  <div className="block md:hidden text-xs font-bold">Age:</div>
                   <td className="px-1 py-2 text-xs ">{item.Age18}</td>
                   {/* Actions */}
-                  <td className="px-1 py-2 text-xs flex justify-center space-x-2 md:table-cell">
-                    {editingId === item.memberChildId ? (
-                      <>
-                        <button
-                          className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded mr-2"
-                          onClick={() => handleSave(item.memberChildId)}
-                        >
-                          {saveLoading ? <Loader w={3} h={3} /> : <MdSave />}
-                        </button>
-                        <button
-                          className="bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded"
-                          onClick={onCancelEdit}
-                        >
-                          <MdCancel />
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <button
-                          className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded mr-2"
-                          onClick={() => handleEdit(item.memberChildId, item)}
-                        >
-                          <MdEdit />
-                        </button>
-                        <button
-                          className="bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded"
-                          onClick={() => handleDelete(item.memberChildId)}
-                          disabled={
-                            deleteLoading && deletingId === item.memberChildId
-                          }
-                        >
-                          {deleteLoading &&
-                          deletingId === item.memberChildId ? (
-                            <Loader w={3} h={3} />
-                          ) : (
-                            <FaTrash />
-                          )}
-                        </button>
-                      </>
-                    )}
-                  </td>
+                  {session.user.isAdmin !== 1 ? (
+                    <td className="px-1 py-2 text-xs flex justify-center space-x-2 md:table-cell">
+                      {editingId === item.memberChildId ? (
+                        <>
+                          <button
+                            className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded mr-2"
+                            onClick={() => handleSave(item.memberChildId)}
+                          >
+                            {saveLoading ? <Loader w={3} h={3} /> : <MdSave />}
+                          </button>
+                          <button
+                            className="bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded"
+                            onClick={onCancelEdit}
+                          >
+                            <MdCancel />
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded mr-2"
+                            onClick={() => handleEdit(item.memberChildId, item)}
+                          >
+                            <MdEdit />
+                          </button>
+                          <button
+                            className="bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded"
+                            onClick={() => handleDelete(item.memberChildId)}
+                            disabled={
+                              deleteLoading && deletingId === item.memberChildId
+                            }
+                          >
+                            {deleteLoading &&
+                            deletingId === item.memberChildId ? (
+                              <Loader w={3} h={3} />
+                            ) : (
+                              <FaTrash />
+                            )}
+                          </button>
+                        </>
+                      )}
+                    </td>
+                  ) : null}
                 </tr>
               ))}
             </tbody>
