@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Mail, Lock, User } from "lucide-react";
+import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 import { Input } from "../ui/Input";
 import { Button } from "../ui/Button";
 import { validateEmail, validatePassword } from "../../utils/validation";
@@ -24,6 +24,8 @@ export const SignupForm = ({ setIsLogin }) => {
     confirmPassword: "",
   });
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const SendEmail = (formData) => {
     const templateParams = {
@@ -255,32 +257,60 @@ export const SignupForm = ({ setIsLogin }) => {
           icon={<Mail className="w-5 h-5" />}
         />
 
-        <Input
-          label="Password"
-          type="password"
-          placeholder="••••••••"
-          value={formData.password}
-          onChange={(e) =>
-            setFormData((prev) => ({ ...prev, password: e.target.value }))
-          }
-          error={errors.password}
-          icon={<Lock className="w-5 h-5" />}
-        />
+        <div className="relative">
+          <Input
+            label="Password"
+            type={showPassword ? "text" : "password"}
+            placeholder="••••••••"
+            value={formData.password}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, password: e.target.value }))
+            }
+            error={errors.password}
+            icon={<Lock className="w-5 h-5" />}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-[45px] text-gray-500 hover:text-gray-700 focus:outline-none"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? (
+              <EyeOff className="w-5 h-5" />
+            ) : (
+              <Eye className="w-5 h-5" />
+            )}
+          </button>
+        </div>
 
-        <Input
-          label="Confirm Password"
-          type="password"
-          placeholder="••••••••"
-          value={formData.confirmPassword}
-          onChange={(e) =>
-            setFormData((prev) => ({
-              ...prev,
-              confirmPassword: e.target.value,
-            }))
-          }
-          error={errors.confirmPassword}
-          icon={<Lock className="w-5 h-5" />}
-        />
+        <div className="relative">
+          <Input
+            label="Confirm Password"
+            type={showConfirmPassword ? "text" : "password"}
+            placeholder="••••••••"
+            value={formData.confirmPassword}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                confirmPassword: e.target.value,
+              }))
+            }
+            error={errors.confirmPassword}
+            icon={<Lock className="w-5 h-5" />}
+          />
+          <button
+            type="button"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            className="absolute right-3 top-[45px] text-gray-500 hover:text-gray-700 focus:outline-none"
+            aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+          >
+            {showConfirmPassword ? (
+              <EyeOff className="w-5 h-5" />
+            ) : (
+              <Eye className="w-5 h-5" />
+            )}
+          </button>
+        </div>
       </div>
 
       <Button type="submit" isLoading={isLoading} fullWidth>
