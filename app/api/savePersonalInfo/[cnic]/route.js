@@ -39,12 +39,13 @@ export async function POST(req, { params }) {
       .input("DeathOn", formData.deathOn)
       .input("GraveNumber", formData.graveNumber)
       .input("Remarks", formData.remarks)
+      .input("Image", formData.image)
       .input("FromCountryID", formData.country)
       .input("FromStateID", formData.state)
       .input("FromCityID", formData.city)
       .input("Status", formData.activeStatus).query(`
         UPDATE tb_member_mst_test
-        SET 
+        SET
         MemberShipNo = @MemberShipNo,
         MemberShipDt = @MemberShipDt,
         MemberTitle = @MemberTitle,
@@ -61,6 +62,7 @@ export async function POST(req, { params }) {
         DeathOn = @DeathOn,
         GraveNumber = @GraveNumber,
         Remarks = @Remarks,
+        PicPath = @Image,
         FromCountryID = @FromCountryID,
         FromStateID = @FromStateID,
         FromCityID = @FromCityID,

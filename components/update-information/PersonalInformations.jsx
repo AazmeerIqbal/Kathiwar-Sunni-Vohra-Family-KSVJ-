@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { IoIosArrowDown, IoIosSave } from "react-icons/io";
 import { MdOutlineFileUpload, MdDelete } from "react-icons/md";
 import dayjs from "dayjs";
@@ -55,6 +55,9 @@ const PersonalInformations = ({
     state: "",
     city: "",
   });
+
+  const [selectedImage, setSelectedImage] = useState(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     fetchDropdownData();
@@ -251,6 +254,55 @@ const PersonalInformations = ({
       console.log("Error calling save API:", error);
     }
   };
+
+  const handleImageClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.includes("image")) {
+      toast.error("Please select an image file", {
+        position: "top-right",
+      });
+      return;
+    }
+
+    setSelectedImage(file);
+
+    try {
+      const formDataFile = new FormData();
+      formDataFile.append("file", file);
+      formDataFile.append("memberId", UserData.memberId || session.user.id);
+
+      const response = await fetch("/api/upload-member-image", {
+        method: "POST",
+        body: formDataFile,
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        // Update the image in the form
+        setFormData((prev) => ({ ...prev, image: result.imagePath }));
+        toast.success("Image uploaded successfully", {
+          position: "top-right",
+        });
+      } else {
+        toast.error(result.message || "Failed to upload image", {
+          position: "top-right",
+        });
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      toast.error("Failed to upload image", {
+        position: "top-right",
+      });
+    }
+  };
+
   return (
     <>
       <div
@@ -295,12 +347,32 @@ const PersonalInformations = ({
                     alt="Profile"
                   />
                   <div className="flex flex-col gap-2">
-                    <button className="bg-gray-200 rounded-lg p-1">
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      style={{ display: "none" }}
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                    />
+                    <button
+                      className={`${
+                        !UserData
+                          ? "bg-gray-400 cursor-not-allowed"
+                          : "bg-gray-200 cursor-pointer"
+                      } rounded-lg p-1`}
+                      onClick={UserData ? handleImageClick : undefined}
+                      disabled={!UserData}
+                      title={
+                        !UserData
+                          ? "Save personal information first"
+                          : "Upload profile image"
+                      }
+                    >
                       <MdOutlineFileUpload />
                     </button>
-                    <button className="bg-red-400 text-white rounded-lg p-1">
+                    {/* <button className="bg-red-400 text-white rounded-lg p-1">
                       <MdDelete />
-                    </button>
+                    </button> */}
                   </div>
                 </div>
                 {/* Left Sub-Section */}

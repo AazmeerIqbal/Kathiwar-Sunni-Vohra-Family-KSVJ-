@@ -202,7 +202,8 @@ const Page = () => {
 
   const handleFetchData = async () => {
     const result = await Swal.fire({
-      title: "Are you sure you want to fetch data from the main server?",
+      title:
+        "Are you sure you want to get real time data from the main server?",
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#d33",
@@ -353,8 +354,8 @@ const Page = () => {
 
                 {/* Fetch */}
                 <ButtonInfoHover
-                  text={"Fetch"}
-                  info={"Fetch current data from the server"}
+                  text={"Get Data"}
+                  info={"Get current data from the server"}
                   icon={<RiDownloadCloud2Fill className="text-xl my-auto" />}
                   FetchLoading={FetchLoading}
                   handleFetchData={handleFetchData}
