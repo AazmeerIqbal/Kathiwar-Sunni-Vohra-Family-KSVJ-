@@ -13,7 +13,6 @@ import { LuBriefcaseBusiness } from "react-icons/lu";
 import { useSession } from "next-auth/react";
 
 const ProfessionalInformation = ({
-  MemberId,
   ProfessionalDetail,
   setProfessionalDetail,
 }) => {
@@ -30,15 +29,13 @@ const ProfessionalInformation = ({
   const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
-    if (MemberId !== null) {
-      getMemberData();
-    }
-  }, [MemberId]);
+    getMemberData();
+  }, []);
 
   const getMemberData = async () => {
     try {
       const response = await fetch(
-        `/api/getProfessionalInformation/${MemberId}`,
+        `/api/getProfessionalInformation/${session.user.memberId}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -342,7 +339,7 @@ const ProfessionalInformation = ({
       <ProfessionalModel
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        MemberId={MemberId}
+        MemberId={session.user.memberId}
         getMemberData={getMemberData}
       />
       <ToastContainer />

@@ -41,13 +41,11 @@ const Dashboard = ({ children }) => {
               alert
             />
           </Link>
-          <Link href={`/update-information?cnic=${encrypt(session.user.cnic)}`}>
+          <Link href={`/update-information`}>
             <SidebarItem
               icon={<IoMdInformationCircleOutline size={20} />}
               text="Update Information"
-              active={pathname?.includes(
-                `/update-information?cnic=${encrypt(session.user.cnic)}`
-              )}
+              active={pathname?.includes(`/update-information`)}
             />
           </Link>
           <Link href="/news-letter">

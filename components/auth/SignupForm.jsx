@@ -16,9 +16,7 @@ export const SignupForm = ({ setIsLogin }) => {
     username: "",
     firstName: "",
     lastName: "",
-    gender: "",
     email: "",
-    memberId: "",
     cnic: "",
     password: "",
     confirmPassword: "",
@@ -75,11 +73,6 @@ export const SignupForm = ({ setIsLogin }) => {
       newErrors.lastName = "Last Name is required";
     }
 
-    // Validate gender
-    if (!formData.gender) {
-      newErrors.gender = "Gender is required";
-    }
-
     // Validate email
     if (!validateEmail(formData.email)) {
       newErrors.email = "Please enter a valid email address";
@@ -120,9 +113,7 @@ export const SignupForm = ({ setIsLogin }) => {
           username: formData.username,
           firstName: formData.firstName,
           lastName: formData.lastName,
-          gender: formData.gender,
           email: formData.email,
-          memberId: formData.memberId,
           cnic: formData.cnic,
           password: formData.password,
         }),
@@ -141,9 +132,7 @@ export const SignupForm = ({ setIsLogin }) => {
           username: "",
           firstName: "",
           lastName: "",
-          gender: "",
           email: "",
-          memberId: "",
           cnic: "",
           password: "",
           confirmPassword: "",
@@ -219,41 +208,6 @@ export const SignupForm = ({ setIsLogin }) => {
             setFormData((prev) => ({ ...prev, email: e.target.value }))
           }
           error={errors.email}
-          icon={<Mail className="w-5 h-5" />}
-        />
-
-        <div className="space-y-2">
-          <label htmlFor="gender" className="block text-sm font-medium">
-            Gender
-          </label>
-          <select
-            id="gender"
-            value={formData.gender}
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, gender: e.target.value }))
-            }
-            className={`w-full border px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-              errors.gender ? "border-red-500" : "border-gray-300"
-            }`}
-          >
-            <option value="">Select Gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-          </select>
-          {errors.gender && (
-            <p className="text-sm text-red-500">{errors.gender}</p>
-          )}
-        </div>
-
-        <Input
-          label="Member ID (optional)"
-          type="text"
-          placeholder="XXXX-XXXXXX"
-          value={formData.memberId}
-          onChange={(e) =>
-            setFormData((prev) => ({ ...prev, memberId: e.target.value }))
-          }
-          error={errors.memberId}
           icon={<Mail className="w-5 h-5" />}
         />
 

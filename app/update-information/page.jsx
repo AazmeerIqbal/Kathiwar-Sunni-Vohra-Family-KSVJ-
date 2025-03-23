@@ -26,11 +26,18 @@ import ChildrenInformation from "@/components/update-information/ChildrenInforma
 const Page = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const cnic = decrypt(searchParams.get("cnic"));
   const { data: session } = useSession();
   const [FetchLoading, setFetchLoading] = useState(false);
   const [SbumitLoading, setSbumitLoading] = useState(false);
-  const [MemberId, setMemberId] = useState(null);
+
+  // Storing MemberId
+  const memberIdFromParams = searchParams.get("memberId");
+  const memberId = memberIdFromParams
+    ? decrypt(memberIdFromParams)
+    : session.user.memberId;
+
+  console.log("Session, ", session);
+  console.log("Member ID, ", memberId);
 
   //state and city
   const [StateDropDown, setStateDropDown] = useState([]);
@@ -92,7 +99,7 @@ const Page = () => {
   // Get Member Data from Temp Table
   const getMemberData = async () => {
     try {
-      const apiUrl = `/api/getMemberUpdatedData_onload-updateInformation/${cnic}`;
+      const apiUrl = `/api/getMemberUpdatedData_onload-updateInformation/${memberId}`;
 
       // Make the API call
       const response = await fetch(apiUrl, {
@@ -203,7 +210,7 @@ const Page = () => {
   const handleFetchData = async () => {
     const result = await Swal.fire({
       title:
-        "Are you sure you want to get real time data from the main server?",
+        "Are you sure you want to get real-time data from the main server?",
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#d33",
@@ -213,11 +220,12 @@ const Page = () => {
     });
 
     if (!result.isConfirmed) return;
+
     try {
       setFetchLoading(true);
 
       // Construct the API URL
-      const apiUrl = `/api/update-information/${cnic}`;
+      const apiUrl = `/api/update-information/${memberId}`;
 
       // Make the API call
       const response = await fetch(apiUrl, {
@@ -225,6 +233,7 @@ const Page = () => {
         headers: {
           "Content-Type": "application/json",
         },
+        // body: JSON.stringify({ cnic, memberId }), // Send CNIC and MemberId
       });
 
       // Parse the response
@@ -236,20 +245,49 @@ const Page = () => {
         toast.success("User Data Fetched Successfully", {
           position: "top-right",
         });
-        console.log(result.data.recordset[0]);
-        setUserData(result.data.recordset[0]);
-        fetchStateData(result.data.recordset[0].FromCountryID);
-        fetchCityData(result.data.recordset[0].FromStateID);
 
-        setMemberId(result.data.recordset[0].memberId);
+        // Extract all six result sets
+        const {
+          memberInfo,
+          educationInfo,
+          professionalInfo,
+          livingInfo,
+          wifeInfo,
+          childInfo,
+        } = result.data;
+
+        // Log fetched data
+        console.log("Member Info:", memberInfo);
+        console.log("Education Info:", educationInfo);
+        console.log("Professional Info:", professionalInfo);
+        console.log("Living Info:", livingInfo);
+        console.log("Wife Info:", wifeInfo);
+        console.log("Child Info:", childInfo);
+
+        // Update state with the fetched data
+        setUserData(memberInfo?.[0] || {}); // Set member info
+        setEducationData(educationInfo || []); // Set education info
+        setProfessionalDetail(professionalInfo || []); // Set professional info
+        setLivingDetail(livingInfo || []); // Set living info
+        setWifeData(wifeInfo || []); // Set wife info
+        setChildrenDetail(childInfo || []); // Set child info
+
+        // Fetch additional related data if necessary
+        if (memberInfo?.[0]?.FromCountryID) {
+          fetchStateData(memberInfo[0].FromCountryID);
+        }
+        if (memberInfo?.[0]?.FromStateID) {
+          fetchCityData(memberInfo[0].FromStateID);
+        }
       } else {
         setFetchLoading(false);
-        console.log("Error fetching data:", result.message);
-        // Handle error (e.g., show an error message to the user)
+        console.error("Error fetching data:", result.message);
+        toast.error(`Error: ${result.message}`, { position: "top-right" });
       }
     } catch (error) {
       setFetchLoading(false);
-      console.log("Error calling API:", error);
+      console.error("Error calling API:", error);
+      toast.error("Failed to fetch user data", { position: "top-right" });
     }
   };
 
@@ -267,7 +305,7 @@ const Page = () => {
     if (!result.isConfirmed) return;
     try {
       setSbumitLoading(true);
-      const apiUrl = `/api/finalSubmit-UpdateInformation/${session.user.cnic}`;
+      const apiUrl = `/api/finalSubmit-UpdateInformation/${memberId}`;
 
       const response = await fetch(apiUrl, {
         method: "POST",
@@ -383,7 +421,6 @@ const Page = () => {
         {/* Educational Information */}
         <div className="w-full mt-4 bg-white shadow-lg rounded-lg border border-gray-300">
           <EducationalInformations
-            MemberId={MemberId}
             EducationData={EducationData}
             setEducationData={setEducationData}
             HQ={HQ}
@@ -396,7 +433,6 @@ const Page = () => {
         {/* Personal Information */}
         <div className="w-full mt-4 bg-white shadow-lg rounded-lg border border-gray-300">
           <ProfessionalInformation
-            MemberId={MemberId}
             ProfessionalDetail={ProfessionalDetail}
             setProfessionalDetail={setProfessionalDetail}
           />
@@ -405,7 +441,6 @@ const Page = () => {
         {/* Living Information */}
         <div className="w-full mt-4 bg-white shadow-lg rounded-lg border border-gray-300">
           <LivingInformation
-            MemberId={MemberId}
             CountryDropDown={CountryDropDown}
             StateDropDown={StateDropDown}
             CityDropDown={CityDropDown}
@@ -419,7 +454,6 @@ const Page = () => {
         {/* Wife Information */}
         <div className="w-full mt-4 bg-white shadow-lg rounded-lg border border-gray-300">
           <WifeInformation
-            MemberId={MemberId}
             wifeData={wifeData}
             setWifeData={setWifeData}
             WifeFamilyDropDown={WifeFamilyDropDown}
@@ -432,7 +466,6 @@ const Page = () => {
         {/* Children Information */}
         <div className="w-full mt-4 bg-white shadow-lg rounded-lg border border-gray-300">
           <ChildrenInformation
-            MemberId={MemberId}
             childrenDetail={childrenDetail}
             setChildrenDetail={setChildrenDetail}
           />

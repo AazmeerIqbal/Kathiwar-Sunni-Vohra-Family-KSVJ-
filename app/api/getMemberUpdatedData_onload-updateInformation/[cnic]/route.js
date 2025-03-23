@@ -18,7 +18,7 @@ export async function POST(req, { params }) {
     const result = await pool
       .request()
       .input("CNICNo", cnic) // Pass CNIC as input parameter
-      .query("SELECT * FROM tb_member_mst_test WHERE CNICNo=@CNICNo");
+      .query("SELECT * FROM tb_member_mst_test WHERE memberId=@CNICNo");
 
     await closeConnection(pool);
 

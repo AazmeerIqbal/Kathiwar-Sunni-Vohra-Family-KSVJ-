@@ -21,11 +21,7 @@ const bloodGroupMap = {
   9: "O-",
 };
 
-const ChildrenInformation = ({
-  MemberId,
-  childrenDetail,
-  setChildrenDetail,
-}) => {
+const ChildrenInformation = ({ childrenDetail, setChildrenDetail }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [toggle, setToggle] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -36,18 +32,17 @@ const ChildrenInformation = ({
   const { data: session, status } = useSession();
 
   useEffect(() => {
-    if (MemberId !== null) {
-      console.log("MemberId from ChildrenInformation:", MemberId);
-      getChildrenData(); // Fetch children data on load
-    }
-  }, [MemberId]);
+    getChildrenData(); // Fetch children data on load
+  }, []);
 
   const getChildrenData = useCallback(async () => {
     try {
-      console.log("Fetching data for MemberId:", MemberId); // Debugging line
-      const response = await fetch(`/api/getChildrenInformation/${MemberId}`, {
-        method: "GET",
-      });
+      const response = await fetch(
+        `/api/getChildrenInformation/${session.user.memberId}`,
+        {
+          method: "GET",
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -64,7 +59,7 @@ const ChildrenInformation = ({
       setChildrenDetail([]); // Set empty array on error
       toast.error("Failed to fetch children information");
     }
-  }, [MemberId]);
+  }, [session.user.memberId]);
 
   // Handle Input Change
   const handleChange = useCallback((e, field) => {
@@ -376,7 +371,7 @@ const ChildrenInformation = ({
       <ChildrenModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        MemberId={MemberId}
+        MemberId={session.user.memberId}
         getChildrenData={getChildrenData}
       />
       <ToastContainer />

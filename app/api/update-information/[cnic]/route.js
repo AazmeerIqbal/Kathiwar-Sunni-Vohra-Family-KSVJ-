@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(req, { params }) {
   const { cnic } = await params;
+  console.log("Member ID from Update information: ", cnic);
 
   if (!cnic) {
     return NextResponse.json(
@@ -10,22 +11,30 @@ export async function POST(req, { params }) {
       { status: 400 }
     );
   }
-
   try {
     const pool = await connectToDB(config);
 
-    // Run the stored procedure
+    // Execute the stored procedure
     const result = await pool
       .request()
-      .input("CNICNo", cnic) // Pass the CNIC parameter
+      .input("MemberId", cnic) // Pass MemberId
       .execute("fetchUserData");
 
     await closeConnection(pool);
 
-    // Return success message
+    // Extract different result sets
+    const responseData = {
+      memberInfo: result.recordsets[0] || [],
+      educationInfo: result.recordsets[1] || [],
+      professionalInfo: result.recordsets[2] || [],
+      livingInfo: result.recordsets[3] || [],
+      wifeInfo: result.recordsets[4] || [],
+      childInfo: result.recordsets[5] || [],
+    };
+
     return NextResponse.json({
       message: "Stored procedure executed successfully.",
-      data: result,
+      data: responseData,
     });
   } catch (error) {
     console.error("Error executing stored procedure:", error);

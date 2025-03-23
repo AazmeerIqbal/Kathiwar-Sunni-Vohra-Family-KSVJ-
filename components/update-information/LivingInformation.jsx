@@ -13,7 +13,6 @@ import { IoHome } from "react-icons/io5";
 import { useSession } from "next-auth/react";
 
 const LivingInformation = ({
-  MemberId,
   CountryDropDown,
   StateDropDown,
   CityDropDown,
@@ -32,17 +31,17 @@ const LivingInformation = ({
   const { data: session } = useSession();
 
   useEffect(() => {
-    if (MemberId !== null) {
-      getMemberData();
-    }
-  }, [MemberId]);
+    getMemberData();
+  }, []);
 
   const getMemberData = useCallback(async () => {
     try {
-      console.log("Fetching data for MemberID:", MemberId);
-      const response = await fetch(`/api/getLivingInformation/${MemberId}`, {
-        method: "GET",
-      });
+      const response = await fetch(
+        `/api/getLivingInformation/${session.user.memberId}`,
+        {
+          method: "GET",
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -61,7 +60,7 @@ const LivingInformation = ({
       // Optionally show error to user
       toast.error("Failed to fetch living information");
     }
-  }, [MemberId]);
+  }, [session.user.memberId]);
 
   // Handle Input Change
   const handleChange = useCallback((e, field) => {
@@ -335,7 +334,7 @@ const LivingInformation = ({
       <LivingModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        MemberId={MemberId}
+        MemberId={session.user.memberId}
         CountryDropDown={CountryDropDown}
         StateDropDown={StateDropDown}
         CityDropDown={CityDropDown}

@@ -11,7 +11,6 @@ import { motion } from "framer-motion";
 import { PiStudentFill } from "react-icons/pi";
 
 const EducationalInformations = ({
-  MemberId,
   EducationData,
   setEducationData,
   HQ,
@@ -38,11 +37,8 @@ const EducationalInformations = ({
   }, [session]);
 
   useEffect(() => {
-    if (MemberId !== null) {
-      console.log("MEMBER ID:", MemberId);
-      getMemberData();
-    }
-  }, [MemberId]);
+    getMemberData();
+  }, []);
 
   const fetchHQData = async () => {
     try {
@@ -67,7 +63,7 @@ const EducationalInformations = ({
   const getMemberData = async () => {
     try {
       const response = await fetch(
-        `/api/getEductionalInformation/${MemberId}`,
+        `/api/getEductionalInformation/${session.user.memberId}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -497,7 +493,7 @@ const EducationalInformations = ({
       <EducationModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        MemberId={MemberId}
+        MemberId={session.user.memberId}
         getMemberData={getMemberData}
         HQ={HQ}
         SP={SP}

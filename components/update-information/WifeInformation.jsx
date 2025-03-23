@@ -11,7 +11,6 @@ import Loader from "../ui/Loader";
 import Select from "react-select";
 
 const WifeInformation = ({
-  MemberId,
   wifeData,
   setWifeData,
   WifeFamilyDropDown,
@@ -31,12 +30,10 @@ const WifeInformation = ({
   const { data: session } = useSession();
 
   useEffect(() => {
-    if (MemberId !== null) {
-      fetchFamilyData();
-      fetchFatherName();
-      getWifeData();
-    }
-  }, [MemberId]);
+    fetchFamilyData();
+    fetchFatherName();
+    getWifeData();
+  }, []);
 
   const fetchFamilyData = async () => {
     try {
@@ -96,9 +93,12 @@ const WifeInformation = ({
 
   const getWifeData = async () => {
     try {
-      const response = await fetch(`/api/getWifeInformation/${MemberId}`, {
-        method: "GET",
-      });
+      const response = await fetch(
+        `/api/getWifeInformation/${session.user.memberId}`,
+        {
+          method: "GET",
+        }
+      );
 
       const result = await response.json();
 
@@ -587,7 +587,7 @@ const WifeInformation = ({
       <WifeDetailForm
         isOpen={isModalOpen}
         onClose={handleModalClose}
-        MemberId={MemberId}
+        MemberId={session.user.memberId}
         WifeFamilyDropDown={WifeFamilyDropDown}
         FatherNames={FatherNames}
         getWifeData={getWifeData}

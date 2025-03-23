@@ -58,6 +58,8 @@ export const authOptions = {
                 roleId: user.RoleId,
                 imagePath: user.ImagePath,
                 isAdmin: user.IsAdmin,
+                memberId: user.MemberId,
+                memberShipNo: user.MemberShipNo,
               }; // Return user object for session
             } else {
               throw new Error("Invalid username or password");
@@ -92,6 +94,8 @@ export const authOptions = {
                 roleId: user.RoleId,
                 imagePath: user.ImagePath,
                 isAdmin: user.IsAdmin,
+                memberId: user.MemberId,
+                memberShipNo: user.MemberShipNo,
               }; // Return user object for session
             } else {
               throw new Error("Invalid username or password");
@@ -124,6 +128,8 @@ export const authOptions = {
         token.roleId = user.roleId;
         token.imagePath = user.imagePath;
         token.isAdmin = user.isAdmin;
+        token.memberId = user.memberId;
+        token.memberShipNo = user.memberShipNo;
       }
       return token;
     },
@@ -140,6 +146,8 @@ export const authOptions = {
         roleId: token.roleId,
         imagePath: token.imagePath,
         isAdmin: token.isAdmin,
+        memberId: token.memberId,
+        memberShipNo: token.memberShipNo,
       };
       return session;
     },

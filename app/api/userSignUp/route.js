@@ -3,51 +3,24 @@ import { NextResponse } from "next/server";
 import { encrypt } from "@/utils/Encryption";
 
 export async function POST(req) {
-  const {
-    username,
-    firstName,
-    lastName,
-    email,
-    memberId,
-    cnic,
-    password,
-    gender,
-  } = await req.json();
+  const { username, firstName, lastName, email, cnic, password } =
+    await req.json();
 
   // Validate required fields
-  if (
-    !username ||
-    !firstName ||
-    !lastName ||
-    !email ||
-    !cnic ||
-    !password ||
-    !gender
-  ) {
+  if (!username || !firstName || !lastName || !email || !cnic || !password) {
     return NextResponse.json(
       { message: "All required fields must be provided" },
       { status: 400 }
     );
   }
 
-  // Convert gender to 'M' or 'F'
-  const genderValue =
-    gender === "male" ? "M" : gender === "female" ? "F" : null;
-
-  if (!genderValue) {
-    return NextResponse.json(
-      { message: "Invalid gender value provided" },
-      { status: 400 }
-    );
-  }
-
   const insertQuery = `
-    INSERT INTO Users (UserName, FirstName, LastName, Email, MemberId, CNICNo, UserPassword, Gender, CompanyId, RoleId)
-    VALUES (@Username, @FirstName, @LastName, @Email, @MemberId, @CNICNo, @UserPassword, @Gender, @CompanyId, @RoleId);
+    INSERT INTO Users (UserName, FirstName, LastName, Email, MemberId, CNICNo, UserPassword, Gender, CompanyId, RoleId, MemberShipNo)
+    VALUES (@Username, @FirstName, @LastName, @Email, @MemberId, @CNICNo, @UserPassword, @Gender, @CompanyId, @RoleId, @MemberShipNo);
   `;
 
   const checkCnicQuery = `
-    SELECT CNICNo, memberId
+    SELECT CNICNo, memberId, MemberShipNo, Gender 
     FROM tb_member_mst
     WHERE CNICNo = @CNICNo;
   `;
@@ -80,6 +53,15 @@ export async function POST(req) {
 
     if (CnicResult.recordset.length > 0) {
       // Check if the username already exists
+
+      const memberId = CnicResult.recordset[0].memberId;
+      const memberShipNo = CnicResult.recordset[0].MemberShipNo;
+      const gender = CnicResult.recordset[0].Gender;
+      // console.log("Gender Coming from master ", gender);
+
+      // Convert gender to 'M' or 'F'
+      const genderValue = gender === "0" ? "M" : gender === "1" ? "F" : null;
+
       const result = await pool
         .request()
         .input("Username", username)
@@ -128,12 +110,13 @@ export async function POST(req) {
         .input("FirstName", firstName)
         .input("LastName", lastName)
         .input("Email", email)
-        .input("MemberId", memberId || null) // If memberId is null, set it to NULL in the DB
+        .input("MemberId", memberId)
         .input("CNICNo", cnic)
         .input("UserPassword", encrypt(password))
         .input("Gender", genderValue)
         .input("CompanyId", "12")
         .input("RoleId", "55")
+        .input("MemberShipNo", memberShipNo || null)
         .query(insertQuery);
 
       await closeConnection(pool);

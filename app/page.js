@@ -185,8 +185,8 @@ export default function Home() {
                         </td>
                         <td className="p-2 gap-2">
                           <Link
-                            href={`/update-information?cnic=${encrypt(
-                              doc.CNICNo
+                            href={`/update-information?memberId=${encrypt(
+                              doc.memberId
                             )}`}
                           >
                             <button className="sm:px-4 md:px-4 lg:px-4 px-2 py-2 bg-blue-600 text-white rounded-lg flex gap-[6px] items-center">
