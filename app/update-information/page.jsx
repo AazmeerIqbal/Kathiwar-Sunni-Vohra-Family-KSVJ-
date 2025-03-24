@@ -114,19 +114,48 @@ const Page = () => {
 
       // Check if the response is successful
       if (response.ok) {
-        if (result.data.length > 0) {
-          console.log("Member Data: ", result.data);
-          setUserData(result.data[0]);
-          fetchStateData(result.data[0].FromCountryID);
-          fetchCityData(result.data[0].FromStateID);
-          setMemberId(result.data[0].memberId);
+        if (result.data) {
+          // Extract all data sets from API response
+          const {
+            member_mst,
+            member_edu,
+            member_professional,
+            member_living,
+            member_wife,
+            member_child,
+          } = result.data;
+
+          // Log fetched data
+          console.log("Member Info:", member_mst);
+          console.log("Education Info:", member_edu);
+          console.log("Professional Info:", member_professional);
+          console.log("Living Info:", member_living);
+          console.log("Wife Info:", member_wife);
+          console.log("Child Info:", member_child);
+
+          // Update state with the fetched data
+          setUserData(member_mst?.[0] || {}); // Set member info
+          setEducationData(member_edu || []); // Set education info
+          setProfessionalDetail(member_professional || []); // Set professional info
+          setLivingDetail(member_living || []); // Set living info
+          setWifeData(member_wife || []); // Set wife info
+          setChildrenDetail(member_child || []); // Set child info
+
+          // Fetch additional related data if necessary
+          if (member_mst?.[0]?.FromCountryID) {
+            fetchStateData(member_mst[0].FromCountryID);
+          }
+          if (member_mst?.[0]?.FromStateID) {
+            fetchCityData(member_mst[0].FromStateID);
+          }
         }
       } else {
-        console.log("Error fetching data:", result.message);
-        // Handle error (e.g., show an error message to the user)
+        console.error("Error fetching data:", result.message);
+        toast.error(`Error: ${result.message}`, { position: "top-right" });
       }
     } catch (error) {
-      console.log("Error calling API:", error);
+      console.error("Error calling API:", error);
+      toast.error("Failed to fetch user data", { position: "top-right" });
     }
   };
 
@@ -233,7 +262,7 @@ const Page = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        // body: JSON.stringify({ cnic, memberId }), // Send CNIC and MemberId
+        body: JSON.stringify({ memberId }), // Send CNIC and MemberId
       });
 
       // Parse the response
@@ -310,7 +339,7 @@ const Page = () => {
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cnic: session.user.cnic }), // ✅ Ensure a valid JSON body
+        // body: JSON.stringify({ cnic: session.user.cnic }), // ✅ Ensure a valid JSON body
       });
 
       const result = await response.json();
@@ -362,19 +391,17 @@ const Page = () => {
             </button>
 
             {session.user.isAdmin === 1 ? (
-              cnic !== "cxaa" && (
-                <button
-                  // onClick={handleSubmit}
-                  className=" flex gap-1 items-center my-2 hover:opacity-70 py-2 px-4 bg-[#22583e] text-[#f1f1f1] font-semibold rounded-3xl "
-                >
-                  {SbumitLoading ? (
-                    <Loader w={4} h={4} />
-                  ) : (
-                    <MdOutlineFileUpload className="text-xl my-auto" />
-                  )}
-                  Upload
-                </button>
-              )
+              <button
+                // onClick={handleSubmit}
+                className=" flex gap-1 items-center my-2 hover:opacity-70 py-2 px-4 bg-[#22583e] text-[#f1f1f1] font-semibold rounded-3xl "
+              >
+                {SbumitLoading ? (
+                  <Loader w={4} h={4} />
+                ) : (
+                  <MdOutlineFileUpload className="text-xl my-auto" />
+                )}
+                Upload
+              </button>
             ) : (
               <>
                 {/* Submit */}

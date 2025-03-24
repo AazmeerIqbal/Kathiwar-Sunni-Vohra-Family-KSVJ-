@@ -32,7 +32,6 @@ const WifeInformation = ({
   useEffect(() => {
     fetchFamilyData();
     fetchFatherName();
-    getWifeData();
   }, []);
 
   const fetchFamilyData = async () => {

@@ -30,10 +30,6 @@ const LivingInformation = ({
   const [deletingId, setDeletingId] = useState(null);
   const { data: session } = useSession();
 
-  useEffect(() => {
-    getMemberData();
-  }, []);
-
   const getMemberData = useCallback(async () => {
     try {
       const response = await fetch(

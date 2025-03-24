@@ -189,7 +189,7 @@ export default function Home() {
                               doc.memberId
                             )}`}
                           >
-                            <button className="sm:px-4 md:px-4 lg:px-4 px-2 py-2 bg-blue-600 text-white rounded-lg flex gap-[6px] items-center">
+                            <button className="sm:px-4 md:px-4 lg:px-4 px-2 py-2 bg-blue-500 text-white rounded-lg flex gap-[6px] items-center hover:bg-blue-500">
                               <FaArrowUpRightFromSquare />
                             </button>
                           </Link>

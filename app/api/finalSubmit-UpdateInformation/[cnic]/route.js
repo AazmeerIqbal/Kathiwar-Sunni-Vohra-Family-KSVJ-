@@ -1,10 +1,10 @@
 import { connectToDB, closeConnection, config } from "@/utils/database";
 import { NextResponse } from "next/server";
 
-export async function POST(req, context) {
+export async function POST(req, { params }) {
   try {
-    // ✅ Await params properly in Next.js 15
-    const { cnic } = await context.params;
+    const { cnic } = await params;
+    console.log("Member ID from Final Submit to Admin: ", cnic);
 
     if (!cnic) {
       return NextResponse.json(
@@ -12,19 +12,6 @@ export async function POST(req, context) {
         { status: 400 }
       );
     }
-
-    // ✅ Read the request body safely
-    const rawBody = await req.text();
-    if (!rawBody) {
-      return NextResponse.json(
-        { message: "Request body is empty." },
-        { status: 400 }
-      );
-    }
-
-    const formData = JSON.parse(rawBody);
-    console.log("Received CNIC:", cnic);
-    console.log("Form Data:", formData);
 
     // ✅ Ensure database connection
     const pool = await connectToDB(config);
@@ -35,7 +22,7 @@ export async function POST(req, context) {
       .query(`
         UPDATE tb_member_mst_test
         SET IsUpdatedFlag = 1
-        WHERE CNICNo = @CNICNo;
+        WHERE memberId = @CNICNo;
       `);
 
     await closeConnection(pool);

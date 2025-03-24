@@ -28,10 +28,6 @@ const ProfessionalInformation = ({
   const [DeleteLoading, setDeleteLoading] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
 
-  useEffect(() => {
-    getMemberData();
-  }, []);
-
   const getMemberData = async () => {
     try {
       const response = await fetch(

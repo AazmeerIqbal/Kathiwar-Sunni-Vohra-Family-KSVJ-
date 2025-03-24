@@ -58,7 +58,7 @@ const PrintPage = () => {
     }
   }, []);
 
-  console.log("FAMILYYYY: ", FamilyDropDown);
+  console.log("User Data:", userData);
 
   if (!userData) return <div>Loading...</div>;
 
@@ -109,7 +109,7 @@ const PrintPage = () => {
         {/* <div>
           <img
             className="rounded-[50%] w-[80px] h-[80px] md:w-[130px] md:h-[130px]"
-            src="https://www.arabians.pk/static/media/home_page_banner.2faa25771bc9ebe0e983.JPEG"
+            src={userData.PicPath == "" ? "DummyUser.png" : userData.PicPath}
             alt="Profile"
           />
         </div> */}

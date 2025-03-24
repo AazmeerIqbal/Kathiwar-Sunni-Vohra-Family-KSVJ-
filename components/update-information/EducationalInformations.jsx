@@ -36,10 +36,6 @@ const EducationalInformations = ({
     }
   }, [session]);
 
-  useEffect(() => {
-    getMemberData();
-  }, []);
-
   const fetchHQData = async () => {
     try {
       const response = await fetch(`/api/fill-HigherQualification`);

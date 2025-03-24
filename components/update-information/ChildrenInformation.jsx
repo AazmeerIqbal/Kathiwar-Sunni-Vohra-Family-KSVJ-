@@ -31,10 +31,6 @@ const ChildrenInformation = ({ childrenDetail, setChildrenDetail }) => {
   const [saveLoading, setSaveLoading] = useState(false);
   const { data: session, status } = useSession();
 
-  useEffect(() => {
-    getChildrenData(); // Fetch children data on load
-  }, []);
-
   const getChildrenData = useCallback(async () => {
     try {
       const response = await fetch(
