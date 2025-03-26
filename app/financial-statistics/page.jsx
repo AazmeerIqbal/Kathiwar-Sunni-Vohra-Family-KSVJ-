@@ -1,55 +1,64 @@
-import React from "react";
+"use client";
+
+import { useSession } from "next-auth/react";
+import React, { useEffect, useState } from "react";
+import { Loader } from "lucide-react";
+import DataTable from "@/components/financial-statistics/DataTable";
+import FinancialChart from "@/components/financial-statistics/FinancialChart";
 
 const FinancialStatistics = () => {
+  const { data: session } = useSession();
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!session.user.memberId) return;
+
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(
+          `/api/getFinancialStatistics/${session.user.memberId}`
+        );
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.message || "Failed to fetch data");
+        }
+
+        setData(result.data);
+        console.log("Financial Statistics: ", result.data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [session.user.memberId]);
+
   return (
     <div className="m-2 p-4 border border-gray-300 rounded-lg md:text-md text-sm">
+      {/* <FinancialChart data={data} /> */}
       <div className="py-4">
-        <h4 className="text-xl bold">Financial Statistics</h4>
+        <h4 className="md:text-xl text-lg tracking-wide font-bold bold">
+          Financial Statistics
+        </h4>
       </div>
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white rounded-lg overflow-hidden shadow-md">
-          <thead className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
-            <tr>
-              <th className="py-3 px-4 text-left font-semibold">On Account</th>
-              <th className="py-3 px-4 text-left font-semibold">Date</th>
-              <th className="py-3 px-4 text-left font-semibold">Amount</th>
-              <th className="py-3 px-4 text-left font-semibold">
-                Trasaction ID
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {/* Sample data rows - replace with your actual data */}
-            <tr className="hover:bg-gray-50 transition-colors duration-200">
-              <td className="py-3 px-4">Membership Fee</td>
-              <td className="py-3 px-4">2023-10-15</td>
-              <td className="py-3 px-4 font-medium text-green-600">$250.00</td>
-              <td className="py-3 px-4">VCH-001</td>
-            </tr>
-            <tr className="hover:bg-gray-50 transition-colors duration-200">
-              <td className="py-3 px-4">Donation</td>
-              <td className="py-3 px-4">2023-11-05</td>
-              <td className="py-3 px-4 font-medium text-green-600">$500.00</td>
-              <td className="py-3 px-4">VCH-002</td>
-            </tr>
-            <tr className="hover:bg-gray-50 transition-colors duration-200">
-              <td className="py-3 px-4">Event Fee</td>
-              <td className="py-3 px-4">2023-12-20</td>
-              <td className="py-3 px-4 font-medium text-green-600">$150.00</td>
-              <td className="py-3 px-4">VCH-003</td>
-            </tr>
-            <tr className="hover:bg-gray-50 transition-colors duration-200">
-              <td className="py-3 px-4">Annual Dues</td>
-              <td className="py-3 px-4">2024-01-10</td>
-              <td className="py-3 px-4 font-medium text-green-600">$350.00</td>
-              <td className="py-3 px-4">VCH-004</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div className="mt-4 text-right text-sm text-gray-500">
-        <p>Showing 4 of 4 transactions</p>
-      </div>
+      {loading ? (
+        <div>
+          {" "}
+          <Loader className="animate-spin text-center" />
+        </div>
+      ) : data.length > 0 ? (
+        <>
+          <DataTable data={data} loading={loading} />
+        </>
+      ) : (
+        <div>No data available</div>
+      )}
     </div>
   );
 };
