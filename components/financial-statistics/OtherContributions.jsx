@@ -7,57 +7,38 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 
-const DetailedDataTable = ({ data, loading }) => {
-  // Reverse the order to display from last to top
+const OtherContributions = ({ data, loading }) => {
+  // Reverse the data order to show bottom-to-top
   const reversedData = useMemo(() => [...data].reverse(), [data]);
 
   const columns = useMemo(
     () => [
-      { accessorKey: "MemberFeeID", header: "Trans ID" },
+      { accessorKey: "TransTypeName", header: "Transaction Type" },
       {
         accessorKey: "TransDAte",
-        header: "Trans Date",
-        cell: ({ getValue }) => {
-          const date = new Date(getValue());
-          return date
+        header: "Date",
+        cell: ({ getValue }) =>
+          new Date(getValue())
             .toLocaleDateString("en-GB", {
               day: "2-digit",
               month: "short",
               year: "numeric",
             })
-            .replace(/ /g, "-");
-        },
-      },
-      { accessorKey: "MonthName", header: "Month Name" },
-      {
-        accessorKey: "Debit",
-        header: "Monthly Donation",
-        cell: ({ getValue }) => {
-          const value = getValue();
-          return (
-            <span className="text-red-600 font-medium">
-              {value !== null && value !== undefined ? value : 0}
-            </span>
-          );
-        },
+            .replace(/ /g, "-"),
       },
       {
         accessorKey: "Credit",
-        header: "Received",
-        cell: ({ getValue }) => {
-          const value = getValue();
-          return (
-            <span className="text-green-600 font-medium">
-              {value !== null && value !== undefined ? value : 0}
-            </span>
-          );
-        },
+        header: "Amount",
+        cell: ({ getValue }) => (
+          <span className="text-green-600 font-medium">
+            {getValue() !== null && getValue() !== undefined ? getValue() : 0}
+          </span>
+        ),
       },
-      { accessorKey: "RunningTotal", header: "Balance" },
       {
         accessorKey: "VoucherID",
-        header: "Payment ID",
-        cell: ({ getValue }) => getValue || "N/A",
+        header: "Voucher ID",
+        cell: ({ getValue }) => getValue() || "N/A",
       },
     ],
     []
@@ -66,7 +47,7 @@ const DetailedDataTable = ({ data, loading }) => {
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 8 });
 
   const table = useReactTable({
-    data: reversedData, // Now using reversed data
+    data: reversedData, // Using reversed data
     columns,
     state: { pagination },
     getCoreRowModel: getCoreRowModel(),
@@ -76,7 +57,7 @@ const DetailedDataTable = ({ data, loading }) => {
 
   return (
     <div className="w-full p-4">
-      <h1 className="md:text-xl text-lg font-bold mb-3">Monthly Donation:</h1>
+      <h1 className="md:text-xl text-lg font-bold mb-3">Other Transactions</h1>
       <div className="overflow-x-auto bg-white shadow-md rounded-lg">
         <table className="min-w-full border border-gray-300 rounded-md">
           <thead className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-sm sm:text-base">
@@ -99,13 +80,13 @@ const DetailedDataTable = ({ data, loading }) => {
           <tbody className="divide-y divide-gray-200 text-sm sm:text-base">
             {loading ? (
               <tr>
-                <td colSpan="7" className="text-center py-4">
+                <td colSpan="4" className="text-center py-4">
                   Loading...
                 </td>
               </tr>
             ) : table.getRowModel().rows.length === 0 ? (
               <tr>
-                <td colSpan="7" className="text-center py-4">
+                <td colSpan="4" className="text-center py-4">
                   No records found.
                 </td>
               </tr>
@@ -130,6 +111,7 @@ const DetailedDataTable = ({ data, loading }) => {
         </table>
       </div>
 
+      {/* Pagination Controls */}
       <div className="flex flex-col sm:flex-row justify-between items-center p-4 space-y-2 sm:space-y-0">
         <button
           className="px-3 py-1 bg-indigo-500 text-white rounded-md disabled:opacity-50"
@@ -154,4 +136,4 @@ const DetailedDataTable = ({ data, loading }) => {
   );
 };
 
-export default DetailedDataTable;
+export default OtherContributions;

@@ -28,7 +28,7 @@ const FinancialStatistics = () => {
         }
 
         setData(result.data);
-        console.log("Financial Statistics: ", result.data);
+        console.log("FInacial Data:", result.data);
       } catch (err) {
         setError(err.message);
       } finally {

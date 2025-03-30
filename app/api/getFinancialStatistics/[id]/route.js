@@ -21,12 +21,15 @@ export async function GET(req, { params }) {
     const result = await pool
       .request()
       .input("MemberID", sql.VarChar, id) // Assuming CompanyID is VarChar
+      // .input("SupportID", sql.VarChar, 21)
       .execute("sp_tb_member_fee_sel"); // Replace with your stored procedure
 
     // Close the connection
     await closeConnection(pool);
 
-    return NextResponse.json({ success: true, data: result.recordset });
+    // console.log("FinancialData: ", result.recordset);
+
+    return NextResponse.json({ success: true, data: result.recordsets });
   } catch (error) {
     await closeConnection(pool);
     console.error("Error fetching financial statistics:", error);
