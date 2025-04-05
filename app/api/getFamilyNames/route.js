@@ -1,9 +1,7 @@
 import { connectToDB, closeConnection, config } from "@/utils/database";
 import { NextResponse } from "next/server";
 
-export async function GET(req, { params }) {
-  const { cnic } = await params;
-
+export async function GET(req) {
   try {
     // Establish database connection
     const pool = await connectToDB(config);

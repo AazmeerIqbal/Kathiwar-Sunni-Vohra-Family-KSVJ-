@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 // Notification Toaster
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Link from "next/link";
 
 export const LoginForm = ({ isAdmin, onToggleMode }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -179,6 +180,10 @@ export const LoginForm = ({ isAdmin, onToggleMode }) => {
     }
   };
 
+  const newRegisterationClick = () => {
+    router.push("/register-user");
+  };
+
   return (
     <>
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -238,11 +243,24 @@ export const LoginForm = ({ isAdmin, onToggleMode }) => {
           )}
         </div>
 
-        <Button type="submit" isLoading={isLoading} fullWidth>
-          {isLoading
-            ? "Signing in..."
-            : `Sign in as ${isAdmin ? "Admin" : "User"}`}
-        </Button>
+        <div className="flex gap-2 w-full">
+          {isAdmin ? null : (
+            <Button
+              fullWidth={"w-2/4"}
+              type="button"
+              variant="outline"
+              onClick={newRegisterationClick}
+            >
+              New Registeration
+            </Button>
+          )}
+
+          <Button type="submit" isLoading={isLoading} fullWidth={"w-2/4"}>
+            {isLoading
+              ? "Signing in..."
+              : `Sign in as ${isAdmin ? "Admin" : "User"}`}
+          </Button>
+        </div>
 
         <div className="text-center">
           <button

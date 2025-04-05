@@ -113,7 +113,7 @@ const PersonalInformations = ({
   const fetchDropdownData = async () => {
     try {
       // Construct the API URL
-      const apiUrl = `/api/update-information/${session.user.cnic}/fill-dropDown`;
+      const apiUrl = `/api/getFamilyNames`;
 
       // Make the API call
       const response = await fetch(apiUrl, {

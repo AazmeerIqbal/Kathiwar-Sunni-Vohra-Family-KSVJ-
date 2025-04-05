@@ -13,6 +13,10 @@ export async function GET(req, { params }) {
       .request()
       .query("SELECT * FROM tb_member_mst_test where IsUpdatedFlag = 1");
 
+    const RegisterationRequest = await pool
+      .request()
+      .query("SELECT * FROM tb_member_mst_temp");
+
     // Close the database connection
     await closeConnection(pool);
 
@@ -20,6 +24,7 @@ export async function GET(req, { params }) {
     return NextResponse.json({
       message: "Query executed successfully.",
       Members: MembersResult.recordset,
+      RegisterReq: RegisterationRequest.recordset,
     });
   } catch (error) {
     // Handle and log errors

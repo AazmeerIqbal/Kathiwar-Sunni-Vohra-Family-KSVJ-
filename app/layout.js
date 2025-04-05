@@ -70,7 +70,8 @@ export default function RootLayout({ children }) {
                 ) : (
                   children // This will render the ResetPassword page
                 )
-              ) : pathname === "/update-information/print" ? (
+              ) : pathname === "/update-information/print" ||
+                pathname === "/register-user" ? (
                 // Render the print page directly without the Dashboard
                 children // Assuming the print page is passed as children
               ) : (
