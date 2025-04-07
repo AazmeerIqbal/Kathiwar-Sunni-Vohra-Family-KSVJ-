@@ -1,21 +1,20 @@
 "use client";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
-import { FaArrowUpRightFromSquare } from "react-icons/fa6";
-import Link from "next/link";
-import { encrypt } from "@/utils/Encryption";
+import { Loader2 } from "lucide-react";
+import UpdateInformationRequest from "@/components/dashboard/updateInformationRequest";
+import NewRegisterationRequest from "@/components/dashboard/NewRegisterationRequest";
 
 export default function Home() {
   const [UpdatedMembers, setUpdatedMembers] = useState([]);
   const [RegisterReq, setRegisterReq] = useState([]);
+  const [Loading, setLoading] = useState([]);
   const { data: session, status } = useSession();
 
   const fetchUpdatedMembers = async () => {
     if (session.user.isAdmin !== 1) return;
     try {
-      // Log the CNIC from the session
-      console.log("Fetching data for Admin:", session.user.isAdmin);
-
+      setLoading(true);
       // Construct the API URL
       const apiUrl = `/api/get-updatedMembers/${session.user.isAdmin}`;
 
@@ -27,23 +26,18 @@ export default function Home() {
         },
       });
 
-      // Parse the response
       const result = await response.json();
 
-      // Check if the response is successful
       if (response.ok) {
         setUpdatedMembers(result.Members);
         setRegisterReq(result.RegisterReq);
-        console.log("Updated Members fetched successfully:", result.Members);
-        // Handle the RegisterationRequest if needed
-        console.log(
-          "Registration Requests fetched successfully:",
-          result.RegisterReq
-        );
+        setLoading(false);
       } else {
+        setLoading(false);
         console.error("Error fetching dropdown data:", result.message);
       }
     } catch (error) {
+      setLoading(false);
       console.error("Error calling API:", error);
     }
   };
@@ -51,10 +45,6 @@ export default function Home() {
   useEffect(() => {
     fetchUpdatedMembers();
   }, [session]);
-
-  useEffect(() => {
-    console.log(UpdatedMembers);
-  }, [UpdatedMembers]);
 
   return (
     <div className="p-4 md:text-sm text-xs">
@@ -146,136 +136,42 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Update information Requestes */}
+          {/* Requestes */}
           {session.user.isAdmin === 1 ? (
             <div className="mt-6">
-              {/* Documents Table */}
               <h3 className="text-xl mb-2 font-bold">
                 Update Information Requests
               </h3>
-              <div className="overflow-x-auto border border-gray-300 rounded-lg shadow-lg">
-                <table className="min-w-full table-auto border-collapse">
-                  <thead>
-                    <tr className="bg-gray-200 text-left">
-                      <th className="border-b md:w-[10px] lg:w-[10px] py-2 px-4 border-r border-gray-300">
-                        S.NO
-                      </th>
-                      <th className="border-b py-2 px-4 w-[60%] border-r  border-gray-300">
-                        Member Name
-                      </th>
-                      <th className="border-b border-gray-300 w-[15%] border-r py-2 px-4">
-                        Membership #
-                      </th>
-                      <th className="border-b py-2 px-4 border-r w-[15%] border-gray-300">
-                        Cnic
-                      </th>
-                      <th className="border-b py-2 px-4 border-r border-gray-300"></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {UpdatedMembers.map((doc, index) => (
-                      <tr key={index} className="border-b">
-                        <td className="md:w-[10px] lg:w-[10px] p-2 sm:px-4 md:px-4 lg:px-4 border-r border-gray-300 text-center">
-                          {index + 1}
-                        </td>
-                        <td className="p-2 border-r flex items-center border-gray-300">
-                          <div>
-                            <img
-                              className="rounded-[50%] w-[30px] h-[30px] mx-2 my-2"
-                              src={doc.PicPath}
-                              alt="Profile"
-                            />
-                          </div>
-                          <div>{doc.MemberName}</div>
-                        </td>
-                        <td className="p-2  border-r  border-gray-300">
-                          {doc.MemberShipNo}
-                        </td>
-                        <td className="p-2  border-r border-gray-300">
-                          {doc.CNICNo}
-                        </td>
-                        <td className="p-2 gap-2">
-                          <Link
-                            href={`/update-information?memberId=${encrypt(
-                              doc.memberId
-                            )}`}
-                          >
-                            <button className="sm:px-4 md:px-4 lg:px-4 px-2 py-2 bg-blue-500 text-white rounded-lg flex gap-[6px] items-center hover:bg-blue-500">
-                              <FaArrowUpRightFromSquare />
-                            </button>
-                          </Link>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              {UpdatedMembers.length > 0 ? (
+                <UpdateInformationRequest UpdatedMembers={UpdatedMembers} />
+              ) : (
+                <div className="text-center">
+                  {Loading ? (
+                    <Loader2 className="w-8 h-8 mx-auto animate-spin text-blue-600" />
+                  ) : (
+                    "No requests at the moment"
+                  )}
+                </div>
+              )}
 
               <div className="my-4">
                 <h3 className="text-xl mb-2 font-bold">
                   New Registeration Requests
                 </h3>
-                <div className="overflow-x-auto border border-gray-300 rounded-lg shadow-lg">
-                  <table className="min-w-full table-auto border-collapse">
-                    <thead>
-                      <tr className="bg-gray-200 text-left">
-                        <th className="border-b md:w-[10px] lg:w-[10px] py-2 px-4 border-r border-gray-300">
-                          S.NO
-                        </th>
-                        <th className="border-b py-2 px-4 w-[60%] border-r  border-gray-300">
-                          Member Name
-                        </th>
-                        <th className="border-b border-gray-300 w-[15%] border-r py-2 px-4">
-                          Email
-                        </th>
-                        <th className="border-b py-2 px-4 border-r w-[15%] border-gray-300">
-                          Cnic
-                        </th>
-                        <th className="border-b py-2 px-4 border-r border-gray-300"></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {RegisterReq.map((doc, index) => (
-                        <tr key={index} className="border-b">
-                          <td className="md:w-[10px] lg:w-[10px] p-2 sm:px-4 md:px-4 lg:px-4 border-r border-gray-300 text-center">
-                            {index + 1}
-                          </td>
-                          <td className="p-2 border-r flex items-center border-gray-300">
-                            <div>
-                              <img
-                                className="rounded-[50%] w-[30px] h-[30px] mx-2 my-2"
-                                src={doc.PicPath}
-                                alt="Profile"
-                              />
-                            </div>
-                            <div>{doc.MemberName}</div>
-                          </td>
-                          <td className="p-2  border-r  border-gray-300">
-                            {doc.EmailID}
-                          </td>
-                          <td className="p-2  border-r border-gray-300">
-                            {doc.CNICNo}
-                          </td>
-                          <td className="p-2 gap-2">
-                            {console.log(
-                              "Sending data to new-registration:",
-                              doc
-                            )}
-                            <Link
-                              href={`/new-registeration?memberId=${encrypt(
-                                doc.memberId
-                              )}`}
-                            >
-                              <button className="sm:px-4 md:px-4 lg:px-4 px-2 py-2 bg-blue-500 text-white rounded-lg flex gap-[6px] items-center hover:bg-blue-500">
-                                <FaArrowUpRightFromSquare />
-                              </button>
-                            </Link>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                {RegisterReq.length > 0 ? (
+                  <NewRegisterationRequest
+                    RegisterReq={RegisterReq}
+                    fetchUpdatedMembers={fetchUpdatedMembers}
+                  />
+                ) : (
+                  <div className="text-center">
+                    {Loading ? (
+                      <Loader2 className="w-8 h-8 mx-auto animate-spin text-blue-600" />
+                    ) : (
+                      "No requests at the moment"
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           ) : null}
