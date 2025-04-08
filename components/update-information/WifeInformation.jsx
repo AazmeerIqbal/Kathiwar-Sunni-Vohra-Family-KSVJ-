@@ -509,7 +509,7 @@ const WifeInformation = ({
                             }
                             className="w-full border border-gray-300 px-2 py-1 text-sm"
                           />
-                        ) : wife.DeathOn !== "1900-01-01T00:00:00.000Z" ? (
+                        ) : wife.DeathOn ? (
                           new Date(wife.DeathOn).toLocaleDateString()
                         ) : (
                           "N/A"
