@@ -3,10 +3,22 @@ import React, { useState } from "react";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { SignupForm } from "@/components/auth/SignupForm";
+import SignupOptionsModal from "@/components/auth/SignupOptionsModal";
 
 const Login = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleNewRegistration = () => {
+    setIsModalOpen(false);
+    window.location.href = "/register-user";
+  };
+
+  const handleSignup = () => {
+    setIsModalOpen(false);
+    setIsLogin(false);
+  };
 
   return (
     <AuthLayout
@@ -31,11 +43,17 @@ const Login = () => {
             Don't have an account?{" "}
             <button
               className="text-blue-600 hover:text-blue-500 font-medium"
-              onClick={() => setIsLogin(false)}
+              onClick={() => setIsModalOpen(true)}
             >
               Sign up
             </button>
           </p>
+          <SignupOptionsModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onNewRegistration={handleNewRegistration}
+            onSignup={handleSignup}
+          />
         </>
       ) : (
         <>

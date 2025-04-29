@@ -43,6 +43,10 @@ export async function POST(req, { params }) {
       .input("FromCountryID", formData.country)
       .input("FromStateID", formData.state)
       .input("FromCityID", formData.city)
+      .input("CurrentCountryID", formData.currentCountry)
+      .input("CurrentCity", formData.currentCity)
+      .input("CurrentAddress", formData.currentAddress)
+
       .input("Status", formData.activeStatus).query(`
         UPDATE tb_member_mst_test
         SET
@@ -66,6 +70,9 @@ export async function POST(req, { params }) {
         FromCountryID = @FromCountryID,
         FromStateID = @FromStateID,
         FromCityID = @FromCityID,
+        CurrentCountry = @CurrentCountryID,
+        CurrentCity = @CurrentCity,
+        CurrentAddress = @CurrentAddress,
         Status = @Status
         WHERE CNICNo = @CNICNo;
       `);

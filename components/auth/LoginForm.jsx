@@ -244,7 +244,7 @@ export const LoginForm = ({ isAdmin, onToggleMode }) => {
         </div>
 
         <div className="flex gap-2 w-full">
-          {isAdmin ? null : (
+          {/* {isAdmin ? null : (
             <Button
               fullWidth={"w-2/4"}
               type="button"
@@ -253,7 +253,7 @@ export const LoginForm = ({ isAdmin, onToggleMode }) => {
             >
               New Registeration
             </Button>
-          )}
+          )} */}
 
           <Button type="submit" isLoading={isLoading} fullWidth={"w-2/4"}>
             {isLoading

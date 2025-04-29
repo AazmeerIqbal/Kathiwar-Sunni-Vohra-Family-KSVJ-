@@ -93,6 +93,9 @@ const PersonalInformations = ({
         country: UserData.FromCountryID ?? "",
         state: UserData.FromStateID ?? "",
         city: UserData.FromCityID ?? "",
+        currentCountry: UserData.CurrentCountry ?? "",
+        currentCity: UserData.CurrentCity ?? "",
+        currentAddress: UserData.CurrentAddress ?? "",
       });
     }
   }, [UserData]);
@@ -627,51 +630,6 @@ const PersonalInformations = ({
                     </div>
                   </div>
 
-                  {/* Address */}
-                  <div className="flex items-center h-full border border-gray-300">
-                    <div className="w-[50%] py-2 px-2">Address</div>
-                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
-                      <input
-                        type="text"
-                        name="address"
-                        value={formData.address}
-                        onChange={handleChange}
-                        className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-col justify-between sm:flex-row md:flex-col lg:flex-row border border-gray-300">
-                <div className="flex flex-col w-full">
-                  {/* Death On */}
-                  <div className="flex items-center h-full border border-gray-300">
-                    <div className="w-[50%] py-2 px-2">Death On</div>
-                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
-                      <input
-                        type="text"
-                        name="deathOn"
-                        value={formData.deathOn}
-                        onChange={handleChange}
-                        className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
-                      />
-                    </div>
-                  </div>
-                  {/* Grave # */}
-                  <div className="flex items-center h-full border border-gray-300">
-                    <div className="w-[50%] py-2 px-2">Grave #</div>
-                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
-                      <input
-                        type="text"
-                        name="graveNumber"
-                        value={formData.graveNumber}
-                        onChange={handleChange}
-                        className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
-                      />
-                    </div>
-                  </div>
-
                   {/* Remarks */}
                   <div className="flex items-center h-full border border-gray-300">
                     <div className="w-[50%] py-2 px-2">Remarks</div>
@@ -685,11 +643,74 @@ const PersonalInformations = ({
                       />
                     </div>
                   </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col justify-between sm:flex-row md:flex-col lg:flex-row border border-gray-300">
+                <div className="flex flex-col w-full">
+                  <div className="flex items-center h-full border border-gray-300">
+                    <div className="w-[50%] py-2 px-2">Current Country</div>
+                    {/* Current Country Dropdown */}
+                    <select
+                      name="currentCountry"
+                      value={formData.currentCountry}
+                      onChange={handleChange}
+                      className="w-[90%] lg:w-[45%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
+                    >
+                      <option value="0">Select Country</option>
+                      {CountryDropDown.map((country) => (
+                        <option key={country.ID} value={country.ID}>
+                          {country.CountryName}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  {/* City # */}
+                  <div className="flex items-center h-full border border-gray-300">
+                    <div className="w-[50%] py-2 px-2">Current City</div>
+                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
+                      <input
+                        type="text"
+                        name="currentCity"
+                        value={formData.currentCity}
+                        onChange={handleChange}
+                        className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
+                      />
+                    </div>
+                  </div>
+
+                  {/*Current Address # */}
+                  <div className="flex items-center h-full border border-gray-300">
+                    <div className="w-[50%] py-2 px-2">Current Address</div>
+                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
+                      <input
+                        type="text"
+                        name="currentAddress"
+                        value={formData.currentAddress}
+                        onChange={handleChange}
+                        className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Pakistani Address */}
+                  <div className="flex items-center h-full border border-gray-300">
+                    <div className="w-[50%] py-2 px-2">Pakistani Address</div>
+                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
+                      <input
+                        type="text"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleChange}
+                        className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
+                      />
+                    </div>
+                  </div>
 
                   {/* From Country/State/City */}
                   <div className="flex items-center border border-gray-300">
                     <div className="w-[50%] py-2 px-2">
-                      From Country/State/City
+                      Pakistan Country/State/City
                     </div>
                     <div className="w-[50%] md:w-[60%] lg:w-[60%] flex flex-col lg:flex-row border-l border-gray-300">
                       {/* Country Dropdown */}
