@@ -96,12 +96,10 @@ export default function EducationModal({
           >
             {/* Academic Year */}
             <div>
-              <label className="text-gray-600">Academic Year *</label>
+              <label className="text-gray-600">Academic Year</label>
               <input
                 type="text"
-                {...register("academicYear", {
-                  required: "Academic Year is required",
-                })}
+                {...register("academicYear")}
                 className="w-full p-2 border rounded-md"
                 placeholder="Enter Academic Year (e.g., 2021-2022)"
               />
@@ -133,11 +131,9 @@ export default function EducationModal({
 
             {/* Specialization */}
             <div>
-              <label className="text-gray-600 ">Area of Specialization *</label>
+              <label className="text-gray-600 ">Area of Specialization</label>
               <select
-                {...register("specialization", {
-                  required: "Specialization is required",
-                })}
+                {...register("specialization")}
                 className="w-full p-2 border rounded-md"
               >
                 <option value="">Select</option>
@@ -155,12 +151,10 @@ export default function EducationModal({
 
             {/* Institute */}
             <div>
-              <label className="text-gray-600 ">Institute *</label>
+              <label className="text-gray-600 ">Institute</label>
               <input
                 type="text"
-                {...register("institute", {
-                  required: "Institute is required",
-                })}
+                {...register("institute")}
                 className="w-full p-2 border rounded-md"
               />
               {errors.institute && (
@@ -170,12 +164,10 @@ export default function EducationModal({
 
             {/* Degree Title */}
             <div>
-              <label className="text-gray-600 ">Degree Title *</label>
+              <label className="text-gray-600 ">Degree Title</label>
               <input
                 type="text"
-                {...register("degreeTitle", {
-                  required: "Degree Title is required",
-                })}
+                {...register("degreeTitle")}
                 className="w-full p-2 border rounded-md"
               />
               {errors.degreeTitle && (
@@ -185,11 +177,10 @@ export default function EducationModal({
 
             {/* Completion Year */}
             <div>
-              <label className="text-gray-600 ">Completion Year *</label>
+              <label className="text-gray-600 ">Completion Year</label>
               <input
                 type="number"
                 {...register("completionYear", {
-                  required: "Completion Year is required",
                   min: { value: 1970, message: "Enter a valid year (1970+)" },
                   max: {
                     value: new Date().getFullYear(),
@@ -205,12 +196,10 @@ export default function EducationModal({
 
             {/* Total Marks */}
             <div>
-              <label className="text-gray-600 ">Total Marks *</label>
+              <label className="text-gray-600 ">Total Marks</label>
               <input
                 type="number"
-                {...register("totalMarks", {
-                  required: "Total Marks is required",
-                })}
+                {...register("totalMarks")}
                 className="w-full p-2 border rounded-md"
               />
               {errors.totalMarks && (
@@ -220,12 +209,10 @@ export default function EducationModal({
 
             {/* Obtain Marks */}
             <div>
-              <label className="text-gray-600 ">Obtained Marks *</label>
+              <label className="text-gray-600 ">Obtained Marks</label>
               <input
                 type="number"
-                {...register("obtainMarks", {
-                  required: "Obtained Marks is required",
-                })}
+                {...register("obtainMarks")}
                 className="w-full p-2 border rounded-md"
               />
               {errors.obtainMarks && (
@@ -235,12 +222,10 @@ export default function EducationModal({
 
             {/* CGPA or Grade */}
             <div>
-              <label className="text-gray-600 ">CGPA / Percentage *</label>
+              <label className="text-gray-600 ">CGPA / Percentage</label>
               <input
                 type="text"
-                {...register("grade", {
-                  required: "CGPA/Percentage is required",
-                })}
+                {...register("grade")}
                 className="w-full p-2 border rounded-md"
               />
               {errors.grade && (
