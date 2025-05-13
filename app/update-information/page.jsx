@@ -466,7 +466,7 @@ const Page = () => {
         </div>
 
         {/* Living Information */}
-        <div className="w-full mt-4 bg-white shadow-lg rounded-lg border border-gray-300">
+        {/* <div className="w-full mt-4 bg-white shadow-lg rounded-lg border border-gray-300">
           <LivingInformation
             CountryDropDown={CountryDropDown}
             StateDropDown={StateDropDown}
@@ -476,7 +476,7 @@ const Page = () => {
             LivingDetail={LivingDetail}
             setLivingDetail={setLivingDetail}
           />
-        </div>
+        </div> */}
 
         {/* Wife Information */}
         <div className="w-full mt-4 bg-white shadow-lg rounded-lg border border-gray-300">

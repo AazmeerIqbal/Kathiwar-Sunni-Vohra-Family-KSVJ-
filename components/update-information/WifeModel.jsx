@@ -90,8 +90,6 @@ const WifeDetailForm = ({
             { label: "Cell #", name: "cellNumber" },
             { label: "E-mail ID", name: "email", type: "email" },
             { label: "Marriage Date", name: "marriageDate", type: "date" },
-            { label: "Death On", name: "deathDate", type: "date" },
-            { label: "Grave Number", name: "graveNumber" },
           ].map((field) => (
             <div key={field.name}>
               <label className="text-gray-600">{field.label}</label>
@@ -109,25 +107,6 @@ const WifeDetailForm = ({
               )}
             </div>
           ))}
-          <div>
-            <label className="text-gray-600">Is Father Member Also?</label>
-            <input
-              type="checkbox"
-              {...register("isFatherMember")}
-              className="ml-2"
-            />
-          </div>
-          <div>
-            <label className="text-gray-600">Gender</label>
-            <select
-              {...register("gender")}
-              className="w-full p-2 border rounded-md"
-            >
-              <option value="">Select Gender</option>
-              <option value="0">Male</option>
-              <option value="1">Female</option>
-            </select>
-          </div>
           <div>
             <label className="text-gray-600">Father Name (if member)</label>
 
@@ -149,7 +128,7 @@ const WifeDetailForm = ({
             />
           </div>
           <div>
-            <label className="text-gray-600">Father Family Name</label>
+            <label className="text-gray-600">Family Name</label>
             <Select
               options={WifeFamilyDropDown.map((family) => ({
                 value: family.FamilyID,
@@ -184,7 +163,7 @@ const WifeDetailForm = ({
               <option value="AB-">AB-</option>
             </select>
           </div>
-          <div>
+          {/* <div>
             <label className="text-gray-600">Marital Status</label>
             <select
               {...register("maritalStatus")}
@@ -193,7 +172,7 @@ const WifeDetailForm = ({
               <option value="Under-Marriage">Under-Marriage</option>
               <option vlaue="Divorced">Divorced</option>
             </select>
-          </div>
+          </div> */}
           <div className="col-span-2 flex justify-end gap-3">
             <button
               type="button"

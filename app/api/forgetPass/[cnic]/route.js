@@ -3,7 +3,7 @@ import { connectToDB, closeConnection, config } from "@/utils/database";
 import { NextResponse } from "next/server";
 
 export async function GET(req, { params }) {
-  const { cnic } = params;
+  const { cnic } = await params;
 
   if (!cnic) {
     return NextResponse.json({ message: "CNIC is required" }, { status: 400 });

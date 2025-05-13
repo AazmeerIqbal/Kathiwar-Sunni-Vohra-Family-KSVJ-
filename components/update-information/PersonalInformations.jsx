@@ -403,6 +403,7 @@ const PersonalInformations = ({
                       <select
                         value={formData.activeStatus}
                         onChange={handleChange}
+                        disabled
                         name="activeStatus"
                         className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600 focus:border-2 focus:border-indigo-800"
                       >
@@ -420,6 +421,7 @@ const PersonalInformations = ({
                         name="membershipNumber"
                         placeholder="0000-000000"
                         id="membership"
+                        disabled
                         value={formData.membershipNumber}
                         onChange={handleMembershipChange}
                         className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600"
