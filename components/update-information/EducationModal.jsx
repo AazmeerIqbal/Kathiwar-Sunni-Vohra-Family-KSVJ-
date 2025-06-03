@@ -17,6 +17,9 @@ export default function EducationModal({
   getMemberData,
   HQ,
   SP,
+  EducationData,
+  setEducationData,
+  registerUser,
 }) {
   const { data: session } = useSession();
 
@@ -30,8 +33,21 @@ export default function EducationModal({
   const [SubmitLoading, setSubmitLoading] = useState(false);
 
   const onSubmit = async (data) => {
-    if (!MemberId) {
-      toast.error("Member ID is missing!");
+    // if (!MemberId) {
+    //   toast.error("Member ID is missing!");
+    //   return;
+    // }
+    // If registerUser is 1, just push data to setEducationData
+    if (registerUser === 1) {
+      setSubmitLoading(true);
+      setEducationData((prev) => [...prev, data]);
+      setSubmitLoading(false);
+      console.log(EducationData);
+      reset();
+      onClose();
+      toast.success("Added successfully!", {
+        position: "top-right",
+      });
       return;
     }
     try {
@@ -94,21 +110,7 @@ export default function EducationModal({
             onSubmit={handleSubmit(onSubmit)}
             className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4"
           >
-            {/* Academic Year */}
-            <div>
-              <label className="text-gray-600">Academic Year</label>
-              <input
-                type="text"
-                {...register("academicYear")}
-                className="w-full p-2 border rounded-md"
-                placeholder="Enter Academic Year (e.g., 2021-2022)"
-              />
-              {errors.academicYear && (
-                <p className="text-red-500">{errors.academicYear.message}</p>
-              )}
-            </div>
-
-            {/* Qualification */}
+            {/* Highest Qualification */}
             <div>
               <label className="text-gray-600 ">Highest Qualification *</label>
               <select
@@ -149,19 +151,6 @@ export default function EducationModal({
               )}
             </div>
 
-            {/* Institute */}
-            <div>
-              <label className="text-gray-600 ">Institute</label>
-              <input
-                type="text"
-                {...register("institute")}
-                className="w-full p-2 border rounded-md"
-              />
-              {errors.institute && (
-                <p className="text-red-500 ">{errors.institute.message}</p>
-              )}
-            </div>
-
             {/* Degree Title */}
             <div>
               <label className="text-gray-600 ">Degree Title</label>
@@ -174,6 +163,33 @@ export default function EducationModal({
                 <p className="text-red-500 ">{errors.degreeTitle.message}</p>
               )}
             </div>
+
+            {/* Institute */}
+            {/* <div>
+              <label className="text-gray-600 ">Institute</label>
+              <input
+                type="text"
+                {...register("institute")}
+                className="w-full p-2 border rounded-md"
+              />
+              {errors.institute && (
+                <p className="text-red-500 ">{errors.institute.message}</p>
+              )}
+            </div> */}
+
+            {/* Academic Year */}
+            {/* <div>
+              <label className="text-gray-600">Complition Year</label>
+              <input
+                type="text"
+                {...register("academicYear")}
+                className="w-full p-2 border rounded-md"
+                placeholder="Enter Academic Year (e.g., 2021-2022)"
+              />
+              {errors.academicYear && (
+                <p className="text-red-500">{errors.academicYear.message}</p>
+              )}
+            </div> */}
 
             {/* Completion Year */}
             <div>
@@ -195,7 +211,7 @@ export default function EducationModal({
             </div>
 
             {/* Total Marks */}
-            <div>
+            {/* <div>
               <label className="text-gray-600 ">Total Marks</label>
               <input
                 type="number"
@@ -205,10 +221,10 @@ export default function EducationModal({
               {errors.totalMarks && (
                 <p className="text-red-500 ">{errors.totalMarks.message}</p>
               )}
-            </div>
+            </div> */}
 
             {/* Obtain Marks */}
-            <div>
+            {/* <div>
               <label className="text-gray-600 ">Obtained Marks</label>
               <input
                 type="number"
@@ -218,10 +234,10 @@ export default function EducationModal({
               {errors.obtainMarks && (
                 <p className="text-red-500 ">{errors.obtainMarks.message}</p>
               )}
-            </div>
+            </div> */}
 
             {/* CGPA or Grade */}
-            <div>
+            {/* <div>
               <label className="text-gray-600 ">CGPA / Percentage</label>
               <input
                 type="text"
@@ -231,11 +247,11 @@ export default function EducationModal({
               {errors.grade && (
                 <p className="text-red-500 ">{errors.grade.message}</p>
               )}
-            </div>
+            </div> */}
 
             {/* Description */}
             <div className="col-span-2">
-              <label className="text-gray-600 ">Description</label>
+              <label className="text-gray-600 ">Description / Notes</label>
               <textarea
                 {...register("description")}
                 className="w-full p-2 border rounded-md h-20"

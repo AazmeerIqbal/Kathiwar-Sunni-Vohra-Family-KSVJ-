@@ -27,7 +27,7 @@ export async function POST(req) {
       );
     }
 
-    await pool
+    const result = await pool
       .request()
       .input("CNICNo", formData.cnic)
       .input("Image", formData.image)
@@ -73,6 +73,7 @@ export async function POST(req) {
           RequestDt,
           Status
         )
+        OUTPUT INSERTED.MemberID
         VALUES (
           @CNICNo,
           @Image,
@@ -98,8 +99,47 @@ export async function POST(req) {
         )
       `);
 
+    const NewMemberId = result.recordset[0].MemberID;
+    console.log("New Member ID: ", NewMemberId);
+
+    // Insert education data if present
+    if (Array.isArray(formData.education)) {
+      for (const edu of formData.education) {
+        await pool
+          .request()
+          .input("CompanyID", "12")
+          .input("MemberID", NewMemberId)
+          .input("HighestQualificationID", edu.qualification || null)
+          .input("AreaofSpecializationID", edu.specialization || null)
+          .input("DegreeTitle", edu.degreeTitle || null)
+          .input("DegreeCompleteInYear", edu.completionYear || null)
+          .input("Description", edu.description || null).query(`
+            INSERT INTO tb_member_edu_det_test (
+              CompanyID,
+              MemberID,
+              HighestQualificationID,
+              AreaofSpecializationID,
+              DegreeTitle,
+              DegreeCompleteInYear,
+              Description
+            ) VALUES (
+              @CompanyID,
+              @MemberID,
+              @HighestQualificationID,
+              @AreaofSpecializationID,
+              @DegreeTitle,
+              @DegreeCompleteInYear,
+              @Description
+            )
+          `);
+      }
+    }
+
     await closeConnection(pool);
-    return NextResponse.json({ message: "Data saved successfully." });
+    return NextResponse.json({
+      message: "Data saved successfully.",
+      // memberId: NewMemberId,
+    });
   } catch (error) {
     console.error("Error saving data:", error);
     return NextResponse.json(

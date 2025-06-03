@@ -8,10 +8,15 @@ import React, { useEffect, useRef, useState } from "react";
 import { IoIosSave } from "react-icons/io";
 import toast, { Toaster } from "react-hot-toast";
 import { MdOutlineFileUpload } from "react-icons/md";
+import PersonalInformation from "@/components/new-registeration/PersonalInformation";
+import EducationalInformations from "@/components/new-registeration/EducationalInformations";
+import { Button } from "@/components/ui/Button";
+import { AnimatePresence, motion } from "framer-motion";
 
 const page = () => {
   const { data: session } = useSession();
   const router = useRouter();
+  const [currentStep, setCurrentStep] = useState(0);
   const [SaveLoading, setSaveLoading] = useState(false);
 
   //state and city
@@ -21,6 +26,11 @@ const page = () => {
 
   //Personal Information
   const [FamilyDropDown, setFamilyDropDown] = useState([]);
+
+  //Educational Informtaion
+  const [EducationData, setEducationData] = useState([]);
+  const [HQ, setHQ] = useState([]);
+  const [SP, setSP] = useState([]);
 
   // Fetch State
   const fetchCountryData = async () => {
@@ -253,67 +263,22 @@ const page = () => {
     }));
   };
 
-  const handlePersonalInfoSave = async () => {
-    // Validate required fields
-    const requiredFields = [
-      { name: "memberType", label: "Member Type" },
-      { name: "cnic", label: "CNIC No" },
-      { name: "dob", label: "Date Of Birth" },
-      { name: "gender", label: "Gender" },
-      { name: "email", label: "Email ID" },
-      { name: "maritalStatus", label: "Marital Status" },
-      { name: "familyName", label: "Family Name" },
-      { name: "cellNumber", label: "Cell Number" },
-      { name: "fatherHusbandName", label: "Father/Husband Name" },
-      { name: "name", label: "Name" },
-      { name: "address", label: "Address" },
-    ];
-
-    // Check for empty fields
-    const emptyFields = requiredFields.filter(
-      (field) => !formData[field.name] || formData[field.name] === ""
-    );
-
-    if (emptyFields.length > 0) {
-      // Create toast error message with all missing fields
-      const missingFields = emptyFields.map((field) => field.label).join(", ");
-      toast.error(`Please fill in required fields: ${missingFields}`, {
-        duration: 5000,
-        position: "top-center",
-      });
-      return;
-    }
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      toast.error("Please enter a valid email address", {
-        duration: 3000,
-        position: "top-center",
-      });
-      return;
-    }
-
-    // CNIC validation - must be complete
-    if (formData.cnic.length < 15) {
-      // 13 digits + 2 hyphens = 15 characters
-      toast.error("Please enter a complete 13-digit CNIC number", {
-        duration: 3000,
-        position: "top-center",
-      });
-      return;
-    }
-
+  const handleSubmit = async () => {
     try {
       setSaveLoading(true);
       const apiUrl = `/api/registerNewMember`;
+
+      console.log(EducationData);
 
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          education: EducationData,
+        }),
       });
 
       const result = await response.json();
@@ -358,6 +323,7 @@ const page = () => {
         setCellNumber("");
         setMembershipNumber("");
         setSelectedImage(null);
+        setEducationData([]);
 
         // Redirect after success or reset form
         // router.push("/some-success-page"); // Uncomment if you want to redirect
@@ -432,409 +398,189 @@ const page = () => {
     }
   };
 
+  const steps = [
+    {
+      title: "Personal Info",
+      component: (
+        <PersonalInformation
+          formData={formData}
+          setFormData={setFormData}
+          handleChange={handleChange}
+          handleCellNumber={handleCellNumber}
+          handleCNICChange={handleCNICChange}
+          handleImageClick={handleImageClick}
+          handleImageUpload={handleImageUpload}
+          fileInputRef={fileInputRef}
+          selectedImage={selectedImage}
+          setSelectedImage={setSelectedImage}
+          CountryDropDown={CountryDropDown}
+          StateDropDown={StateDropDown}
+          CityDropDown={CityDropDown}
+          FamilyDropDown={FamilyDropDown}
+        />
+      ),
+    },
+    {
+      title: "Educational Info",
+      component: (
+        <EducationalInformations
+          EducationData={EducationData}
+          setEducationData={setEducationData}
+          HQ={HQ}
+          setHQ={setHQ}
+          SP={SP}
+          setSP={setSP}
+        />
+      ),
+    },
+  ];
+
+  const handleNext = () => {
+    if (currentStep == 0) {
+      // Validate required fields
+      const requiredFields = [
+        { name: "memberType", label: "Member Type" },
+        { name: "cnic", label: "CNIC No" },
+        { name: "dob", label: "Date Of Birth" },
+        { name: "gender", label: "Gender" },
+        { name: "email", label: "Email ID" },
+        { name: "maritalStatus", label: "Marital Status" },
+        { name: "familyName", label: "Family Name" },
+        { name: "cellNumber", label: "Cell Number" },
+        { name: "fatherHusbandName", label: "Father/Husband Name" },
+        { name: "name", label: "Name" },
+        { name: "address", label: "Address" },
+      ];
+
+      // Check for empty fields
+      const emptyFields = requiredFields.filter(
+        (field) => !formData[field.name] || formData[field.name] === ""
+      );
+
+      if (emptyFields.length > 0) {
+        // Create toast error message with all missing fields
+        const missingFields = emptyFields
+          .map((field) => field.label)
+          .join(", ");
+        toast.error(`Please fill in required fields: ${missingFields}`, {
+          duration: 5000,
+          position: "top-center",
+        });
+        return;
+      }
+
+      // Email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        toast.error("Please enter a valid email address", {
+          duration: 3000,
+          position: "top-center",
+        });
+        return;
+      }
+
+      // CNIC validation - must be complete
+      if (formData.cnic.length < 15) {
+        // 13 digits + 2 hyphens = 15 characters
+        toast.error("Please enter a complete 13-digit CNIC number", {
+          duration: 3000,
+          position: "top-center",
+        });
+        return;
+      }
+    }
+    // If on Educational Info step, store the current EducationData in EducationalInfo
+    if (currentStep === 1) {
+      // Map EducationData to the required columns and store in EducationalInfo
+      const mapped = EducationData.map((item) => ({
+        Year: item.AcademicYear || "",
+        Qualification: item.HighestQualificationID || "",
+        Specialization: item.AreaofSpecializationID || "",
+        Institute: item.Institute || "",
+        DegreeYear: item.DegreeCompleteInYear || "",
+        TotalMarks: item.TotalMarks || "",
+        ObtainMarks: item.ObtainMarks || "",
+        Percentage: item.Percentage || "",
+        Actions: "", // Placeholder for actions
+      }));
+      setEducationData(mapped);
+    }
+    if (currentStep < steps.length - 1) {
+      setCurrentStep((prev) => prev + 1);
+    } else {
+      handleSubmit();
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep((prev) => prev - 1);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-[conic-gradient(at_bottom_left,_var(--tw-gradient-stops))] from-fuchsia-300 via-green-400 to-rose-700 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-r from-gray-100 to-gray-300 flex items-center justify-center p-1">
       <Toaster />
 
-      <div className="w-full bg-white/50 backdrop-blur-lg rounded-2xl shadow-2xl p-8 space-y-8 border border-white/20">
+      <div className="w-full max-w-[75%] bg-white/60 backdrop-blur-lg rounded-xl shadow-lg p-3 space-y-4 border border-white/20">
+        <div>
+          <button
+            onClick={() => router.push("/login")}
+            className="absolute right-3 top-6 flex items-center gap-1 md:px-2 md:py-1 px-1 py-1 bg-gray-800 text-white hover:bg-gray-700  font-medium rounded-lg shadow-md transition-all duration-300 md:text-sm text-xs cursor-pointer"
+          >
+            {/* <ArrowLeft className="md:w-4 md:h-4 h-3 w-3" /> */}
+            Close
+          </button>
+        </div>
+        {/* Personal Information  */}
         <div className="bg-transparent">
-          <div>
-            <button
-              onClick={() => router.push("/login")}
-              className="absolute left-4 top-4 flex items-center gap-1 md:px-4 md:py-2 px-2 py-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-lg shadow-md transition-all duration-300 md:text-base text-xs"
-            >
-              <ArrowLeft className="md:w-5 md:h-5 h-3 w-3" />
-              Back
-            </button>
-          </div>
-          <div className="text-center space-y-2">
-            {/* <span className="text-4xl font-extrabold tracking-wide">KSVJ</span> */}
-            <h1 className="md:text-3xl text-xl font-bold text-gray-900 mt-4">
-              Register Member
+          <div className="space-y-1">
+            <h1 className="text-xl font-semibold mb-4">
+              Step {currentStep + 1}: {steps[currentStep].title}
             </h1>
-          </div>
-
-          {/* Fields */}
-          <div className="p-4 text-gray-900">
-            <div>
-              <div className="text-[13px] md:text-[14px] lg:text-[14px] border border-gray-300 font-crimson md:grid md:grid-cols-2 lg:grid lg:grid-cols-2">
-                {/* Left Section */}
-
-                <div className="flex flex-col justify-between sm:flex-row md:flex-col lg:flex-row border border-gray-300">
-                  <div className="flex flex-col w-full">
-                    {/* Image section */}
-                    <div className="flex order-[-1] sm:order-none md:order-[-1] lg:order-none items-center border border-r-0 w-full md:w-full border-gray-300 justify-center">
-                      <img
-                        className="rounded-[50%] w-[80px] h-[80px] md:w-[130px] md:h-[130px] mx-2 my-2"
-                        src={
-                          formData.image == ""
-                            ? "DummyUser.png"
-                            : formData.image
-                        }
-                        alt="Profile"
-                      />
-                      <div className="flex flex-col gap-2">
-                        <input
-                          type="file"
-                          ref={fileInputRef}
-                          style={{ display: "none" }}
-                          accept="image/*"
-                          onChange={handleImageUpload}
-                        />
-                        <button
-                          className={
-                            "bg-gray-200 cursor-pointer rounded-lg p-1"
-                          }
-                          onClick={handleImageClick}
-                          title={"Upload profile image"}
-                        >
-                          <MdOutlineFileUpload />
-                        </button>
-                        {/* <button className="bg-red-400 text-white rounded-lg p-1">
-                      <MdDelete />
-                    </button> */}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex flex-col justify-between sm:flex-row md:flex-row lg:flex-row border border-gray-300">
-                  <div className="flex flex-col w-full">
-                    {/* Member Type */}
-                    <div className="flex items-center h-full  border border-gray-300">
-                      <div className="w-[50%] py-2 px-2">
-                        Member Type <span className="text-red-500">*</span>
-                      </div>
-                      <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
-                        <select
-                          name="memberType"
-                          value={formData.memberType}
-                          onChange={handleChange}
-                          className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600 focus:border-2 focus:border-indigo-800"
-                        >
-                          <option value={"0"}>Member</option>
-                          <option value={"1"}>DOJ</option>
-                        </select>
-                      </div>
-                    </div>
-                    {/* Name*/}
-                    <div className="flex items-center h-full border border-gray-300">
-                      <div className="w-[30%] py-2 px-2">
-                        Name <span className="text-red-500">*</span>
-                      </div>
-                      <div className="border-l h-full flex items-center border-gray-300">
-                        <select
-                          name="nameTitle"
-                          value={formData.nameTitle}
-                          onChange={handleChange}
-                          className="border border-gray-300 rounded-2xl my-2 mx-[2px] py-2 px-2 text-gray-600 focus:border-2 focus:border-indigo-800"
-                        >
-                          <option>Mr.</option>
-                          <option>Mrs.</option>
-                        </select>
-                      </div>
-
-                      <div className="w-[70%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
-                        <input
-                          type="text"
-                          name="name"
-                          value={formData.name}
-                          onChange={handleChange}
-                          className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600"
-                        />
-                      </div>
-                    </div>
-                    {/* Father/Husband Name */}
-                    <div className="flex items-center h-full border border-gray-300">
-                      <div className="w-[50%] py-2 px-2">
-                        Father/Husband Name{" "}
-                        <span className="text-red-500">*</span>
-                      </div>
-                      <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
-                        <input
-                          type="text"
-                          name="fatherHusbandName"
-                          value={formData.fatherHusbandName}
-                          onChange={handleChange}
-                          className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex flex-col justify-between sm:flex-row md:flex-col lg:flex-row border border-gray-300">
-                  <div className="flex flex-col w-full">
-                    {/* Gender */}
-                    <div className="flex items-center h-full border border-gray-300">
-                      <div className="w-[50%] py-2 px-2">
-                        Gender <span className="text-red-500">*</span>
-                      </div>
-                      <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
-                        <select
-                          name="gender"
-                          value={formData.gender}
-                          onChange={handleChange}
-                          className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600 focus:border-2 focus:border-indigo-800"
-                        >
-                          <option value={"1"}>Male</option>
-                          <option value={"2"}>Female</option>
-                        </select>
-                      </div>
-                    </div>
-                    {/* Date of Birth */}
-                    <div className="flex items-center h-full border border-gray-300">
-                      <div className="w-[50%] py-2 px-2">
-                        DOB <span className="text-red-500">*</span>
-                      </div>
-                      <div className="w-[50%] md:w-[60%] lg:w-[60%] relative border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
-                        <input
-                          id="date"
-                          name="dob"
-                          value={formData.dob}
-                          onChange={handleChange}
-                          type="date"
-                          className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600"
-                        />
-                      </div>
-                    </div>
-                    {/* Family Name */}
-                    <div className="flex items-center h-full border border-gray-300">
-                      <div className="w-[50%] py-2 px-2">
-                        Family Name <span className="text-red-500">*</span>
-                      </div>
-                      <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
-                        <select
-                          name="familyName"
-                          value={formData.familyName}
-                          onChange={handleChange}
-                          className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600 focus:border-2 focus:border-indigo-800"
-                        >
-                          <option value="0">Select Family</option>
-                          {FamilyDropDown.length > 0
-                            ? FamilyDropDown.map((family, index) => (
-                                <option key={index} value={family.FamilyID}>
-                                  {family.FamilyName}
-                                </option>
-                              ))
-                            : null}
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex flex-col justify-between sm:flex-row md:flex-col lg:flex-row border border-gray-300">
-                  <div className="flex flex-col w-full">
-                    {/* {Cell #} */}
-                    <div className="flex items-center h-full border border-gray-300">
-                      <div className="w-[50%] py-2 px-2">
-                        Cell # <span className="text-red-500">*</span>
-                      </div>
-                      <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
-                        <input
-                          type="text"
-                          name="cellNumber"
-                          value={formData.cellNumber} // Use formData.cellNumber instead of cellNumber state
-                          id="cellNumber"
-                          onChange={handleCellNumber} // Only call handleCellNumber
-                          placeholder="####-#######"
-                          className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600"
-                        />
-                      </div>
-                    </div>
-                    {/* E-mail ID */}
-                    <div className="flex items-center h-full border border-gray-300">
-                      <div className="w-[50%] py-2 px-2">
-                        E-mail ID <span className="text-red-500">*</span>
-                      </div>
-                      <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
-                        <input
-                          id="email"
-                          type="email"
-                          name="email"
-                          value={formData.email}
-                          onChange={handleChange}
-                          className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
-                        />
-                      </div>
-                    </div>
-                    {/* Blood Group */}
-                    <div className="flex items-center h-full border border-gray-300">
-                      <div className="w-[50%] py-2 px-2">Blood Group</div>
-                      <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
-                        <select
-                          name="bloodGroup"
-                          value={formData.bloodGroup}
-                          onChange={handleChange}
-                          className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600 focus:border-2 focus:border-indigo-800"
-                        >
-                          <option value="N/A">N/A</option>
-                          <option value="1">A+</option>
-                          <option value="2">A-</option>
-                          <option value="3">B+</option>
-                          <option value="4">B-</option>
-                          <option value="5">O+</option>
-                          <option value="6">O-</option>
-                          <option value="7">AB+</option>
-                          <option value="8">AB-</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex flex-col justify-between sm:flex-row md:flex-col lg:flex-row border border-gray-300">
-                  <div className="flex flex-col w-full">
-                    {/* CNIC Number */}
-                    <div className="flex items-center h-full border border-gray-300">
-                      <div className="w-[50%] py-2 px-2">
-                        CNIC NO <span className="text-red-500">*</span>
-                      </div>
-                      <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
-                        <input
-                          type="text"
-                          name="cnic"
-                          placeholder="00000-000000-0"
-                          value={formData.cnic} // Use formData.cnic instead of cnic state
-                          id="cnic"
-                          onChange={handleCNICChange} // Only call handleCNICChange
-                          className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Marital Status */}
-                    <div className="flex items-center h-full border border-gray-300">
-                      <div className="w-[50%] py-2 px-2">
-                        Marital Status <span className="text-red-500">*</span>
-                      </div>
-                      <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
-                        <select
-                          name="maritalStatus"
-                          value={formData.maritalStatus}
-                          onChange={handleChange}
-                          className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600 focus:border-2 focus:border-indigo-800"
-                        >
-                          <option value={"1"}>Married</option>
-                          <option value={"2"}>Unmarried</option>
-                          <option value={"3"}>Divorced</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    {/* Address */}
-                    <div className="flex items-center h-full border border-gray-300">
-                      <div className="w-[50%] py-2 px-2">
-                        Address <span className="text-red-500">*</span>
-                      </div>
-                      <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
-                        <input
-                          type="text"
-                          name="address"
-                          value={formData.address}
-                          onChange={handleChange}
-                          className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex flex-col justify-between sm:flex-row md:flex-col lg:flex-row border border-gray-300">
-                  <div className="flex flex-col w-full">
-                    {/* Remarks */}
-                    <div className="flex items-center h-full border border-gray-300">
-                      <div className="w-[50%] py-2 px-2">Comments</div>
-                      <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
-                        <input
-                          type="text"
-                          name="remarks"
-                          value={formData.remarks}
-                          onChange={handleChange}
-                          className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-500"
-                        />
-                      </div>
-                    </div>
-
-                    {/* From Country/State/City */}
-                    <div className="flex items-center border border-gray-300">
-                      <div className="w-[50%] py-2 px-2">
-                        From Country/State/City
-                      </div>
-                      <div className="w-[50%] md:w-[60%] lg:w-[60%] flex flex-col lg:flex-row border-l border-gray-300">
-                        {/* Country Dropdown */}
-                        <select
-                          name="country"
-                          value={formData.country}
-                          onChange={handleChange}
-                          className="w-[90%] lg:w-[30%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
-                        >
-                          <option value="0">Select Country</option>
-                          {CountryDropDown.map((country) => (
-                            <option key={country.ID} value={country.ID}>
-                              {country.CountryName}
-                            </option>
-                          ))}
-                        </select>
-
-                        {/* State Dropdown */}
-                        <select
-                          name="state"
-                          value={formData.state}
-                          onChange={handleChange}
-                          className="w-[90%] lg:w-[33%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
-                        >
-                          <option value="0">Select State</option>
-                          {StateDropDown.map((state) => (
-                            <option key={state.ID} value={state.ID}>
-                              {state.StateName}
-                            </option>
-                          ))}
-                        </select>
-
-                        {/* City Dropdown */}
-                        <select
-                          name="city"
-                          value={formData.city}
-                          onChange={handleChange}
-                          className="w-[90%] lg:w-[30%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
-                        >
-                          <option value="0">Select City</option>
-                          {CityDropDown.map((city) => (
-                            <option key={city.ID} value={city.ID}>
-                              {city.CityName}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <div className="bg-white shadow rounded p-6">
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={currentStep}
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -50 }}
+                  transition={{ duration: 0.4, ease: "easeIn" }}
+                >
+                  {steps[currentStep].component}
+                </motion.div>
+              </AnimatePresence>
             </div>
 
-            {/* Submit Button */}
-            <div className="mt-4">
-              <button
-                onClick={handlePersonalInfoSave}
-                className="relative group flex items-center gap-2 p-[2px] font-semibold text-white bg-gray-800 shadow-2xl rounded-3xl shadow-zinc-900 transition-transform duration-300 ease-in-out hover:scale-105 active:scale-95 w-[40%] mx-auto"
-              >
-                {/* Gradient Border Effect */}
-                <span className="absolute inset-0 rounded-3xl bg-gradient-to-r from-teal-400 via-blue-500 to-purple-500 p-[2px] opacity-0 transition-opacity duration-500 group-hover:opacity-100 w-full"></span>
+            <div className="flex justify-between items-center w-full">
+              {currentStep > 0 ? (
+                <Button
+                  onClick={handleBack}
+                  variant="outline"
+                  className="p-0 mt-3 text-xs"
+                >
+                  Back
+                </Button>
+              ) : (
+                <div />
+              )}
 
-                {/* Button Content (Centered Text) */}
-                <span className="relative z-10 flex items-center justify-center w-full bg-gray-950 px-6 py-3 rounded-3xl text-center">
-                  {SaveLoading ? (
-                    <Loader2 />
-                  ) : (
-                    <span className="transition-all duration-500 group-hover:translate-x-1">
-                      Submit
-                    </span>
-                  )}
-                </span>
-              </button>
-              
+              <Button
+                onClick={handleNext}
+                className="p-0 mt-3 text-xs"
+                disabled={SaveLoading}
+              >
+                {SaveLoading ? (
+                  <span className="flex items-center gap-1">
+                    <Loader2 className="animate-spin w-4 h-4" />
+                    Submitting...
+                  </span>
+                ) : currentStep === steps.length - 1 ? (
+                  "Submit"
+                ) : (
+                  "Next"
+                )}
+              </Button>
             </div>
           </div>
         </div>
