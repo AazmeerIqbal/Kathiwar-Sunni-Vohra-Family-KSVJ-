@@ -129,6 +129,9 @@ const page = () => {
     country: "",
     state: "",
     city: "",
+    currentCountry: "",
+    currentCity: "",
+    currentAddress: "",
   });
 
   useEffect(() => {

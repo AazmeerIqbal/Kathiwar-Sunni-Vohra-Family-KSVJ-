@@ -1,4 +1,5 @@
 import React from "react";
+import { MdOutlineFileUpload } from "react-icons/md";
 
 const PersonalInformation = ({
   formData,
@@ -44,14 +45,7 @@ const PersonalInformation = ({
                     title={"Upload profile image"}
                   >
                     <span className="sr-only">Upload</span>
-                    <svg
-                      width="20"
-                      height="20"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M16.707 10.293a1 1 0 00-1.414 0L11 14.586V3a1 1 0 10-2 0v11.586l-4.293-4.293a1 1 0 00-1.414 1.414l6 6a1 1 0 001.414 0l6-6a1 1 0 000-1.414z"></path>
-                    </svg>
+                    <MdOutlineFileUpload />
                   </button>
                 </div>
               </div>
@@ -75,6 +69,7 @@ const PersonalInformation = ({
                   >
                     <option value={"0"}>Member</option>
                     <option value={"1"}>DOJ</option>
+                    <option value={"2"}>Overseas</option>
                   </select>
                 </div>
               </div>
@@ -226,28 +221,24 @@ const PersonalInformation = ({
                   />
                 </div>
               </div>
-              {/* Blood Group */}
+
+              {/* Current Country */}
               <div className="flex items-center border border-gray-300">
-                <div className="w-[50%] py-1 px-1">Blood Group</div>
-                <div className="w-[50%] border-l border-gray-300">
-                  <select
-                    name="bloodGroup"
-                    value={formData.bloodGroup}
-                    onChange={handleChange}
-                    className="w-[95%] rounded-xl my-1 mx-1 py-1 px-1 border border-gray-300 text-gray-600 
-                          text-sm"
-                  >
-                    <option value="N/A">N/A</option>
-                    <option value="1">A+</option>
-                    <option value="2">A-</option>
-                    <option value="3">B+</option>
-                    <option value="4">B-</option>
-                    <option value="5">O+</option>
-                    <option value="6">O-</option>
-                    <option value="7">AB+</option>
-                    <option value="8">AB-</option>
-                  </select>
-                </div>
+                <div className="w-[50%] py-1 px-1">Current Country</div>
+                {/* Current Country Dropdown */}
+                <select
+                  name="currentCountry"
+                  value={formData.currentCountry}
+                  onChange={handleChange}
+                  className="w-[90%] lg:w-[45%] rounded-2xl my-2 mx-[0.3rem] py-1 px-1 border border-gray-300 text-gray-600"
+                >
+                  <option value="0">Select Country</option>
+                  {CountryDropDown.map((country) => (
+                    <option key={country.ID} value={country.ID}>
+                      {country.CountryName}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
           </div>
@@ -293,28 +284,31 @@ const PersonalInformation = ({
                 </div>
               </div>
 
-              {/* Address */}
+              {/* Blood Group */}
               <div className="flex items-center border border-gray-300">
-                <div className="w-[50%] py-1 px-1">
-                  Address <span className="text-red-500">*</span>
-                </div>
+                <div className="w-[50%] py-1 px-1">Blood Group</div>
                 <div className="w-[50%] border-l border-gray-300">
-                  <input
-                    type="text"
-                    name="address"
-                    value={formData.address}
+                  <select
+                    name="bloodGroup"
+                    value={formData.bloodGroup}
                     onChange={handleChange}
                     className="w-[95%] rounded-xl my-1 mx-1 py-1 px-1 border border-gray-300 text-gray-600 
                           text-sm"
-                  />
+                  >
+                    <option value="N/A">N/A</option>
+                    <option value="1">A+</option>
+                    <option value="2">A-</option>
+                    <option value="3">B+</option>
+                    <option value="4">B-</option>
+                    <option value="5">O+</option>
+                    <option value="6">O-</option>
+                    <option value="7">AB+</option>
+                    <option value="8">AB-</option>
+                  </select>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <div className="flex flex-col justify-between border border-gray-300">
-            <div className="flex flex-col w-full">
-              {/* Remarks */}
+              {/* Comments */}
               <div className="flex items-center border border-gray-300">
                 <div className="w-[50%] py-1 px-1">Comments</div>
                 <div className="w-[50%] border-l border-gray-300">
@@ -328,10 +322,61 @@ const PersonalInformation = ({
                   />
                 </div>
               </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col justify-between border border-gray-300">
+            <div className="flex flex-col w-full">
+              {/* City # */}
+              <div className="flex items-center border border-gray-300">
+                <div className="w-[50%] py-1 px-1">Current City</div>
+                <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
+                  <input
+                    type="text"
+                    name="currentCity"
+                    value={formData.currentCity}
+                    onChange={handleChange}
+                    className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-1 px-1 border border-gray-300 text-gray-600"
+                  />
+                </div>
+              </div>
+
+              {/*Current Address # */}
+              <div className="flex items-center border border-gray-300">
+                <div className="w-[50%] py-1 px-1">Current Address</div>
+                <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
+                  <input
+                    type="text"
+                    name="currentAddress"
+                    value={formData.currentAddress}
+                    onChange={handleChange}
+                    className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-1 px-1 border border-gray-300 text-gray-600"
+                  />
+                </div>
+              </div>
+
+              {/* Pakistani Address */}
+              <div className="flex items-center border border-gray-300">
+                <div className="w-[50%] py-1 px-1">
+                  Pakistani Address <span className="text-red-500">*</span>
+                </div>
+                <div className="w-[50%] border-l border-gray-300">
+                  <input
+                    type="text"
+                    name="address"
+                    value={formData.address}
+                    onChange={handleChange}
+                    className="w-[95%] rounded-xl my-1 mx-1 py-1 px-1 border border-gray-300 text-gray-600 
+                          text-sm"
+                  />
+                </div>
+              </div>
 
               {/* From Country/State/City */}
               <div className="flex items-center border border-gray-300">
-                <div className="w-[50%] py-1 px-1">From Country/State/City</div>
+                <div className="w-[50%] py-1 px-1">
+                  Pakistani Country/State/City
+                </div>
                 <div className="w-[50%] flex flex-col lg:flex-row border-l border-gray-300 gap-1">
                   {/* Country Dropdown */}
                   <select
