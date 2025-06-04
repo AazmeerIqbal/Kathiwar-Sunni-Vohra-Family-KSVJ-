@@ -8,7 +8,7 @@ import Swal from "sweetalert2";
 import { Loader2 } from "lucide-react";
 
 const NewRegisterationRequest = ({ RegisterReq, fetchUpdatedMembers }) => {
-  const [CancelReqLoading, setCancelReqLoading] = useState(false);
+  const [cancelingMemberId, setCancelingMemberId] = useState(null);
 
   const handleCancelReq = async (memberId) => {
     if (!memberId) {
@@ -33,7 +33,7 @@ const NewRegisterationRequest = ({ RegisterReq, fetchUpdatedMembers }) => {
     if (!result.isConfirmed) return;
 
     try {
-      setCancelReqLoading(true);
+      setCancelingMemberId(memberId);
       const response = await fetch(`/api/deleteRegisterationReq/${memberId}`, {
         method: "DELETE",
         headers: {
@@ -61,7 +61,7 @@ const NewRegisterationRequest = ({ RegisterReq, fetchUpdatedMembers }) => {
         icon: "error",
       });
     } finally {
-      setCancelReqLoading(false);
+      setCancelingMemberId(null);
     }
   };
 
@@ -107,7 +107,7 @@ const NewRegisterationRequest = ({ RegisterReq, fetchUpdatedMembers }) => {
                 <div className="flex items-center gap-2">
                   <div>
                     <button className="sm:px-4 md:px-4 lg:px-4 px-2 py-2 bg-red-500 text-white rounded-lg flex gap-[6px] items-center hover:bg-red-600">
-                      {CancelReqLoading ? (
+                      {cancelingMemberId === doc.memberId ? (
                         <Loader2 className="w-4 h-4 mx-auto animate-spin text-white" />
                       ) : (
                         <MdDelete
