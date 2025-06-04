@@ -435,7 +435,7 @@ const page = () => {
     },
   ];
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep == 0) {
       // Validate required fields
       const requiredFields = [
@@ -488,6 +488,15 @@ const page = () => {
         });
         return;
       }
+
+      const cnicCheck = await checkExistingUser(formData.cnic);
+      if (cnicCheck.exists) {
+        toast.error("A user with this CNIC already exists.", {
+          duration: 4000,
+          position: "top-center",
+        });
+        return;
+      }
     }
     // If on Educational Info step, store the current EducationData in EducationalInfo
     if (currentStep === 1) {
@@ -515,6 +524,19 @@ const page = () => {
   const handleBack = () => {
     if (currentStep > 0) {
       setCurrentStep((prev) => prev - 1);
+    }
+  };
+
+  const checkExistingUser = async (cnic) => {
+    try {
+      const response = await fetch(`/api/checkExistingUser/${cnic}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      return { error: "Network error" };
     }
   };
 

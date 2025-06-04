@@ -9,24 +9,6 @@ export async function POST(req) {
     const pool = await connectToDB(config);
     console.log("Connected to DB successfully.");
 
-    // Check if a user with the same CNIC already exists
-    const checkExistingUser = await pool
-      .request()
-      .input("CNICNo", formData.cnic).query(`
-        SELECT COUNT(*) as count FROM tb_member_mst 
-        WHERE CNICNo = @CNICNo
-      `);
-
-    const userExists = checkExistingUser.recordset[0].count > 0;
-
-    if (userExists) {
-      await closeConnection(pool);
-      return NextResponse.json(
-        { message: "User with this CNIC already exists", exists: true },
-        { status: 409 }
-      );
-    }
-
     const result = await pool
       .request()
       .input("CNICNo", formData.cnic)
