@@ -80,7 +80,7 @@ const WifeDetailForm = ({
         </div>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4"
+          className="flex flex-col sm:grid sm:grid-cols-2 md:grid-cols-2 gap-4 mt-4"
         >
           {[
             { label: "Wife Name", name: "wifeName", required: true },
