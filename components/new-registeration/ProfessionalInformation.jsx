@@ -103,7 +103,7 @@ const ProfessionalInformation = ({
       {/* Professional Form */}
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200"
+        className="flex flex-col sm:grid sm:grid-cols-2 md:grid-cols-2 gap-4 mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200 text-xs sm:text-[13px] md:text-sm lg:text-base"
       >
         {/* Profession */}
         <div>
