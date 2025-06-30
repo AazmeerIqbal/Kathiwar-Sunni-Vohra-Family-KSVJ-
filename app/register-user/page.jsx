@@ -487,7 +487,13 @@ const page = () => {
 
   const handleNext = async () => {
     if (currentStep == 0) {
-      // Validate required fields
+      const selectedCurrentCountry = CountryDropDown.find(
+        (country) => country.ID === formData.currentCountry
+      );
+      const showPakistaniFields =
+        selectedCurrentCountry &&
+        selectedCurrentCountry.CountryName !== "Pakistan";
+
       const requiredFields = [
         { name: "memberType", label: "Member Type" },
         { name: "cnic", label: "CNIC No" },
@@ -499,10 +505,16 @@ const page = () => {
         { name: "cellNumber", label: "Cell Number" },
         { name: "fatherHusbandName", label: "Father/Husband Name" },
         { name: "name", label: "Name" },
-        { name: "address", label: "Address" },
+        { name: "currentCountry", label: "Current Country" },
+        { name: "state", label: "State" },
+        { name: "city", label: "City" },
+        { name: "currentAddress", label: "Current Address" },
       ];
 
-      // Check for empty fields
+      if (showPakistaniFields) {
+        requiredFields.push({ name: "address", label: "Address In Pakistan" });
+      }
+
       const emptyFields = requiredFields.filter(
         (field) => !formData[field.name] || formData[field.name] === ""
       );

@@ -23,6 +23,42 @@ const PersonalInformation = ({
     label: family.FamilyName,
   }));
 
+  const countryOptions = CountryDropDown.map((country) => ({
+    value: country.ID,
+    label: country.CountryName,
+  }));
+
+  const bloodGroupOptions = [
+    { value: "N/A", label: "N/A" },
+    { value: "1", label: "A+" },
+    { value: "2", label: "A-" },
+    { value: "3", label: "B+" },
+    { value: "4", label: "B-" },
+    { value: "5", label: "O+" },
+    { value: "6", label: "O-" },
+    { value: "7", label: "AB+" },
+    { value: "8", label: "AB-" },
+  ];
+
+  const pkCountryOptions = CountryDropDown.map((country) => ({
+    value: country.ID,
+    label: country.CountryName,
+  }));
+  const pkStateOptions = StateDropDown.map((state) => ({
+    value: state.ID,
+    label: state.StateName,
+  }));
+  const pkCityOptions = CityDropDown.map((city) => ({
+    value: city.ID,
+    label: city.CityName,
+  }));
+
+  const selectedCurrentCountry = CountryDropDown.find(
+    (country) => country.ID === formData.currentCountry
+  );
+  const showPakistaniFields =
+    selectedCurrentCountry && selectedCurrentCountry.CountryName !== "Pakistan";
+
   return (
     <div className="text-gray-900">
       <div>
@@ -231,25 +267,6 @@ const PersonalInformation = ({
                   />
                 </div>
               </div>
-
-              {/* Current Country */}
-              <div className="flex items-center border border-gray-300">
-                <div className="w-[50%] py-1 px-1">Current Country</div>
-                {/* Current Country Dropdown */}
-                <select
-                  name="currentCountry"
-                  value={formData.currentCountry}
-                  onChange={handleChange}
-                  className="w-[90%] lg:w-[45%] rounded-2xl my-2 mx-[0.3rem] py-1 px-1 border border-gray-300 text-gray-600"
-                >
-                  <option value="0">Select Country</option>
-                  {CountryDropDown.map((country) => (
-                    <option key={country.ID} value={country.ID}>
-                      {country.CountryName}
-                    </option>
-                  ))}
-                </select>
-              </div>
             </div>
           </div>
 
@@ -298,23 +315,26 @@ const PersonalInformation = ({
               <div className="flex items-center border border-gray-300">
                 <div className="w-[50%] py-1 px-1">Blood Group</div>
                 <div className="w-[50%] border-l border-gray-300">
-                  <select
+                  <Select
                     name="bloodGroup"
-                    value={formData.bloodGroup}
-                    onChange={handleChange}
-                    className="w-[95%] rounded-xl my-1 mx-1 py-1 px-1 border border-gray-300 text-gray-600 
-                          text-sm"
-                  >
-                    <option value="N/A">N/A</option>
-                    <option value="1">A+</option>
-                    <option value="2">A-</option>
-                    <option value="3">B+</option>
-                    <option value="4">B-</option>
-                    <option value="5">O+</option>
-                    <option value="6">O-</option>
-                    <option value="7">AB+</option>
-                    <option value="8">AB-</option>
-                  </select>
+                    value={
+                      bloodGroupOptions.find(
+                        (opt) => opt.value === formData.bloodGroup
+                      ) || null
+                    }
+                    onChange={(selected) =>
+                      handleChange({
+                        target: {
+                          name: "bloodGroup",
+                          value: selected ? selected.value : "",
+                        },
+                      })
+                    }
+                    options={bloodGroupOptions}
+                    isClearable
+                    isSearchable
+                    placeholder="Select Blood Group"
+                  />
                 </div>
               </div>
 
@@ -337,9 +357,40 @@ const PersonalInformation = ({
 
           <div className="flex flex-col justify-between border border-gray-300">
             <div className="flex flex-col w-full">
+              {/* Current Country */}
+              <div className="flex items-center border border-gray-300">
+                <div className="w-[50%] py-1 px-1">
+                  Current Country <span className="text-red-500">*</span>
+                </div>
+                <div className="w-[50%] border-l border-gray-300">
+                  <Select
+                    name="currentCountry"
+                    value={
+                      countryOptions.find(
+                        (opt) => opt.value === formData.currentCountry
+                      ) || null
+                    }
+                    onChange={(selected) =>
+                      handleChange({
+                        target: {
+                          name: "currentCountry",
+                          value: selected ? selected.value : "",
+                        },
+                      })
+                    }
+                    options={countryOptions}
+                    isClearable
+                    isSearchable
+                    placeholder="Select Country"
+                  />
+                </div>
+              </div>
+
               {/* City # */}
               <div className="flex items-center border border-gray-300">
-                <div className="w-[50%] py-1 px-1">Current City</div>
+                <div className="w-[50%] py-1 px-1">
+                  Current City <span className="text-red-500">*</span>
+                </div>
                 <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
                   <input
                     type="text"
@@ -353,7 +404,9 @@ const PersonalInformation = ({
 
               {/*Current Address # */}
               <div className="flex items-center border border-gray-300">
-                <div className="w-[50%] py-1 px-1">Current Address</div>
+                <div className="w-[50%] py-1 px-1">
+                  Current Address <span className="text-red-500">*</span>
+                </div>
                 <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
                   <input
                     type="text"
@@ -365,78 +418,100 @@ const PersonalInformation = ({
                 </div>
               </div>
 
-              {/* Pakistani Address */}
-              <div className="flex items-center border border-gray-300">
-                <div className="w-[50%] py-1 px-1">
-                  Address In Pakistan <span className="text-red-500">*</span>
-                </div>
-                <div className="w-[50%] border-l border-gray-300">
-                  <input
-                    type="text"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleChange}
-                    className="w-[95%] rounded-xl my-1 mx-1 py-1 px-1 border border-gray-300 text-gray-600 
-                          text-sm"
-                  />
-                </div>
-              </div>
+              {showPakistaniFields && (
+                <>
+                  {/* Address In Pakistan */}
+                  <div className="flex items-center border border-gray-300">
+                    <div className="w-[50%] py-1 px-1">
+                      Address In Pakistan{" "}
+                      <span className="text-red-500">*</span>
+                    </div>
+                    <div className="w-[50%] border-l border-gray-300">
+                      <input
+                        type="text"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleChange}
+                        className="w-[95%] rounded-xl my-1 mx-1 py-1 px-1 border border-gray-300 text-gray-600 
+                              text-sm"
+                      />
+                    </div>
+                  </div>
+                  {/* Pakistani Country/State/City */}
+                  <div className="flex items-center border border-gray-300">
+                    <div className="w-[50%] py-1 px-1">
+                      Pakistani Country/State/City
+                    </div>
+                    <div className="w-[50%] flex flex-col lg:flex-row border-l border-gray-300 gap-1">
+                      {/* Country Dropdown */}
+                      <Select
+                        name="country"
+                        value={
+                          pkCountryOptions.find(
+                            (opt) => opt.value === formData.country
+                          ) || null
+                        }
+                        onChange={(selected) =>
+                          handleChange({
+                            target: {
+                              name: "country",
+                              value: selected ? selected.value : "",
+                            },
+                          })
+                        }
+                        options={pkCountryOptions}
+                        isClearable
+                        isSearchable
+                        placeholder="Select Country"
+                      />
 
-              {/* From Country/State/City */}
-              <div className="flex items-center border border-gray-300">
-                <div className="w-[50%] py-1 px-1">
-                  Pakistani Country/State/City
-                </div>
-                <div className="w-[50%] flex flex-col lg:flex-row border-l border-gray-300 gap-1">
-                  {/* Country Dropdown */}
-                  <select
-                    name="country"
-                    value={formData.country}
-                    onChange={handleChange}
-                    className="w-full lg:w-[33%] rounded-xl my-1 mx-1 py-1 px-1 border border-gray-300 
-                          text-gray-600 text-sm"
-                  >
-                    <option value="0">Select Country</option>
-                    {CountryDropDown.map((country) => (
-                      <option key={country.ID} value={country.ID}>
-                        {country.CountryName}
-                      </option>
-                    ))}
-                  </select>
+                      {/* State Dropdown */}
+                      <Select
+                        name="state"
+                        value={
+                          pkStateOptions.find(
+                            (opt) => opt.value === formData.state
+                          ) || null
+                        }
+                        onChange={(selected) =>
+                          handleChange({
+                            target: {
+                              name: "state",
+                              value: selected ? selected.value : "",
+                            },
+                          })
+                        }
+                        options={pkStateOptions}
+                        isClearable
+                        isSearchable
+                        placeholder="Select State"
+                      />
 
-                  {/* State Dropdown */}
-                  <select
-                    name="state"
-                    value={formData.state}
-                    onChange={handleChange}
-                    className="w-full lg:w-[33%] rounded-xl my-1 mx-1 py-1 px-1 border border-gray-300 
-                          text-gray-600 text-sm"
-                  >
-                    <option value="0">Select State</option>
-                    {StateDropDown.map((state) => (
-                      <option key={state.ID} value={state.ID}>
-                        {state.StateName}
-                      </option>
-                    ))}
-                  </select>
-
-                  {/* City Dropdown */}
-                  <select
-                    name="city"
-                    value={formData.city}
-                    onChange={handleChange}
-                    className="w-full lg:w-[33%] rounded-xl my-1 mx-1 py-1 px-1 border border-gray-300 
-                          text-gray-600 text-sm"
-                  >
-                    <option value="0">Select City</option>
-                    {CityDropDown.map((city) => (
-                      <option key={city.ID} value={city.ID}>
-                        {city.CityName}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
+                      {/* City Dropdown */}
+                      <Select
+                        name="city"
+                        value={
+                          pkCityOptions.find(
+                            (opt) => opt.value === formData.city
+                          ) || null
+                        }
+                        onChange={(selected) =>
+                          handleChange({
+                            target: {
+                              name: "city",
+                              value: selected ? selected.value : "",
+                            },
+                          })
+                        }
+                        options={pkCityOptions}
+                        isClearable
+                        isSearchable
+                        placeholder="Select City"
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
