@@ -9,7 +9,7 @@ export async function GET(req) {
     // Fetch states for the selected country
     const result = await pool
       .request()
-      .query("SELECT * FROM tb_member_education_HQ");
+      .query("SELECT * FROM tb_member_education_HQ where Tag=1");
 
     await closeConnection(pool);
 

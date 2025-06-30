@@ -4,11 +4,12 @@ import { MdEdit, MdDelete, MdSave, MdCancel } from "react-icons/md";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useSession } from "next-auth/react";
-import EducationModal from "../update-information/EducationModal";
 import Loader from "../ui/Loader";
+import { useForm, Controller } from "react-hook-form";
 import { IoIosArrowDown, IoIosSave } from "react-icons/io";
 import { motion } from "framer-motion";
 import { PiStudentFill } from "react-icons/pi";
+import Select from "react-select";
 
 const EducationalInformations = ({
   EducationData,
@@ -18,7 +19,6 @@ const EducationalInformations = ({
   SP,
   setSP,
 }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const { data: session } = useSession();
   const [toggle, setToggle] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
@@ -28,6 +28,29 @@ const EducationalInformations = ({
   const [Loading, setLoading] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
   const [EditId, setEditId] = useState(null);
+
+  // Form state
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    control,
+    formState: { errors, isSubmitting },
+  } = useForm();
+
+  // ShowSpecialization state
+  const [ShowSpecialization, setShowSpecialization] = useState(false);
+
+  // Prepare options for react-select
+  const HQOptions = HQ.map((item) => ({
+    value: item.HQID,
+    label: item.HighestQualification,
+  }));
+  const SPOptions = SP.map((item) => ({
+    value: item.HQSPId,
+    label: item.AreaofSpecialization,
+  }));
 
   useEffect(() => {
     fetchHQData();
@@ -60,20 +83,32 @@ const EducationalInformations = ({
     }
   };
 
-  const getMemberData = async () => {
-    // try {
-    //   const response = await fetch(
-    //     `/api/getEductionalInformation/${session.user.memberId}`,
-    //     {
-    //       method: "POST",
-    //       headers: { "Content-Type": "application/json" },
-    //     }
-    //   );
-    //   const result = await response.json();
-    //   if (response.ok) setEducationData(result.data);
-    // } catch (error) {
-    //   console.log("Error fetching education data:", error);
-    // }
+  // Handler for HQ change
+  const handleHQChange = (selected, fieldOnChange) => {
+    const selectedHQID = selected ? Number(selected.value) : null;
+    fieldOnChange(selected ? selected.value : "");
+    if (selectedHQID && ![22, 23, 1].includes(selectedHQID)) {
+      setShowSpecialization(true);
+    } else {
+      setShowSpecialization(false);
+      setValue("specialization", "");
+    }
+  };
+
+  // Add or update education entry
+  const onSubmit = async (data) => {
+    if (editIndex === null) {
+      setEducationData((prev) => [...prev, data]);
+      toast.success("Added successfully!", { position: "top-right" });
+    } else {
+      setEducationData((prev) =>
+        prev.map((item, i) => (i === editIndex ? data : item))
+      );
+      toast.success("Updated successfully!", { position: "top-right" });
+      setEditIndex(null);
+    }
+    reset();
+    setShowSpecialization(false);
   };
 
   const onDelete = async (index) => {
@@ -85,49 +120,168 @@ const EducationalInformations = ({
     });
   };
 
-  const onEdit = async (index) => {
+  // Edit handler: populate form fields
+  const onEdit = (index) => {
+    const item = EducationData[index];
+    setValue("qualification", item.qualification);
+    setValue("specialization", item.specialization);
+    setValue("degreeTitle", item.degreeTitle);
+    setValue("completionYear", item.completionYear);
+    setValue("description", item.description);
+    // Show/hide specialization
+    const selectedHQID = Number(item.qualification);
+    if (selectedHQID && ![22, 23, 1].includes(selectedHQID)) {
+      setShowSpecialization(true);
+    } else {
+      setShowSpecialization(false);
+    }
     setEditIndex(index);
-    setEditRow({ ...EducationData[index] });
   };
 
+  // Cancel edit handler
   const onCancelEdit = () => {
+    reset();
     setEditIndex(null);
-    setEditRow({});
-  };
-
-  const onSaveEdit = async (index) => {
-    // Update the item at the given index in EducationData
-    setEducationData((prev) =>
-      prev.map((item, i) => (i === index ? { ...item, ...editRow } : item))
-    );
-    setEditId(null);
-    setLoading(false);
-    toast.success("Updated successfully!", {
-      position: "top-right",
-    });
-    setEditIndex(null); // Exit edit mode
-    setEditRow({});
+    setShowSpecialization(false);
   };
 
   return (
     <>
-      <div className="text-[12px] md:text-[13px] lg:text-[13px] border border-gray-300 font-crimson bg-white rounded-lg p-2 md:p-4 grid grid-cols-1 gap-2 text-gray-900">
-        <div className="flex justify-end items-center gap-4 mb-2">
+      {/* Education Form */}
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200"
+      >
+        {/* Highest Qualification */}
+        <div>
+          <label className="text-gray-600 ">Highest Qualification *</label>
+          <Controller
+            name="qualification"
+            control={control}
+            rules={{ required: "Qualification is required" }}
+            render={({ field }) => (
+              <Select
+                {...field}
+                options={HQOptions}
+                isClearable
+                placeholder="Select..."
+                onChange={(selected) =>
+                  handleHQChange(selected, field.onChange)
+                }
+                value={
+                  HQOptions.find((opt) => opt.value === field.value) || null
+                }
+              />
+            )}
+          />
+          {errors.qualification && (
+            <p className="text-red-500 ">{errors.qualification.message}</p>
+          )}
+        </div>
+
+        {/* Specialization */}
+        {ShowSpecialization && (
+          <div>
+            <label className="text-gray-600 ">Area of Specialization</label>
+            <Controller
+              name="specialization"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  options={SPOptions}
+                  isClearable
+                  placeholder="Select..."
+                  onChange={(selected) =>
+                    field.onChange(selected ? selected.value : "")
+                  }
+                  value={
+                    SPOptions.find((opt) => opt.value === field.value) || null
+                  }
+                />
+              )}
+            />
+            {errors.specialization && (
+              <p className="text-red-500 ">{errors.specialization.message}</p>
+            )}
+          </div>
+        )}
+
+        {/* Degree Title */}
+        <div>
+          <label className="text-gray-600 ">Other Diploma/Certifications</label>
+          <input
+            type="text"
+            {...register("degreeTitle")}
+            className="w-full p-2 border rounded-md"
+          />
+          {errors.degreeTitle && (
+            <p className="text-red-500 ">{errors.degreeTitle.message}</p>
+          )}
+        </div>
+
+        {/* Completion Year */}
+        {/* <div>
+          <label className="text-gray-600 ">Completion Year</label>
+          <input
+            type="number"
+            {...register("completionYear", {
+              min: { value: 1970, message: "Enter a valid year (1970+)" },
+              max: {
+                value: new Date().getFullYear(),
+                message: "Year can't be in the future",
+              },
+            })}
+            className="w-full p-2 border rounded-md"
+          />
+          {errors.completionYear && (
+            <p className="text-red-500 ">{errors.completionYear.message}</p>
+          )}
+        </div> */}
+
+        {/* Description / Notes */}
+        {/* <div className="col-span-2">
+          <label className="text-gray-600 ">Description / Notes</label>
+          <textarea
+            {...register("description")}
+            className="w-full p-2 border rounded-md h-20"
+          ></textarea>
+        </div> */}
+
+        {/* Submit Button */}
+        <div className="col-span-2 flex justify-end gap-3">
+          {editIndex !== null && (
+            <button
+              type="button"
+              className="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500"
+              onClick={onCancelEdit}
+            >
+              Cancel
+            </button>
+          )}
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsModalOpen(true);
-            }}
-            className="flex gap-1 items-center hover:opacity-70 py-1 px-2 bg-[#e5e6e7] text-xs md:text-sm text-black font-semibold rounded-3xl border border-gray-300"
+            type="submit"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            disabled={isSubmitting}
           >
-            <FaPlus /> Add New
+            {isSubmitting ? (
+              <Loader w={4} h={4} />
+            ) : editIndex !== null ? (
+              "Update"
+            ) : (
+              "Add Education"
+            )}
           </button>
         </div>
+      </form>
+      {/* End Education Form */}
+
+      <div className="text-[12px] md:text-[13px] lg:text-[13px] border border-gray-300 font-crimson bg-white rounded-lg p-2 md:p-4 grid grid-cols-1 gap-2 text-gray-900">
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white rounded-lg overflow-hidden border border-gray-300">
             <thead className="bg-gray-100 text-gray-700">
               <tr className="hidden md:table-row">
-                <th className="px-1 py-2 text-left text-xs font-bold">Year</th>
+                {/* <th className="px-1 py-2 text-left text-xs font-bold">Year</th> */}
                 <th className="px-1 py-2 text-left text-xs font-bold">
                   Qualification
                 </th>
@@ -135,7 +289,7 @@ const EducationalInformations = ({
                   Specialization
                 </th>
                 <th className="px-1 py-2 text-left text-xs font-bold">
-                  Degree Title
+                  Diploma/Certifications
                 </th>
                 <th className="px-1 py-2 text-left text-xs font-bold">
                   Actions
@@ -158,158 +312,50 @@ const EducationalInformations = ({
                   const Qualification = HQ.find(
                     (hq) => hq.HQID === Number(item.qualification)
                   );
-                  console.log(Qualification);
-
                   // Find Specialization Name
                   const Specialization = SP.find(
                     (sp) => sp.HQSPId === Number(item.specialization)
                   );
-
                   return (
                     <tr
                       key={index}
                       className="flex flex-col md:table-row hover:bg-gray-50"
                     >
-                      <div className="block md:hidden text-xs font-bold">
+                      {/* <div className="block md:hidden text-xs font-bold">
                         Year:
                       </div>
                       <td className="px-1 py-2 text-xs ">
-                        {editIndex === index ? (
-                          <input
-                            type="text"
-                            value={editRow["completionYear"] || ""}
-                            onChange={(e) =>
-                              setEditRow({
-                                ...editRow,
-                                completionYear: e.target.value,
-                              })
-                            }
-                            className="border border-gray-300 px-2 py-1 w-full"
-                          />
-                        ) : (
-                          item.completionYear
-                        )}
-                      </td>
-
-                      <div className="block md:hidden text-xs font-bold">
-                        Qualification:
-                      </div>
+                        {item.completionYear}
+                      </td> */}
                       <td className="px-1 py-2 text-xs ">
-                        {editIndex === index ? (
-                          <select
-                            value={editRow.qualification || ""}
-                            onChange={(e) =>
-                              setEditRow({
-                                ...editRow,
-                                qualification: e.target.value,
-                              })
-                            }
-                            className="w-full border border-gray-300 px-2 py-1"
-                          >
-                            <option value="">Select Qualification</option>
-                            {HQ.map((hq) => (
-                              <option key={hq.HQID} value={hq.HQID}>
-                                {hq.HighestQualification}
-                              </option>
-                            ))}
-                          </select>
-                        ) : Qualification ? (
-                          Qualification.HighestQualification
-                        ) : (
-                          "N/A"
-                        )}
+                        {Qualification
+                          ? Qualification.HighestQualification
+                          : "N/A"}
                       </td>
-
-                      <div className="block md:hidden text-xs font-bold">
-                        Specialization:
-                      </div>
                       <td className="px-1 py-2 text-xs ">
-                        {editIndex === index ? (
-                          <select
-                            value={editRow.specialization || ""}
-                            onChange={(e) =>
-                              setEditRow({
-                                ...editRow,
-                                specialization: e.target.value,
-                              })
-                            }
-                            className="w-full border border-gray-300 px-2 py-1"
-                          >
-                            <option value="">Select Specialization</option>
-                            {SP.map((sp) => (
-                              <option key={sp.HQSPId} value={sp.HQSPId}>
-                                {sp.AreaofSpecialization}
-                              </option>
-                            ))}
-                          </select>
-                        ) : Specialization ? (
-                          Specialization.AreaofSpecialization
-                        ) : (
-                          "N/A"
-                        )}
+                        {Specialization
+                          ? Specialization.AreaofSpecialization
+                          : ""}
                       </td>
-
-                      <div className="block md:hidden text-xs font-bold">
-                        Degree Title:
-                      </div>
-                      <td className="px-1 py-2 text-xs ">
-                        {editIndex === index ? (
-                          <input
-                            type="text"
-                            value={editRow["degreeTitle"] || ""}
-                            onChange={(e) =>
-                              setEditRow({
-                                ...editRow,
-                                degreeTitle: e.target.value,
-                              })
-                            }
-                            className="border border-gray-300 px-2 py-1 w-full"
-                          />
-                        ) : (
-                          item.degreeTitle
-                        )}
-                      </td>
-
+                      <td className="px-1 py-2 text-xs ">{item.degreeTitle}</td>
                       <td className="px-1 py-2 text-xs flex justify-center space-x-2 md:table-cell">
-                        {editIndex === index ? (
-                          <button
-                            onClick={() => onSaveEdit(index)}
-                            className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded mr-2"
-                          >
-                            {(EditId === index) & Loading ? (
-                              <Loader w={3} h={3} />
-                            ) : (
-                              <MdSave />
-                            )}
-                          </button>
-                        ) : (
-                          <button
-                            className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded mr-2"
-                            onClick={() => onEdit(index)}
-                          >
-                            <MdEdit />
-                          </button>
-                        )}
-                        {editIndex === index ? (
-                          <button
-                            onClick={onCancelEdit}
-                            className="bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded"
-                          >
-                            <MdCancel />
-                          </button>
-                        ) : (
-                          <button
-                            className="bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded"
-                            onClick={() => onDelete(index)}
-                            disabled={Loading && deletingId === index}
-                          >
-                            {(deletingId === index) & Loading ? (
-                              <Loader w={3} h={3} />
-                            ) : (
-                              <MdDelete />
-                            )}
-                          </button>
-                        )}
+                        <button
+                          className="bg-blue-400 hover:bg-blue-500 text-white px-2 py-1 rounded mr-2"
+                          onClick={() => onEdit(index)}
+                        >
+                          <MdEdit />
+                        </button>
+                        <button
+                          className="bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded"
+                          onClick={() => onDelete(index)}
+                          disabled={Loading && deletingId === index}
+                        >
+                          {(deletingId === index) & Loading ? (
+                            <Loader w={3} h={3} />
+                          ) : (
+                            <MdDelete />
+                          )}
+                        </button>
                       </td>
                     </tr>
                   );
@@ -319,17 +365,6 @@ const EducationalInformations = ({
           </table>
         </div>
       </div>
-      <EducationModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        // MemberId={session.user.memberId}
-        EducationData={EducationData}
-        setEducationData={setEducationData}
-        registerUser={1}
-        getMemberData={getMemberData}
-        HQ={HQ}
-        SP={SP}
-      />
       <ToastContainer />
     </>
   );

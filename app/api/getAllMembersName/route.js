@@ -1,13 +1,10 @@
 import { connectToDB, closeConnection, config } from "@/utils/database";
 import { NextResponse } from "next/server";
 
-export async function GET(req, { params }) {
-  const { cnic } = await params;
-
+export async function GET(req) {
   try {
     // Establish database connection
     const pool = await connectToDB(config);
-    console.log("CNIC INCOMING FATHERS DATA: ", cnic);
 
     // Run queries to fetch data from multiple tables
     const MemberName = await pool

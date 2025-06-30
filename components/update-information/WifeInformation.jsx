@@ -14,7 +14,6 @@ const WifeInformation = ({
   wifeData,
   setWifeData,
   WifeFamilyDropDown,
-  setWifeFamilyDropDown,
   FatherNames,
   setFatherNames,
 }) => {
@@ -30,42 +29,42 @@ const WifeInformation = ({
   const { data: session } = useSession();
 
   useEffect(() => {
-    fetchFamilyData();
+    // fetchFamilyData();
     fetchFatherName();
   }, []);
 
-  const fetchFamilyData = async () => {
-    try {
-      // Construct the API URL
-      const apiUrl = `/api/update-information/${session.user.cnic}/fill-dropDown`;
+  // const fetchFamilyData = async () => {
+  //   try {
+  //     // Construct the API URL
+  //     const apiUrl = `/api/update-information/${session.user.cnic}/fill-dropDown`;
 
-      // Make the API call
-      const response = await fetch(apiUrl, {
-        method: "GET",
-        headers: {  
-          "Content-Type": "application/json",
-        },
-      });
+  //     // Make the API call
+  //     const response = await fetch(apiUrl, {
+  //       method: "GET",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
 
-      // Parse the response
-      const result = await response.json();
+  //     // Parse the response
+  //     const result = await response.json();
 
-      // Check if the response is successful
-      if (response.ok) {
-        setWifeFamilyDropDown(result.family); // Family dropdown data
-        console.log("Family data fetched:", result.family);
-      } else {
-        console.log("Error fetching dropdown data:", result.message);
-      }
-    } catch (error) {
-      console.log("Error calling API:", error);
-    }
-  };
+  //     // Check if the response is successful
+  //     if (response.ok) {
+  //       setWifeFamilyDropDown(result.family); // Family dropdown data
+  //       console.log("Family data fetched:", result.family);
+  //     } else {
+  //       console.log("Error fetching dropdown data:", result.message);
+  //     }
+  //   } catch (error) {
+  //     console.log("Error calling API:", error);
+  //   }
+  // };
 
   const fetchFatherName = async () => {
     try {
       // Construct the API URL
-      const apiUrl = `/api/getAllMembersName/${session.user.cnic}`;
+      const apiUrl = `/api/getAllMembersName`;
 
       // Make the API call
       const response = await fetch(apiUrl, {

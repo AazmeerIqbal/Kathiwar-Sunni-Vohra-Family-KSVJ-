@@ -117,6 +117,39 @@ export async function POST(req) {
       }
     }
 
+    // Insert Professional data if present
+    if (Array.isArray(formData.profession)) {
+      for (const pro of formData.profession) {
+        await pool
+          .request()
+          .input("MemberID", NewMemberId)
+          .input("CompanyID", "12")
+          .input("CurrentProfession", pro.profession)
+          .input("CompanyName", pro.companyName)
+          .input("CurrentPosition", pro.currentPosition)
+          .input("ProfessionalExperience", pro.professionalExp)
+          .input("EmployeeUnEmployeed", pro.employeeStatus).query(`
+        INSERT INTO tb_member_professional_det_test (
+          MemberID,
+          CompanyID,
+          CurrentProfession,
+          CompanyName,
+          CurrentPosition,
+          ProfessionalExperience,
+          EmployeeUnEmployeed
+        ) VALUES (
+          @MemberID,
+          @CompanyID,
+          @CurrentProfession,
+          @CompanyName,
+          @CurrentPosition,
+          @ProfessionalExperience,
+          @EmployeeUnEmployeed
+        );
+      `);
+      }
+    }
+
     await closeConnection(pool);
     return NextResponse.json({
       message: "Data saved successfully.",

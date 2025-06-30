@@ -483,8 +483,7 @@ const Page = () => {
           <WifeInformation
             wifeData={wifeData}
             setWifeData={setWifeData}
-            WifeFamilyDropDown={WifeFamilyDropDown}
-            setWifeFamilyDropDown={setWifeFamilyDropDown}
+            WifeFamilyDropDown={FamilyDropDown}
             FatherNames={FatherNames}
             setFatherNames={setFatherNames}
           />

@@ -10,8 +10,11 @@ import toast, { Toaster } from "react-hot-toast";
 import { MdOutlineFileUpload } from "react-icons/md";
 import PersonalInformation from "@/components/new-registeration/PersonalInformation";
 import EducationalInformations from "@/components/new-registeration/EducationalInformations";
+import ProfessionalInformation from "@/components/new-registeration/ProfessionalInformation";
 import { Button } from "@/components/ui/Button";
 import { AnimatePresence, motion } from "framer-motion";
+import WifeInformation from "@/components/new-registeration/WifeInformation";
+import ChildrenInformation from "@/components/new-registeration/ChildrenInformation";
 
 const page = () => {
   const { data: session } = useSession();
@@ -31,6 +34,16 @@ const page = () => {
   const [EducationData, setEducationData] = useState([]);
   const [HQ, setHQ] = useState([]);
   const [SP, setSP] = useState([]);
+
+  // Professional Informaion
+  const [ProfessionalDetail, setProfessionalDetail] = useState([]);
+
+  // Wife Informaion
+  const [wifeData, setWifeData] = useState([]);
+  const [FatherNames, setFatherNames] = useState([]);
+
+  // Children Infotmation
+  const [childrenDetail, setChildrenDetail] = useState([]);
 
   // Fetch State
   const fetchCountryData = async () => {
@@ -281,6 +294,7 @@ const page = () => {
         body: JSON.stringify({
           ...formData,
           education: EducationData,
+          profession: ProfessionalDetail,
         }),
       });
 
@@ -327,6 +341,7 @@ const page = () => {
         setMembershipNumber("");
         setSelectedImage(null);
         setEducationData([]);
+        setProfessionalDetail([]);
 
         // Redirect after success or reset form
         // router.push("/some-success-page"); // Uncomment if you want to redirect
@@ -436,71 +451,103 @@ const page = () => {
         />
       ),
     },
+    {
+      title: "Professional Info",
+      component: (
+        <ProfessionalInformation
+          ProfessionalDetail={ProfessionalDetail}
+          setProfessionalDetail={setProfessionalDetail}
+        />
+      ),
+    },
+
+    {
+      title: "Professional Info",
+      component: (
+        <WifeInformation
+          wifeData={wifeData}
+          setWifeData={setWifeData}
+          FamilyDropDown={FamilyDropDown}
+          FatherNames={FatherNames}
+          setFatherNames={setFatherNames}
+        />
+      ),
+    },
+
+    {
+      title: "Children Info",
+      component: (
+        <ChildrenInformation
+          childrenDetail={childrenDetail}
+          setChildrenDetail={setChildrenDetail}
+        />
+      ),
+    },
   ];
 
   const handleNext = async () => {
-    if (currentStep == 0) {
-      // Validate required fields
-      const requiredFields = [
-        { name: "memberType", label: "Member Type" },
-        { name: "cnic", label: "CNIC No" },
-        { name: "dob", label: "Date Of Birth" },
-        { name: "gender", label: "Gender" },
-        { name: "email", label: "Email ID" },
-        { name: "maritalStatus", label: "Marital Status" },
-        { name: "familyName", label: "Family Name" },
-        { name: "cellNumber", label: "Cell Number" },
-        { name: "fatherHusbandName", label: "Father/Husband Name" },
-        { name: "name", label: "Name" },
-        { name: "address", label: "Address" },
-      ];
+    // if (currentStep == 0) {
+    //   // Validate required fields
+    //   const requiredFields = [
+    //     { name: "memberType", label: "Member Type" },
+    //     { name: "cnic", label: "CNIC No" },
+    //     { name: "dob", label: "Date Of Birth" },
+    //     { name: "gender", label: "Gender" },
+    //     { name: "email", label: "Email ID" },
+    //     { name: "maritalStatus", label: "Marital Status" },
+    //     { name: "familyName", label: "Family Name" },
+    //     { name: "cellNumber", label: "Cell Number" },
+    //     { name: "fatherHusbandName", label: "Father/Husband Name" },
+    //     { name: "name", label: "Name" },
+    //     { name: "address", label: "Address" },
+    //   ];
 
-      // Check for empty fields
-      const emptyFields = requiredFields.filter(
-        (field) => !formData[field.name] || formData[field.name] === ""
-      );
+    //   // Check for empty fields
+    //   const emptyFields = requiredFields.filter(
+    //     (field) => !formData[field.name] || formData[field.name] === ""
+    //   );
 
-      if (emptyFields.length > 0) {
-        // Create toast error message with all missing fields
-        const missingFields = emptyFields
-          .map((field) => field.label)
-          .join(", ");
-        toast.error(`Please fill in required fields: ${missingFields}`, {
-          duration: 5000,
-          position: "top-center",
-        });
-        return;
-      }
+    //   if (emptyFields.length > 0) {
+    //     // Create toast error message with all missing fields
+    //     const missingFields = emptyFields
+    //       .map((field) => field.label)
+    //       .join(", ");
+    //     toast.error(`Please fill in required fields: ${missingFields}`, {
+    //       duration: 5000,
+    //       position: "top-center",
+    //     });
+    //     return;
+    //   }
 
-      // Email validation
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email)) {
-        toast.error("Please enter a valid email address", {
-          duration: 3000,
-          position: "top-center",
-        });
-        return;
-      }
+    //   // Email validation
+    //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    //   if (!emailRegex.test(formData.email)) {
+    //     toast.error("Please enter a valid email address", {
+    //       duration: 3000,
+    //       position: "top-center",
+    //     });
+    //     return;
+    //   }
 
-      // CNIC validation - must be complete
-      if (formData.cnic.length < 15) {
-        // 13 digits + 2 hyphens = 15 characters
-        toast.error("Please enter a complete 13-digit CNIC number", {
-          duration: 3000,
-          position: "top-center",
-        });
-        return;
-      }
+    //   // CNIC validation - must be complete
+    //   if (formData.cnic.length < 15) {
+    //     // 13 digits + 2 hyphens = 15 characters
+    //     toast.error("Please enter a complete 13-digit CNIC number", {
+    //       duration: 3000,
+    //       position: "top-center",
+    //     });
+    //     return;
+    //   }
 
-      const cnicCheck = await checkExistingUser(formData.cnic);
-      if (cnicCheck.exists) {
-        toast.error("A user with this CNIC already exists.", {
-          duration: 4000,
-          position: "top-center",
-        });
-        return;
-      }
-    }
+    //   const cnicCheck = await checkExistingUser(formData.cnic);
+    //   if (cnicCheck.exists) {
+    //     toast.error("A user with this CNIC already exists.", {
+    //       duration: 4000,
+    //       position: "top-center",
+    //     });
+    //     return;
+    //   }
+    // }
     // If on Educational Info step, store the current EducationData in EducationalInfo
     if (currentStep === 1) {
       // Map EducationData to the required columns and store in EducationalInfo
