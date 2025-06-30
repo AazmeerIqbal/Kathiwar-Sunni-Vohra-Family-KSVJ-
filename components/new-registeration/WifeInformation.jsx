@@ -17,12 +17,7 @@ const WifeInformation = ({
   FatherNames,
   setFatherNames,
 }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [toggle, setToggle] = useState(false);
-
   const [editIndex, setEditIndex] = useState(null);
-  const [Loading, setLoading] = useState(false);
-  const [deletingId, setDeletingId] = useState(null);
 
   // Form state
   const {
@@ -100,53 +95,10 @@ const WifeInformation = ({
     }
   };
 
-  const getWifeData = async () => {
-    try {
-      const response = await fetch(
-        `/api/getWifeInformation/${session.user.memberId}`,
-        {
-          method: "GET",
-        }
-      );
-
-      const result = await response.json();
-
-      if (response.ok) {
-        setWifeData(result.data || []);
-        console.log("Wife data fetched successfully: ", result.data);
-      } else {
-        console.log("Error fetching wife data:", result.message);
-        setWifeData([]);
-      }
-    } catch (error) {
-      console.log("Error fetching wife data:", error);
-      setWifeData([]);
-    }
-  };
-
-  const handleModalClose = () => {
-    setIsModalOpen(false);
-  };
-
-  const onDelete = async (id) => {
-    try {
-      setDeletingId(id);
-      setLoading(true);
-      const response = await fetch(`/api/deleteWifeInformation/${id}`, {
-        method: "DELETE",
-      });
-      if (response.ok) {
-        setDeletingId(null);
-        setLoading(false);
-        toast.success("Deleted successfully!");
-        getWifeData();
-      }
-    } catch (error) {
-      setDeletingId(null);
-      setLoading(false);
-      console.log("Error deleting wife information:", error);
-      toast.error("Failed to delete wife information");
-    }
+  // Delete wife entry from state only
+  const onDelete = (index) => {
+    setWifeData((prev) => prev.filter((_, i) => i !== index));
+    toast.success("Deleted successfully!");
   };
 
   // Add or update wife entry
@@ -519,13 +471,8 @@ const WifeInformation = ({
                         <button
                           className="bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded"
                           onClick={() => onDelete(index)}
-                          disabled={Loading && deletingId === index}
                         >
-                          {deletingId === index && Loading ? (
-                            <Loader w={3} h={3} />
-                          ) : (
-                            <MdDelete />
-                          )}
+                          <MdDelete />
                         </button>
                       </td>
                     </tr>

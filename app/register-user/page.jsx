@@ -506,13 +506,16 @@ const page = () => {
         { name: "fatherHusbandName", label: "Father/Husband Name" },
         { name: "name", label: "Name" },
         { name: "currentCountry", label: "Current Country" },
-        { name: "state", label: "State" },
-        { name: "city", label: "City" },
+        { name: "currentCity", label: "Current City" },
         { name: "currentAddress", label: "Current Address" },
       ];
 
       if (showPakistaniFields) {
-        requiredFields.push({ name: "address", label: "Address In Pakistan" });
+        requiredFields.push(
+          { name: "address", label: "Address In Pakistan" },
+          { name: "state", label: "State" },
+          { name: "city", label: "City" }
+        );
       }
 
       const emptyFields = requiredFields.filter(
