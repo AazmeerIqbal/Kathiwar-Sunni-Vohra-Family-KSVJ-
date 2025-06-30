@@ -150,11 +150,11 @@ const EducationalInformations = ({
       {/* Education Form */}
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200"
+        className="flex flex-col sm:grid sm:grid-cols-2 gap-4 mb-6 text-xs sm:text-[13px] md:text-sm lg:text-base bg-gray-50 p-2 sm:p-4 rounded-lg border border-gray-200"
       >
         {/* Highest Qualification */}
         <div>
-          <label className="text-gray-600 ">Highest Qualification *</label>
+          <label className="text-gray-600">Highest Qualification *</label>
           <Controller
             name="qualification"
             control={control}

@@ -598,7 +598,7 @@ const page = () => {
         <div>
           <button
             onClick={() => router.push("/login")}
-            className="absolute right-3 top-6 flex items-center gap-1 md:px-2 md:py-1 px-1 py-1 bg-gray-800 text-white hover:bg-gray-700  font-medium rounded-lg shadow-md transition-all duration-300 md:text-sm text-xs cursor-pointer"
+            className="absolute right-3  flex items-center gap-1 md:px-2 md:py-1 px-1 py-1 bg-gray-800 text-white hover:bg-gray-700  font-medium rounded-lg shadow-md transition-all duration-300 md:text-sm text-xs cursor-pointer"
           >
             {/* <ArrowLeft className="md:w-4 md:h-4 h-3 w-3" /> */}
             Close
