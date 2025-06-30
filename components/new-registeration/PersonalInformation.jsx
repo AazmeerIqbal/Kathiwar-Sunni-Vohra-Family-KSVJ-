@@ -1,5 +1,6 @@
 import React from "react";
 import { MdOutlineFileUpload } from "react-icons/md";
+import Select from "react-select";
 
 const PersonalInformation = ({
   formData,
@@ -17,6 +18,11 @@ const PersonalInformation = ({
   CityDropDown,
   FamilyDropDown,
 }) => {
+  const familyOptions = FamilyDropDown.map((family) => ({
+    value: family.FamilyID,
+    label: family.FamilyName,
+  }));
+
   return (
     <div className="text-gray-900">
       <div>
@@ -163,22 +169,26 @@ const PersonalInformation = ({
                   Family Name <span className="text-red-500">*</span>
                 </div>
                 <div className="w-[50%] border-l border-gray-300">
-                  <select
+                  <Select
                     name="familyName"
-                    value={formData.familyName}
-                    onChange={handleChange}
-                    className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 
-                          text-sm"
-                  >
-                    <option value="0">Select Family</option>
-                    {FamilyDropDown.length > 0
-                      ? FamilyDropDown.map((family, index) => (
-                          <option key={index} value={family.FamilyID}>
-                            {family.FamilyName}
-                          </option>
-                        ))
-                      : null}
-                  </select>
+                    value={
+                      familyOptions.find(
+                        (opt) => opt.value === formData.familyName
+                      ) || null
+                    }
+                    onChange={(selected) =>
+                      handleChange({
+                        target: {
+                          name: "familyName",
+                          value: selected ? selected.value : "",
+                        },
+                      })
+                    }
+                    options={familyOptions}
+                    isClearable
+                    isSearchable
+                    placeholder="Select Family"
+                  />
                 </div>
               </div>
             </div>
