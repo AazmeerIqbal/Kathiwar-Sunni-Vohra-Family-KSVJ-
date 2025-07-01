@@ -62,7 +62,7 @@ const PersonalInformation = ({
   return (
     <div className="text-gray-900">
       <div>
-        <div className="text-[12px] md:text-[13px] lg:text-[13px] border border-gray-300 font-crimson grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-1">
+        <div className="text-[10px] md:text-[13px] lg:text-[13px] border border-gray-300 font-crimson grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-1">
           {/* Left Section */}
           <div className="flex flex-col justify-between border border-gray-300">
             <div className="flex flex-col w-full">
@@ -107,7 +107,7 @@ const PersonalInformation = ({
                     value={formData.memberType}
                     onChange={handleChange}
                     className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 
-                          text-sm"
+                          "
                   >
                     <option value={"0"}>Member</option>
                     <option value={"1"}>DOJ</option>
@@ -125,7 +125,7 @@ const PersonalInformation = ({
                     name="nameTitle"
                     value={formData.nameTitle}
                     onChange={handleChange}
-                    className="border border-gray-300 rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 text-sm"
+                    className="border border-gray-300 rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 "
                   >
                     <option>Mr.</option>
                     <option>Mrs.</option>
@@ -139,7 +139,7 @@ const PersonalInformation = ({
                     value={formData.name}
                     onChange={handleChange}
                     className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 
-                          text-sm"
+                          "
                   />
                 </div>
               </div>
@@ -155,7 +155,7 @@ const PersonalInformation = ({
                     value={formData.fatherHusbandName}
                     onChange={handleChange}
                     className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 
-                          text-sm"
+                          "
                   />
                 </div>
               </div>
@@ -175,7 +175,7 @@ const PersonalInformation = ({
                     value={formData.gender}
                     onChange={handleChange}
                     className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 
-                          text-sm"
+                          "
                   >
                     <option value={"1"}>Male</option>
                     <option value={"2"}>Female</option>
@@ -195,7 +195,7 @@ const PersonalInformation = ({
                     onChange={handleChange}
                     type="date"
                     className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 
-                          text-sm"
+                          "
                   />
                 </div>
               </div>
@@ -246,7 +246,7 @@ const PersonalInformation = ({
                     onChange={handleCellNumber}
                     placeholder="####-#######"
                     className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 
-                          text-sm"
+                          "
                   />
                 </div>
               </div>
@@ -263,7 +263,7 @@ const PersonalInformation = ({
                     value={formData.email}
                     onChange={handleChange}
                     className="w-[95%] rounded-xl my-1 mx-1 py-1 px-1 border border-gray-300 text-gray-600 
-                          text-sm"
+                          "
                   />
                 </div>
               </div>
@@ -286,7 +286,7 @@ const PersonalInformation = ({
                     id="cnic"
                     onChange={handleCNICChange}
                     className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 
-                          text-sm"
+                          "
                   />
                 </div>
               </div>
@@ -302,7 +302,7 @@ const PersonalInformation = ({
                     value={formData.maritalStatus}
                     onChange={handleChange}
                     className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 
-                          text-sm"
+                          "
                   >
                     <option value={"1"}>Married</option>
                     <option value={"2"}>Unmarried</option>
@@ -350,7 +350,7 @@ const PersonalInformation = ({
                     value={formData.remarks}
                     onChange={handleChange}
                     className="w-[95%] rounded-xl my-1 mx-1 py-1 px-1 border border-gray-300 text-gray-500 
-                          text-sm"
+                        "
                   />
                 </div>
               </div>
@@ -435,7 +435,7 @@ const PersonalInformation = ({
                         value={formData.address}
                         onChange={handleChange}
                         className="w-[95%] rounded-xl my-1 mx-1 py-1 px-1 border border-gray-300 text-gray-600 
-                              text-sm"
+                              "
                       />
                     </div>
                   </div>

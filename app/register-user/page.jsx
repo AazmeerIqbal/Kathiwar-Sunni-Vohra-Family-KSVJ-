@@ -606,10 +606,10 @@ const page = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-gray-100 to-gray-300 flex items-center justify-center p-1">
+    <div className="min-h-screen bg-gradient-to-r from-gray-100 to-gray-300 flex items-center justify-center p-3 lg:p-6">
       <Toaster />
 
-      <div className="w-full max-w-[75%] bg-white/60 backdrop-blur-lg rounded-xl shadow-lg p-3 space-y-4 border border-white/20">
+      <div className="w-full  bg-white/60 backdrop-blur-lg rounded-xl shadow-lg p-2 lg:p-4 space-y-4 border border-white/20">
         <div>
           <button
             onClick={() => router.push("/login")}
@@ -625,7 +625,7 @@ const page = () => {
             <h1 className="text-xl font-semibold mb-4">
               Step {currentStep + 1}: {steps[currentStep].title}
             </h1>
-            <div className="bg-white shadow rounded p-6">
+            <div className="bg-white shadow rounded p-2 lg:p-6">
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={currentStep}
