@@ -340,7 +340,9 @@ const PersonalInformation = ({
 
               {/* Referenece */}
               <div className="flex items-center border border-gray-300">
-                <div className="w-[50%] py-1 px-1">Reference <span className="text-red-500">*</span></div>
+                <div className="w-[50%] py-1 px-1">
+                  Reference <span className="text-red-500">*</span>
+                </div>
                 <div className="w-[50%] border-l border-gray-300">
                   <input
                     type="text"
