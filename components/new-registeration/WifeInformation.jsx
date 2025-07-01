@@ -411,13 +411,13 @@ const WifeInformation = ({
                         </span>
                         {Father
                           ? Father.MemberName
-                          : wife.fatherName || wife.WifeFatherName || "N/A"}
+                          : wife.fatherName || wife.WifeFatherName || ""}
                       </td>
                       <td className="px-1 py-2 text-xs ">
                         <span className="font-semibold md:hidden mr-2">
                           Family:
                         </span>
-                        {Family ? Family.FamilyName : "N/A"}
+                        {Family ? Family.FamilyName : ""}
                       </td>
                       <td className="px-1 py-2 text-xs ">
                         <span className="font-semibold md:hidden mr-2">
@@ -425,25 +425,25 @@ const WifeInformation = ({
                         </span>
                         {wife.dob || wife.DOB
                           ? new Date(wife.dob || wife.DOB).toLocaleDateString()
-                          : "N/A"}
+                          : ""}
                       </td>
                       <td className="px-1 py-2 text-xs ">
                         <span className="font-semibold md:hidden mr-2">
                           CNIC:
                         </span>
-                        {wife.cnicNo || wife.CNICNo || "N/A"}
+                        {wife.cnicNo || wife.CNICNo || ""}
                       </td>
                       <td className="px-1 py-2 text-xs ">
                         <span className="font-semibold md:hidden mr-2">
                           Cell #:
                         </span>
-                        {wife.cellNumber || wife.CellNo || "N/A"}
+                        {wife.cellNumber || wife.CellNo || ""}
                       </td>
                       <td className="px-1 py-2 text-xs ">
                         <span className="font-semibold md:hidden mr-2">
                           Email:
                         </span>
-                        {wife.email || wife.EmailID || "N/A"}
+                        {wife.email || wife.EmailID || ""}
                       </td>
                       <td className="px-1 py-2 text-xs ">
                         <span className="font-semibold md:hidden mr-2">
@@ -453,13 +453,13 @@ const WifeInformation = ({
                           ? new Date(
                               wife.marriageDate || wife.MarriageDt
                             ).toLocaleDateString()
-                          : "N/A"}
+                          : ""}
                       </td>
                       <td className="px-1 py-2 text-xs ">
                         <span className="font-semibold md:hidden mr-2">
                           Blood Group:
                         </span>
-                        {wife.bloodGroup || wife.xBloodGroup || "N/A"}
+                        {wife.bloodGroup || wife.xBloodGroup || ""}
                       </td>
                       <td className="px-1 py-2 text-xs flex justify-center gap-2 md:table-cell">
                         <button
