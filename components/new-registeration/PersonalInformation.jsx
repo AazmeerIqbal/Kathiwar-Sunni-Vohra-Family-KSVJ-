@@ -17,6 +17,7 @@ const PersonalInformation = ({
   StateDropDown,
   CityDropDown,
   FamilyDropDown,
+  FatherNames,
 }) => {
   const familyOptions = FamilyDropDown.map((family) => ({
     value: family.FamilyID,
@@ -344,13 +345,35 @@ const PersonalInformation = ({
                   Reference <span className="text-red-500">*</span>
                 </div>
                 <div className="w-[50%] border-l border-gray-300">
-                  <input
-                    type="text"
-                    name="remarks"
-                    value={formData.remarks}
-                    onChange={handleChange}
-                    className="w-[95%] rounded-xl my-1 mx-1 py-1 px-1 border border-gray-300 text-gray-500 
-                        "
+                  <Select
+                    name="reference"
+                    value={
+                      FatherNames.find(
+                        (opt) => opt.memberId === formData.reference
+                      )
+                        ? {
+                            value: FatherNames.find(
+                              (opt) => opt.memberId === formData.reference
+                            ).memberId,
+                            label: FatherNames.find(
+                              (opt) => opt.memberId === formData.reference
+                            ).MemberName,
+                          }
+                        : null
+                    }
+                    onChange={(selected) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        reference: selected ? selected.value : "",
+                      }))
+                    }
+                    options={FatherNames.map((father) => ({
+                      value: father.memberId,
+                      label: father.MemberName,
+                    }))}
+                    isClearable
+                    isSearchable
+                    placeholder="Select Reference"
                   />
                 </div>
               </div>
@@ -439,79 +462,7 @@ const PersonalInformation = ({
                       />
                     </div>
                   </div>
-                  {/* Pakistani Country/State/City */}
-                  <div className="flex items-center border border-gray-300">
-                    <div className="w-[50%] py-1 px-1">
-                      Pakistani Country/State/City
-                    </div>
-                    <div className="w-[50%] flex flex-col lg:flex-row border-l border-gray-300 gap-1">
-                      {/* Country Dropdown */}
-                      <Select
-                        name="country"
-                        value={
-                          pkCountryOptions.find(
-                            (opt) => opt.value === formData.country
-                          ) || null
-                        }
-                        onChange={(selected) =>
-                          handleChange({
-                            target: {
-                              name: "country",
-                              value: selected ? selected.value : "",
-                            },
-                          })
-                        }
-                        options={pkCountryOptions}
-                        isClearable
-                        isSearchable
-                        placeholder="Select Country"
-                      />
-
-                      {/* State Dropdown */}
-                      <Select
-                        name="state"
-                        value={
-                          pkStateOptions.find(
-                            (opt) => opt.value === formData.state
-                          ) || null
-                        }
-                        onChange={(selected) =>
-                          handleChange({
-                            target: {
-                              name: "state",
-                              value: selected ? selected.value : "",
-                            },
-                          })
-                        }
-                        options={pkStateOptions}
-                        isClearable
-                        isSearchable
-                        placeholder="Select State"
-                      />
-
-                      {/* City Dropdown */}
-                      <Select
-                        name="city"
-                        value={
-                          pkCityOptions.find(
-                            (opt) => opt.value === formData.city
-                          ) || null
-                        }
-                        onChange={(selected) =>
-                          handleChange({
-                            target: {
-                              name: "city",
-                              value: selected ? selected.value : "",
-                            },
-                          })
-                        }
-                        options={pkCityOptions}
-                        isClearable
-                        isSearchable
-                        placeholder="Select City"
-                      />
-                    </div>
-                  </div>
+                
                 </>
               )}
             </div>

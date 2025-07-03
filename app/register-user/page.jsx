@@ -117,6 +117,34 @@ const page = () => {
     }
   };
 
+  const fetchFatherName = async () => {
+    try {
+      // Construct the API URL
+      const apiUrl = `/api/getAllMembersName`;
+
+      // Make the API call
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      // Parse the response
+      const result = await response.json();
+
+      // Check if the response is successful
+      if (response.ok) {
+        setFatherNames(result.fathers); // Father dropdown data
+        console.log("Fathers data fetched:", result.fathers);
+      } else {
+        console.log("Error fetching dropdown data:", result.message);
+      }
+    } catch (error) {
+      console.log("Error calling API:", error);
+    }
+  };
+
   // Initialize state for form fields
   const [formData, setFormData] = useState({
     image: "",
@@ -138,7 +166,7 @@ const page = () => {
     address: "",
     deathOn: "",
     graveNumber: "",
-    remarks: "",
+    reference: "",
     country: "",
     state: "",
     city: "",
@@ -150,6 +178,7 @@ const page = () => {
   useEffect(() => {
     fetchDropdownData();
     fetchCountryData();
+    fetchFatherName();
   }, []);
 
   const handleChange = (e) => {
@@ -435,6 +464,7 @@ const page = () => {
           StateDropDown={StateDropDown}
           CityDropDown={CityDropDown}
           FamilyDropDown={FamilyDropDown}
+          FatherNames={FatherNames}
         />
       ),
     },
