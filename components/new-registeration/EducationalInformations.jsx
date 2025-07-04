@@ -87,7 +87,7 @@ const EducationalInformations = ({
   const handleHQChange = (selected, fieldOnChange) => {
     const selectedHQID = selected ? Number(selected.value) : null;
     fieldOnChange(selected ? selected.value : "");
-    if (selectedHQID && ![22, 23, 1].includes(selectedHQID)) {
+    if (selectedHQID && ![29, 30, 3].includes(selectedHQID)) {
       setShowSpecialization(true);
     } else {
       setShowSpecialization(false);
@@ -130,7 +130,7 @@ const EducationalInformations = ({
     setValue("description", item.description);
     // Show/hide specialization
     const selectedHQID = Number(item.qualification);
-    if (selectedHQID && ![22, 23, 1].includes(selectedHQID)) {
+    if (selectedHQID && ![29, 30, 3].includes(selectedHQID)) {
       setShowSpecialization(true);
     } else {
       setShowSpecialization(false);
@@ -154,7 +154,7 @@ const EducationalInformations = ({
       >
         {/* Highest Qualification */}
         <div>
-          <label className="text-gray-600">Highest Qualification *</label>
+          <label className="text-gray-600">Qualification *</label>
           <Controller
             name="qualification"
             control={control}

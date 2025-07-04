@@ -516,83 +516,83 @@ const page = () => {
   ];
 
   const handleNext = async () => {
-    if (currentStep == 0) {
-      const selectedCurrentCountry = CountryDropDown.find(
-        (country) => country.ID === formData.currentCountry
-      );
-      const showPakistaniFields =
-        selectedCurrentCountry &&
-        selectedCurrentCountry.CountryName !== "Pakistan";
+    // if (currentStep == 0) {
+    //   const selectedCurrentCountry = CountryDropDown.find(
+    //     (country) => country.ID === formData.currentCountry
+    //   );
+    //   const showPakistaniFields =
+    //     selectedCurrentCountry &&
+    //     selectedCurrentCountry.CountryName !== "Pakistan";
 
-      const requiredFields = [
-        { name: "memberType", label: "Member Type" },
-        { name: "cnic", label: "CNIC No" },
-        { name: "dob", label: "Date Of Birth" },
-        { name: "gender", label: "Gender" },
-        { name: "email", label: "Email ID" },
-        { name: "maritalStatus", label: "Marital Status" },
-        { name: "familyName", label: "Family Name" },
-        { name: "cellNumber", label: "Cell Number" },
-        { name: "fatherHusbandName", label: "Father/Husband Name" },
-        { name: "name", label: "Name" },
-        { name: "currentCountry", label: "Current Country" },
-        { name: "currentCity", label: "Current City" },
-        { name: "currentAddress", label: "Current Address" },
-      ];
+    //   const requiredFields = [
+    //     { name: "memberType", label: "Member Type" },
+    //     { name: "cnic", label: "CNIC No" },
+    //     { name: "dob", label: "Date Of Birth" },
+    //     { name: "gender", label: "Gender" },
+    //     { name: "email", label: "Email ID" },
+    //     { name: "maritalStatus", label: "Marital Status" },
+    //     { name: "familyName", label: "Family Name" },
+    //     { name: "cellNumber", label: "Cell Number" },
+    //     { name: "fatherHusbandName", label: "Father/Husband Name" },
+    //     { name: "name", label: "Name" },
+    //     { name: "currentCountry", label: "Current Country" },
+    //     { name: "currentCity", label: "Current City" },
+    //     { name: "currentAddress", label: "Current Address" },
+    //   ];
 
-      if (showPakistaniFields) {
-        requiredFields.push(
-          { name: "address", label: "Address In Pakistan" },
-          { name: "state", label: "State" },
-          { name: "city", label: "City" }
-        );
-      }
+    //   if (showPakistaniFields) {
+    //     requiredFields.push(
+    //       { name: "address", label: "Address In Pakistan" },
+    //       { name: "state", label: "State" },
+    //       { name: "city", label: "City" }
+    //     );
+    //   }
 
-      const emptyFields = requiredFields.filter(
-        (field) => !formData[field.name] || formData[field.name] === ""
-      );
+    //   const emptyFields = requiredFields.filter(
+    //     (field) => !formData[field.name] || formData[field.name] === ""
+    //   );
 
-      if (emptyFields.length > 0) {
-        // Create toast error message with all missing fields
-        const missingFields = emptyFields
-          .map((field) => field.label)
-          .join(", ");
-        toast.error(`Please fill in required fields: ${missingFields}`, {
-          duration: 5000,
-          position: "top-center",
-        });
-        return;
-      }
+    //   if (emptyFields.length > 0) {
+    //     // Create toast error message with all missing fields
+    //     const missingFields = emptyFields
+    //       .map((field) => field.label)
+    //       .join(", ");
+    //     toast.error(`Please fill in required fields: ${missingFields}`, {
+    //       duration: 5000,
+    //       position: "top-center",
+    //     });
+    //     return;
+    //   }
 
-      // Email validation
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email)) {
-        toast.error("Please enter a valid email address", {
-          duration: 3000,
-          position: "top-center",
-        });
-        return;
-      }
+    //   // Email validation
+    //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    //   if (!emailRegex.test(formData.email)) {
+    //     toast.error("Please enter a valid email address", {
+    //       duration: 3000,
+    //       position: "top-center",
+    //     });
+    //     return;
+    //   }
 
-      // CNIC validation - must be complete
-      if (formData.cnic.length < 15) {
-        // 13 digits + 2 hyphens = 15 characters
-        toast.error("Please enter a complete 13-digit CNIC number", {
-          duration: 3000,
-          position: "top-center",
-        });
-        return;
-      }
+    //   // CNIC validation - must be complete
+    //   if (formData.cnic.length < 15) {
+    //     // 13 digits + 2 hyphens = 15 characters
+    //     toast.error("Please enter a complete 13-digit CNIC number", {
+    //       duration: 3000,
+    //       position: "top-center",
+    //     });
+    //     return;
+    //   }
 
-      const cnicCheck = await checkExistingUser(formData.cnic);
-      if (cnicCheck.exists) {
-        toast.error("A user with this CNIC already exists.", {
-          duration: 4000,
-          position: "top-center",
-        });
-        return;
-      }
-    }
+    //   const cnicCheck = await checkExistingUser(formData.cnic);
+    //   if (cnicCheck.exists) {
+    //     toast.error("A user with this CNIC already exists.", {
+    //       duration: 4000,
+    //       position: "top-center",
+    //     });
+    //     return;
+    //   }
+    // }
     // If on Educational Info step, store the current EducationData in EducationalInfo
     if (currentStep === 1) {
       // Map EducationData to the required columns and store in EducationalInfo

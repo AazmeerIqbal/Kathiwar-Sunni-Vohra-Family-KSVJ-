@@ -306,7 +306,7 @@ const PersonalInformation = ({
                           "
                   >
                     <option value={"1"}>Married</option>
-                    <option value={"2"}>Unmarried</option>
+                    <option value={"2"}>Single</option>
                     <option value={"3"}>Divorced</option>
                   </select>
                 </div>
@@ -462,7 +462,6 @@ const PersonalInformation = ({
                       />
                     </div>
                   </div>
-                
                 </>
               )}
             </div>
