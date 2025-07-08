@@ -24,7 +24,7 @@ export async function POST(req) {
       .input("FamilyID", formData.familyName)
       .input("MaritalStatus", formData.maritalStatus)
       .input("PostalAddress", formData.address)
-      .input("Remarks", formData.remarks)
+      .input("ReferenceID", formData.reference)
       .input("FromCountryID", formData.country)
       .input("FromStateID", formData.state)
       .input("FromCityID", formData.city)
@@ -46,7 +46,7 @@ export async function POST(req) {
           FamilyID,
           MaritalStatus,
           PostalAddress,
-          Remarks,
+          ReferenceID,
           FromCountryID,
           FromStateID,
           FromCityID,
@@ -70,7 +70,7 @@ export async function POST(req) {
           @FamilyID,
           @MaritalStatus,
           @PostalAddress,
-          @Remarks,
+          @ReferenceID,
           @FromCountryID,
           @FromStateID,
           @FromCityID,
@@ -83,6 +83,8 @@ export async function POST(req) {
 
     const NewMemberId = result.recordset[0].MemberID;
     console.log("New Member ID: ", NewMemberId);
+
+    console.log("Education Data: ", formData.education);
 
     // Insert education data if present
     if (Array.isArray(formData.education)) {
@@ -147,6 +149,91 @@ export async function POST(req) {
           @EmployeeUnEmployeed
         );
       `);
+      }
+    }
+
+    // Insert Wife data if present
+    if (Array.isArray(formData.wife)) {
+      for (const wife of formData.wife) {
+        await pool
+          .request()
+          .input("MemberID", NewMemberId)
+          .input("CompanyID", "12")
+          .input("WifeName", wife.wifeName)
+          .input("WifeFatherName", wife.fatherDetail)
+          .input("CellNo", wife.cellNumber)
+          .input("EmailID", wife.email)
+          .input("CNICNo", wife.cnicNo)
+          .input("xBloodGroup", wife.bloodGroup)
+          .input("DOB", wife.dob)
+          .input("MarriageDt", wife.marriageDate)
+          .input("MaritalStatus", wife.maritalStatus)
+          .input("FamilyID", wife.fatherFamilyName)
+          .input("Del", 0).query(`
+    INSERT INTO tb_member_wife_det_test (
+      MemberID,
+      CompanyID,
+      WifeName,
+      WifeFatherName,
+      CellNo,
+      EmailID,
+      CNICNo,   
+      xBloodGroup,
+      DOB,
+      MarriageDt,
+      MaritalStatus,
+      FamilyID,
+      Del
+    ) VALUES (
+      @MemberID,
+      @CompanyID,
+      @WifeName,
+      @WifeFatherName,
+      @CellNo,
+      @EmailID,
+      @CNICNo,
+      @xBloodGroup,
+      @DOB,
+      @MarriageDt,
+      @MaritalStatus,
+      @FamilyID,
+      @Del
+    )
+  `);
+      }
+    }
+
+    console.log("Children Data: ", formData.children);
+
+    // Insert Children data if present
+    if (Array.isArray(formData.children)) {
+      for (const child of formData.children) {
+        await pool
+          .request()
+          .input("MemberId", NewMemberId)
+          .input("CompanyID", "12")
+          .input("MembershipID", child.MembershipID)
+          .input("ChildName", child.ChildName)
+          .input("Gender", child.Gender)
+          .input("DOB", child.DOB)
+          .input("BloodGroupID", child.BloodGroupID)
+          .input("BFormNo", child.BFormNo)
+          .input("Age", child.Age)
+          .query(` INSERT INTO tb_member_child_det_test (
+        [memberId], [CompanyID], [ChildMemberShipNo], [ChildName],
+        [Gender], [DOB], [BloodGroupID], [xBloodGroup], [CNICNo],
+        [BFormNo], [DeathOn], [MemberIDAlot], [EducationSupportID],
+         [MaritalStatus], [TakeCare], [GraveNumber],
+        [EducationID], [PicPath], [HusbandId], [IsHusbandMember],
+        [LastUpdateUser], [LastUpdateDate]
+      ) VALUES (
+        @MemberId, @CompanyID, @MembershipID, @ChildName,
+        @Gender, @DOB, @BloodGroupID, NULL, NULL,
+        @BFormNo, NULL, NULL, NULL,
+         NULL, 0, NULL,
+        NULL, NULL, NULL, NULL,
+        NULL, NULL
+      )`);
       }
     }
 
