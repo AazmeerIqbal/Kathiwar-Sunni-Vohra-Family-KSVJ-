@@ -30,7 +30,7 @@ const PersonalInformation = ({
   }));
 
   const bloodGroupOptions = [
-    { value: "N/A", label: "N/A" },
+    { value: "0", label: "N/A" },
     { value: "1", label: "A+" },
     { value: "2", label: "A-" },
     { value: "3", label: "B+" },
