@@ -17,7 +17,7 @@ export async function DELETE(req, { params }) {
 
     // Execute delete query
     await request.query(`
-      DELETE FROM tb_member_mst_temp WHERE memberId = @MemberId
+      DELETE FROM tb_member_mst_test WHERE memberId = @MemberId
     `);
 
     await closeConnection(pool);

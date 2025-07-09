@@ -17,7 +17,7 @@ export async function GET(req, { params }) {
 
     // Execute all queries in a single request
     const result = await request.query(`
-      SELECT * FROM tb_member_mst_temp WHERE memberId = @MemberId;
+      SELECT * FROM tb_member_mst_test WHERE memberId = @MemberId;
     `);
 
     await closeConnection(pool);

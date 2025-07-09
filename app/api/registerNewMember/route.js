@@ -30,9 +30,10 @@ export async function POST(req) {
       .input("FromCityID", formData.city)
       .input("MemberType", formData.memberType)
       .input("CompanyID", "12")
+      .input("NewRegisterationFlag", 1)
       .input("RequestDate", new Date().toISOString().split("T")[0]) // Sending today's date in YYYY-MM-DD format
       .input("Status", formData.activeStatus).query(`
-        INSERT INTO tb_member_mst_temp (
+        INSERT INTO tb_member_mst_test (
           CNICNo,
           PicPath,
           MemberTitle,
@@ -52,6 +53,7 @@ export async function POST(req) {
           FromCityID,
           DughterOfJamat,
           CompanyID,
+          NewRegisterationFlag,
           RequestDt,
           Status
         )
@@ -76,6 +78,7 @@ export async function POST(req) {
           @FromCityID,
           @MemberType,
           @CompanyID,
+          @NewRegisterationFlag,
           @RequestDate,
           @Status
         )
