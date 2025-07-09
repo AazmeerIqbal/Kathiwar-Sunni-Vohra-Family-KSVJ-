@@ -544,11 +544,7 @@ const page = () => {
       ];
 
       if (showPakistaniFields) {
-        requiredFields.push(
-          { name: "address", label: "Address In Pakistan" },
-          { name: "state", label: "State" },
-          { name: "city", label: "City" }
-        );
+        requiredFields.push({ name: "address", label: "Address In Pakistan" });
       }
 
       const emptyFields = requiredFields.filter(

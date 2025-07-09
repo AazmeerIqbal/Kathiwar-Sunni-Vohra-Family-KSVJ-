@@ -15,7 +15,7 @@ export async function GET(req, { params }) {
 
     const RegisterationRequest = await pool
       .request()
-      .query("SELECT * FROM tb_member_mst_test");
+      .query("SELECT * FROM tb_member_mst_test where NewRegisterationFlag = 1");
 
     // Close the database connection
     await closeConnection(pool);
