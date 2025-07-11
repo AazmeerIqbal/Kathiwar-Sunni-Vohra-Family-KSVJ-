@@ -544,7 +544,10 @@ const page = () => {
       ];
 
       if (showPakistaniFields) {
-        requiredFields.push({ name: "address", label: "Address In Pakistan" });
+        requiredFields.push({
+          name: "PakistaniAddress",
+          label: "Address In Pakistan",
+        });
       }
 
       const emptyFields = requiredFields.filter(
