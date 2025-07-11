@@ -23,11 +23,12 @@ export async function POST(req) {
       .input("BloodGroupID", formData.bloodGroup)
       .input("FamilyID", formData.familyName)
       .input("MaritalStatus", formData.maritalStatus)
-      .input("PostalAddress", formData.address)
+      .input("CurrentAddress", formData.currentAddress)
       .input("ReferenceID", formData.reference)
-      .input("FromCountryID", formData.country)
+      .input("CurrentCountry", formData.currentCountry)
       .input("FromStateID", formData.state)
-      .input("FromCityID", formData.city)
+      .input("CurrentCity", formData.currentCity)
+      .input("PostalAddress", formData.PakistaniAddress)
       .input("MemberType", formData.memberType)
       .input("CompanyID", "12")
       .input("NewRegisterationFlag", 1)
@@ -46,11 +47,12 @@ export async function POST(req) {
           BloodGroupID,
           FamilyID,
           MaritalStatus,
-          PostalAddress,
+          CurrentAddress,
           ReferenceID,
-          FromCountryID,
+          CurrentCountry,
           FromStateID,
-          FromCityID,
+          CurrentCity,
+          PostalAddress,
           DughterOfJamat,
           CompanyID,
           NewRegisterationFlag,
@@ -71,11 +73,12 @@ export async function POST(req) {
           @BloodGroupID,
           @FamilyID,
           @MaritalStatus,
-          @PostalAddress,
+          @CurrentAddress,
           @ReferenceID,
-          @FromCountryID,
+          @CurrentCountry,
           @FromStateID,
-          @FromCityID,
+          @CurrentCity,
+          @PostalAddress,
           @MemberType,
           @CompanyID,
           @NewRegisterationFlag,

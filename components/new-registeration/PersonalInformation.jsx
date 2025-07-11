@@ -454,8 +454,8 @@ const PersonalInformation = ({
                     <div className="w-[50%] border-l border-gray-300">
                       <input
                         type="text"
-                        name="address"
-                        value={formData.address}
+                        name="PakistaniAddress"
+                        value={formData.PakistaniAddress}
                         onChange={handleChange}
                         className="w-[95%] rounded-xl my-1 mx-1 py-1 px-1 border border-gray-300 text-gray-600 
                               "

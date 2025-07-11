@@ -163,7 +163,7 @@ const page = () => {
     bloodGroup: "",
     familyName: "0",
     maritalStatus: "1",
-    address: "",
+    PakistaniAddress: "",
     deathOn: "",
     graveNumber: "",
     reference: "",

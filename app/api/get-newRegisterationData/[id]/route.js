@@ -13,24 +13,23 @@ export async function GET(req, { params }) {
 
   try {
     const pool = await connectToDB(config);
-    const request = pool.request().input("MemberId", id);
 
-    // Execute all queries in a single request
-    const result = await request.query(`
-      SELECT * FROM tb_member_mst_test WHERE memberId = @MemberId;
-    `);
+    const result = await pool
+      .request()
+      .input("MemberId", id)
+      .execute("sp_Get_NewRegisteration"); // 👈 Call stored procedure
 
     await closeConnection(pool);
 
-    // Destructure result.recordsets
+    // Destructure first result set
     const [member] = result.recordsets;
 
     return NextResponse.json({
-      message: "Query executed successfully.",
+      message: "Stored procedure executed successfully.",
       member: member.length > 0 ? member[0] : null,
     });
   } catch (error) {
-    console.error("Error executing query:", error);
+    console.error("Error executing stored procedure:", error);
     return NextResponse.json(
       { message: "Internal Server Error", error: error.message },
       { status: 500 }
