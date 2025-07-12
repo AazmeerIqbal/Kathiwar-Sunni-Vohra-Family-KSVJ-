@@ -339,6 +339,25 @@ const page = () => {
           duration: 3000,
         });
 
+        // Send confirmation email
+        try {
+          await fetch("/api/sendConfirmationEmail", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: formData.name,
+              cnic: formData.cnic,
+              familyName:
+                FamilyDropDown.find(
+                  (f) => String(f.ID) === String(formData.familyName)
+                )?.FamilyName || "",
+              email: formData.email,
+            }),
+          });
+        } catch (emailError) {
+          console.error("Failed to send confirmation email:", emailError);
+        }
+
         // Clear form fields after successful submission
         setFormData({
           image: "",
