@@ -32,7 +32,7 @@ export async function POST(req, { params }) {
       .input("Gender", formData.gender)
       .input("CellNo", formData.cellNumber)
       .input("EmailID", formData.email)
-      .input("BloodGroupID", formData.bloodGroup)
+      .input("BloodGroupID", parseInt(formData.bloodGroup) || 0)
       .input("FamilyID", formData.familyName)
       .input("MaritalStatus", formData.maritalStatus)
       .input("PostalAddress", formData.address)
@@ -40,13 +40,9 @@ export async function POST(req, { params }) {
       .input("GraveNumber", formData.graveNumber)
       .input("Remarks", formData.remarks)
       .input("Image", formData.image)
-      .input("FromCountryID", formData.country)
-      .input("FromStateID", formData.state)
-      .input("FromCityID", formData.city)
-      .input("CurrentCountryID", formData.currentCountry)
+      .input("CurrentCountry", formData.currentCountry)
       .input("CurrentCity", formData.currentCity)
       .input("CurrentAddress", formData.currentAddress)
-
       .input("Status", formData.activeStatus).query(`
         UPDATE tb_member_mst_test
         SET
@@ -67,10 +63,7 @@ export async function POST(req, { params }) {
         GraveNumber = @GraveNumber,
         Remarks = @Remarks,
         PicPath = @Image,
-        FromCountryID = @FromCountryID,
-        FromStateID = @FromStateID,
-        FromCityID = @FromCityID,
-        CurrentCountry = @CurrentCountryID,
+        CurrentCountry = @CurrentCountry,
         CurrentCity = @CurrentCity,
         CurrentAddress = @CurrentAddress,
         Status = @Status

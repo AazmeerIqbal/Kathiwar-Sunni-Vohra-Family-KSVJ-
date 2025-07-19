@@ -5,6 +5,7 @@ import { MdOutlineFileUpload, MdDelete } from "react-icons/md";
 import dayjs from "dayjs";
 import { useSession } from "next-auth/react";
 import { motion } from "framer-motion";
+import Select from "react-select";
 
 // Notification Toaster
 import { toast } from "react-toastify";
@@ -51,9 +52,10 @@ const PersonalInformations = ({
     deathOn: "",
     graveNumber: "",
     remarks: "",
-    country: "",
+    currentCountry: "",
     state: "",
-    city: "",
+    currentCity: "",
+    currentAddress: "",
   });
 
   const [selectedImage, setSelectedImage] = useState(null);
@@ -90,15 +92,66 @@ const PersonalInformations = ({
           : "",
         graveNumber: UserData.GraveNumber ?? "",
         remarks: UserData.Remarks ?? "",
-        country: UserData.FromCountryID ?? "",
-        state: UserData.FromStateID ?? "",
-        city: UserData.FromCityID ?? "",
         currentCountry: UserData.CurrentCountry ?? "",
         currentCity: UserData.CurrentCity ?? "",
         currentAddress: UserData.CurrentAddress ?? "",
       });
     }
   }, [UserData]);
+
+  const familyOptions =
+    FamilyDropDown && FamilyDropDown.length > 0
+      ? FamilyDropDown.map((family) => ({
+          value: family.FamilyID?.toString(),
+          label: family.FamilyName,
+        }))
+      : [];
+
+  // Debug logging
+  console.log("FamilyDropDown:", FamilyDropDown);
+  console.log("familyOptions:", familyOptions);
+  console.log("formData.familyName:", formData.familyName);
+
+  const countryOptions = CountryDropDown.map((country) => ({
+    value: country.ID,
+    label: country.CountryName,
+  }));
+
+  const bloodGroupOptions = [
+    { value: "0", label: "N/A" },
+    { value: "1", label: "A+" },
+    { value: "2", label: "A-" },
+    { value: "3", label: "B+" },
+    { value: "4", label: "B-" },
+    { value: "5", label: "O+" },
+    { value: "6", label: "O-" },
+    { value: "7", label: "AB+" },
+    { value: "8", label: "AB-" },
+  ];
+
+  // Debug logging for blood group
+  console.log("formData.bloodGroup:", formData.bloodGroup);
+  console.log("bloodGroupOptions:", bloodGroupOptions);
+
+  const pkCountryOptions = CountryDropDown.map((country) => ({
+    value: country.ID,
+    label: country.CountryName,
+  }));
+  const pkStateOptions = StateDropDown.map((state) => ({
+    value: state.ID,
+    label: state.StateName,
+  }));
+  const pkCityOptions = CityDropDown.map((city) => ({
+    value: city.ID,
+    label: city.CityName,
+  }));
+
+  const selectedCurrentCountry = CountryDropDown.find(
+    (country) => country.ID === formData.currentCountry
+  );
+  const showPakistaniFields =
+    selectedCurrentCountry && selectedCurrentCountry.CountryName !== "Pakistan";
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
@@ -131,8 +184,8 @@ const PersonalInformations = ({
 
       // Check if the response is successful
       if (response.ok) {
-        setFamilyDropDown(result.family); // Family dropdown data
-        console.log("Dropdown data fetched:", result.data);
+        setFamilyDropDown(result.family || result.data || []); // Family dropdown data
+        console.log("Dropdown data fetched:", result);
       } else {
         console.log("Error fetching dropdown data:", result.message);
       }
@@ -337,75 +390,62 @@ const PersonalInformations = ({
       >
         <div className="p-4 text-gray-900">
           <div>
-            <div className="text-[13px] md:text-[14px] lg:text-[14px] border border-gray-300 font-crimson md:grid md:grid-cols-2 lg:grid lg:grid-cols-2">
+            <div className="text-[10px] md:text-[13px] lg:text-[13px] border border-gray-300 font-crimson grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-1">
               {/* Left Section */}
-              <div className="flex flex-col justify-between sm:flex-row md:flex-col lg:flex-row border border-gray-300">
-                {/* Profile Image */}
-                <div className="flex order-[-1] sm:order-none md:order-[-1] lg:order-none items-center border border-r-0 lg:w-[50%] md:w-full border-gray-300 justify-center">
-                  <img
-                    className="rounded-[50%] w-[80px] h-[80px] md:w-[130px] md:h-[130px] mx-2 my-2"
-                    src={
-                      formData.image == "" ? "DummyUser.png" : formData.image
-                    }
-                    alt="Profile"
-                  />
-                  <div className="flex flex-col gap-2">
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      style={{ display: "none" }}
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                    />
-                    <button
-                      className={`${
-                        !UserData
-                          ? "bg-gray-400 cursor-not-allowed"
-                          : "bg-gray-200 cursor-pointer"
-                      } rounded-lg p-1`}
-                      onClick={UserData ? handleImageClick : undefined}
-                      disabled={!UserData}
-                      title={
-                        !UserData
-                          ? "Save personal information first"
-                          : "Upload profile image"
+              <div className="flex flex-col justify-between border border-gray-300">
+                <div className="flex flex-col w-full">
+                  {/* Image section */}
+                  <div className="flex items-center border border-r-0 w-full border-gray-300 justify-center py-2">
+                    <img
+                      className="rounded-full w-[60px] h-[60px] md:w-[90px] md:h-[90px] mx-1 my-1"
+                      src={
+                        formData.image == "" ? "DummyUser.png" : formData.image
                       }
-                    >
-                      <MdOutlineFileUpload />
-                    </button>
-                    {/* <button className="bg-red-400 text-white rounded-lg p-1">
-                      <MdDelete />
-                    </button> */}
-                  </div>
-                </div>
-                {/* Left Sub-Section */}
-                <div className="flex flex-col lg:w-[50%] ">
-                  {/* Member Type */}
-                  <div className="flex items-center h-full  border border-gray-300">
-                    <div className="w-[50%] py-2 px-2">Member Type</div>
-                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
-                      <select
-                        name="memberType"
-                        disabled
-                        value={formData.memberType}
-                        onChange={handleChange}
-                        className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600 focus:border-2 focus:border-indigo-800"
+                      alt="Profile"
+                    />
+                    <div className="flex flex-col gap-1">
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        style={{ display: "none" }}
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                      />
+                      <button
+                        className={`${
+                          !UserData
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-gray-200 cursor-pointer"
+                        } rounded-lg p-1`}
+                        onClick={UserData ? handleImageClick : undefined}
+                        disabled={!UserData}
+                        title={
+                          !UserData
+                            ? "Save personal information first"
+                            : "Upload profile image"
+                        }
                       >
-                        <option>Member</option>
-                        <option>Admin</option>
-                      </select>
+                        <span className="sr-only">Upload</span>
+                        <MdOutlineFileUpload />
+                      </button>
                     </div>
                   </div>
+                </div>
+              </div>
+
+              {/* Additional fields for update information */}
+              <div className="flex flex-col justify-between border border-gray-300">
+                <div className="flex flex-col w-full">
                   {/* Active/Inactive */}
-                  <div className="flex items-center h-full border border-gray-300">
-                    <div className="w-[50%] py-2  px-2">Active/Inactive</div>
-                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
+                  <div className="flex items-center border border-gray-300">
+                    <div className="w-[50%] py-1 px-1">Active/Inactive</div>
+                    <div className="w-[50%] border-l border-gray-300">
                       <select
                         value={formData.activeStatus}
                         onChange={handleChange}
                         disabled
                         name="activeStatus"
-                        className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600 focus:border-2 focus:border-indigo-800"
+                        className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600"
                       >
                         <option value="0">Active</option>
                         <option value="1">Inactive</option>
@@ -413,9 +453,9 @@ const PersonalInformations = ({
                     </div>
                   </div>
                   {/* Membership Number */}
-                  <div className="flex items-center h-full border border-gray-300">
-                    <div className="w-[50%] py-2 px-2">Membership #</div>
-                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
+                  <div className="flex items-center border border-gray-300">
+                    <div className="w-[50%] py-1 px-1">Membership #</div>
+                    <div className="w-[50%] border-l border-gray-300">
                       <input
                         type="text"
                         name="membershipNumber"
@@ -424,345 +464,365 @@ const PersonalInformations = ({
                         disabled
                         value={formData.membershipNumber}
                         onChange={handleMembershipChange}
-                        className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600"
+                        className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600"
+                      />
+                    </div>
+                  </div>
+                  {/* Membership Date */}
+                  <div className="flex items-center border border-gray-300">
+                    <div className="w-[50%] py-1 px-1">Membership Date</div>
+                    <div className="w-[50%] border-l border-gray-300">
+                      <input
+                        type="date"
+                        name="membershipDate"
+                        disabled
+                        value={formData.membershipDate}
+                        onChange={handleChange}
+                        className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600"
                       />
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="flex flex-col justify-between sm:flex-row md:flex-row lg:flex-row border border-gray-300">
+              <div className="flex flex-col justify-between border border-gray-300">
                 <div className="flex flex-col w-full">
-                  {/* Membership Date */}
-                  <div className="flex items-center h-full border border-gray-300">
-                    <div className="w-[50%] py-2 px-2">Membership Date</div>
-                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
-                      <input
-                        type="date"
-                        name="membershipDate"
-                        value={formData.membershipDate}
+                  {/* Member Type */}
+                  <div className="flex items-center border border-gray-300">
+                    <div className="w-[50%] py-1 px-1">Member Type</div>
+                    <div className="w-[50%] border-l border-gray-300">
+                      <select
+                        name="memberType"
+                        disabled
+                        value={formData.memberType}
                         onChange={handleChange}
-                        className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600"
-                      />
+                        className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600"
+                      >
+                        <option value="0">Member</option>
+                        <option value="1">Admin</option>
+                      </select>
                     </div>
                   </div>
                   {/* Name*/}
-                  <div className="flex items-center h-full border border-gray-300">
-                    <div className="w-[30%] py-2 px-2">Name</div>
-                    <div className="border-l h-full flex items-center border-gray-300">
+                  <div className="flex items-center border border-gray-300">
+                    <div className="w-[30%] py-1 px-1">Name</div>
+                    <div className="border-l border-gray-300">
                       <select
                         name="nameTitle"
                         value={formData.nameTitle}
                         onChange={handleChange}
-                        className="border border-gray-300 rounded-2xl my-2 mx-[2px] py-2 px-2 text-gray-600 focus:border-2 focus:border-indigo-800"
+                        className="border border-gray-300 rounded-xl my-1 mx-1 py-1 px-1 text-gray-600"
                       >
                         <option>Mr.</option>
                         <option>Mrs.</option>
                       </select>
                     </div>
 
-                    <div className="w-[70%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
+                    <div className="w-[70%] border-l border-gray-300">
                       <input
                         type="text"
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
-                        className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600"
+                        className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600"
                       />
                     </div>
                   </div>
                   {/* Father/Husband Name */}
-                  <div className="flex items-center h-full border border-gray-300">
-                    <div className="w-[50%] py-2 px-2">Father/Husband Name</div>
-                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
+                  <div className="flex items-center border border-gray-300">
+                    <div className="w-[50%] py-1 px-1">Father/Husband Name</div>
+                    <div className="w-[50%] border-l border-gray-300">
                       <input
                         type="text"
                         name="fatherHusbandName"
                         value={formData.fatherHusbandName}
                         onChange={handleChange}
-                        className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600"
+                        className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600"
                       />
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="flex flex-col justify-between sm:flex-row md:flex-col lg:flex-row border border-gray-300">
+              <div className="flex flex-col justify-between border border-gray-300">
                 <div className="flex flex-col w-full">
+                  {/* Gender */}
+                  <div className="flex items-center border border-gray-300">
+                    <div className="w-[50%] py-1 px-1">Gender</div>
+                    <div className="w-[50%] border-l border-gray-300">
+                      <select
+                        name="gender"
+                        value={formData.gender}
+                        onChange={handleChange}
+                        className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600"
+                      >
+                        <option value="1">Male</option>
+                        <option value="2">Female</option>
+                      </select>
+                    </div>
+                  </div>
                   {/* Date of Birth */}
-                  <div className="flex items-center h-full border border-gray-300">
-                    <div className="w-[50%] py-2 px-2">DOB</div>
-                    <div className="w-[50%] md:w-[60%] lg:w-[60%] relative border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
+                  <div className="flex items-center border border-gray-300">
+                    <div className="w-[50%] py-1 px-1">DOB</div>
+                    <div className="w-[50%] border-l border-gray-300">
                       <input
                         id="date"
                         name="dob"
                         value={formData.dob}
                         onChange={handleChange}
                         type="date"
-                        className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600"
+                        className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600"
                       />
                     </div>
                   </div>
-                  {/* CNIC Number */}
-                  <div className="flex items-center h-full border border-gray-300">
-                    <div className="w-[50%] py-2 px-2">CNIC NO</div>
-                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
-                      <input
-                        type="text"
-                        name="cnic"
-                        placeholder="00000-000000-0"
-                        value={formData.cnic} // Use formData.cnic instead of cnic state
-                        id="cnic"
-                        onChange={handleCNICChange} // Only call handleCNICChange
-                        className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600"
+                  {/* Family Name */}
+                  <div className="flex items-center border border-gray-300">
+                    <div className="w-[50%] py-1 px-1">Family Name</div>
+                    <div className="w-[50%] border-l border-gray-300">
+                      <Select
+                        name="familyName"
+                        value={
+                          familyOptions.find(
+                            (opt) => opt.value === formData.familyName
+                          ) || null
+                        }
+                        onChange={(selected) =>
+                          handleChange({
+                            target: {
+                              name: "familyName",
+                              value: selected ? selected.value : "",
+                            },
+                          })
+                        }
+                        options={familyOptions}
+                        isClearable
+                        isSearchable
+                        placeholder="Select Family"
                       />
-                    </div>
-                  </div>
-                  {/* Gender */}
-                  <div className="flex items-center h-full border border-gray-300">
-                    <div className="w-[50%] py-2 px-2">Gender</div>
-                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
-                      <select
-                        name="gender"
-                        value={formData.gender}
-                        onChange={handleChange}
-                        className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600 focus:border-2 focus:border-indigo-800"
-                      >
-                        <option>Male</option>
-                        <option>Female</option>
-                      </select>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="flex flex-col justify-between sm:flex-row md:flex-col lg:flex-row border border-gray-300">
+              <div className="flex flex-col justify-between border border-gray-300">
                 <div className="flex flex-col w-full">
                   {/* {Cell #} */}
-                  <div className="flex items-center h-full border border-gray-300">
-                    <div className="w-[50%] py-2 px-2">Cell #</div>
-                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
+                  <div className="flex items-center border border-gray-300">
+                    <div className="w-[50%] py-1 px-1">Cell #</div>
+                    <div className="w-[50%] border-l border-gray-300">
                       <input
                         type="text"
                         name="cellNumber"
-                        value={formData.cellNumber} // Use formData.cellNumber instead of cellNumber state
+                        value={formData.cellNumber}
                         id="cellNumber"
-                        onChange={handleCellNumber} // Only call handleCellNumber
+                        onChange={handleCellNumber}
                         placeholder="####-#######"
-                        className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600"
+                        className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600"
                       />
                     </div>
                   </div>
                   {/* E-mail ID */}
-                  <div className="flex items-center h-full border border-gray-300">
-                    <div className="w-[50%] py-2 px-2">E-mail ID</div>
-                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
+                  <div className="flex items-center border border-gray-300">
+                    <div className="w-[50%] py-1 px-1">E-mail ID</div>
+                    <div className="w-[50%] border-l border-gray-300">
                       <input
                         id="email"
                         type="email"
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
-                        className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
+                        className="w-[95%] rounded-xl my-1 mx-1 py-1 px-1 border border-gray-300 text-gray-600"
                       />
-                    </div>
-                  </div>
-                  {/* Blood Group */}
-                  <div className="flex items-center h-full border border-gray-300">
-                    <div className="w-[50%] py-2 px-2">Blood Group</div>
-                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
-                      <select
-                        name="bloodGroup"
-                        value={formData.bloodGroup}
-                        onChange={handleChange}
-                        className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600 focus:border-2 focus:border-indigo-800"
-                      >
-                        <option value="N/A">N/A</option>
-                        <option value="A+">A+</option>
-                        <option value="A-">A-</option>
-                        <option value="B+">B+</option>
-                        <option value="B-">B-</option>
-                        <option value="O+">O+</option>
-                        <option value="O-">O-</option>
-                        <option value="AB+">AB+</option>
-                        <option value="AB-">AB-</option>
-                      </select>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="flex flex-col justify-between sm:flex-row md:flex-col lg:flex-row border border-gray-300">
+              <div className="flex flex-col justify-between border border-gray-300">
                 <div className="flex flex-col w-full">
-                  {/* Family Name */}
-                  <div className="flex items-center h-full border border-gray-300">
-                    <div className="w-[50%] py-2 px-2">Family Name</div>
-                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
-                      <select
-                        name="familyName"
-                        value={formData.familyName}
-                        onChange={handleChange}
-                        className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600 focus:border-2 focus:border-indigo-800"
-                      >
-                        <option value="0">Select Family</option>
-                        {FamilyDropDown.length > 0
-                          ? FamilyDropDown.map((family, index) => (
-                              <option key={index} value={family.FamilyID}>
-                                {family.FamilyName}
-                              </option>
-                            ))
-                          : null}
-                      </select>
+                  {/* CNIC Number */}
+                  <div className="flex items-center border border-gray-300">
+                    <div className="w-[50%] py-1 px-1">CNIC NO</div>
+                    <div className="w-[50%] border-l border-gray-300">
+                      <input
+                        type="text"
+                        name="cnic"
+                        placeholder="00000-000000-0"
+                        value={formData.cnic}
+                        id="cnic"
+                        onChange={handleCNICChange}
+                        className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600"
+                      />
                     </div>
                   </div>
 
                   {/* Marital Status */}
-                  <div className="flex items-center h-full border border-gray-300">
-                    <div className="w-[50%] py-2 px-2">Marital Status</div>
-                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l md:h-full md:flex md:items-center lg:h-full lg:flex lg:items-center border-gray-300">
+                  <div className="flex items-center border border-gray-300">
+                    <div className="w-[50%] py-1 px-1">Marital Status</div>
+                    <div className="w-[50%] border-l border-gray-300">
                       <select
                         name="maritalStatus"
                         value={formData.maritalStatus}
                         onChange={handleChange}
-                        className="border border-gray-300 w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 text-gray-600 focus:border-2 focus:border-indigo-800"
+                        className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600"
                       >
-                        <option>Married</option>
-                        <option>Unmarried</option>
+                        <option value="1">Married</option>
+                        <option value="2">Unmarried</option>
                       </select>
                     </div>
                   </div>
 
-                  {/* Remarks */}
-                  <div className="flex items-center h-full border border-gray-300">
-                    <div className="w-[50%] py-2 px-2">Remarks</div>
-                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
-                      <input
-                        type="text"
-                        name="remarks"
-                        value={formData.remarks}
-                        onChange={handleChange}
-                        className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-500"
+                  {/* Blood Group */}
+                  <div className="flex items-center border border-gray-300">
+                    <div className="w-[50%] py-1 px-1">Blood Group</div>
+                    <div className="w-[50%] border-l border-gray-300">
+                      <Select
+                        name="bloodGroup"
+                        value={
+                          bloodGroupOptions.find(
+                            (opt) =>
+                              opt.value === formData.bloodGroup?.toString()
+                          ) || null
+                        }
+                        onChange={(selected) =>
+                          handleChange({
+                            target: {
+                              name: "bloodGroup",
+                              value: selected ? selected.value : "",
+                            },
+                          })
+                        }
+                        options={bloodGroupOptions}
+                        isClearable
+                        isSearchable
+                        placeholder="Select Blood Group"
                       />
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="flex flex-col justify-between sm:flex-row md:flex-col lg:flex-row border border-gray-300">
+              <div className="flex flex-col justify-between border border-gray-300">
                 <div className="flex flex-col w-full">
-                  <div className="flex items-center h-full border border-gray-300">
-                    <div className="w-[50%] py-2 px-2">Current Country</div>
-                    {/* Current Country Dropdown */}
-                    <select
-                      name="currentCountry"
-                      value={formData.currentCountry}
-                      onChange={handleChange}
-                      className="w-[90%] lg:w-[45%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
-                    >
-                      <option value="0">Select Country</option>
-                      {CountryDropDown.map((country) => (
-                        <option key={country.ID} value={country.ID}>
-                          {country.CountryName}
-                        </option>
-                      ))}
-                    </select>
+                  {/* Current Country */}
+                  <div className="flex items-center border border-gray-300">
+                    <div className="w-[50%] py-1 px-1">Current Country</div>
+                    <div className="w-[50%] border-l border-gray-300">
+                      <Select
+                        name="currentCountry"
+                        value={
+                          countryOptions.find(
+                            (opt) => opt.value === formData.currentCountry
+                          ) || null
+                        }
+                        onChange={(selected) =>
+                          handleChange({
+                            target: {
+                              name: "currentCountry",
+                              value: selected ? selected.value : "",
+                            },
+                          })
+                        }
+                        options={countryOptions}
+                        isClearable
+                        isSearchable
+                        placeholder="Select Country"
+                      />
+                    </div>
                   </div>
+
                   {/* City # */}
-                  <div className="flex items-center h-full border border-gray-300">
-                    <div className="w-[50%] py-2 px-2">Current City</div>
-                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
+                  <div className="flex items-center border border-gray-300">
+                    <div className="w-[50%] py-1 px-1">Current City</div>
+                    <div className="w-[50%] border-l border-gray-300">
                       <input
                         type="text"
                         name="currentCity"
                         value={formData.currentCity}
                         onChange={handleChange}
-                        className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
+                        className="w-[95%] rounded-xl my-1 mx-1 py-1 px-1 border border-gray-300 text-gray-600"
                       />
                     </div>
                   </div>
 
                   {/*Current Address # */}
-                  <div className="flex items-center h-full border border-gray-300">
-                    <div className="w-[50%] py-2 px-2">Current Address</div>
-                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
+                  <div className="flex items-center border border-gray-300">
+                    <div className="w-[50%] py-1 px-1">Current Address</div>
+                    <div className="w-[50%] border-l border-gray-300">
                       <input
                         type="text"
                         name="currentAddress"
                         value={formData.currentAddress}
                         onChange={handleChange}
-                        className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
+                        className="w-[95%] rounded-xl my-1 mx-1 py-1 px-1 border border-gray-300 text-gray-600"
                       />
                     </div>
                   </div>
 
-                  {/* Pakistani Address */}
-                  <div className="flex items-center h-full border border-gray-300">
-                    <div className="w-[50%] py-2 px-2">Pakistani Address</div>
-                    <div className="w-[50%] md:w-[60%] lg:w-[60%] border-l flex items-center border-gray-300">
+                  {showPakistaniFields && (
+                    <>
+                      {/* Address In Pakistan */}
+                      <div className="flex items-center border border-gray-300">
+                        <div className="w-[50%] py-1 px-1">
+                          Address In Pakistan
+                        </div>
+                        <div className="w-[50%] border-l border-gray-300">
+                          <input
+                            type="text"
+                            name="address"
+                            value={formData.address}
+                            onChange={handleChange}
+                            className="w-[95%] rounded-xl my-1 mx-1 py-1 px-1 border border-gray-300 text-gray-600"
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* <div className="flex flex-col justify-between border border-gray-300">
+                <div className="flex flex-col w-full">
+                  <div className="flex items-center border border-gray-300">
+                    <div className="w-[50%] py-1 px-1">Remarks</div>
+                    <div className="w-[50%] border-l border-gray-300">
                       <input
                         type="text"
-                        name="address"
-                        value={formData.address}
+                        name="remarks"
+                        value={formData.remarks}
                         onChange={handleChange}
-                        className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
+                        className="w-[95%] rounded-xl my-1 mx-1 py-1 px-1 border border-gray-300 text-gray-500"
                       />
                     </div>
                   </div>
 
-                  {/* From Country/State/City */}
                   <div className="flex items-center border border-gray-300">
-                    <div className="w-[50%] py-2 px-2">
-                      Pakistan Country/State/City
+                    <div className="w-[50%] py-1 px-1">Death On</div>
+                    <div className="w-[50%] border-l border-gray-300">
+                      <input
+                        type="date"
+                        name="deathOn"
+                        value={formData.deathOn}
+                        onChange={handleChange}
+                        className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600"
+                      />
                     </div>
-                    <div className="w-[50%] md:w-[60%] lg:w-[60%] flex flex-col lg:flex-row border-l border-gray-300">
-                      {/* Country Dropdown */}
-                      <select
-                        name="country"
-                        value={formData.country}
-                        onChange={handleChange}
-                        className="w-[90%] lg:w-[30%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
-                      >
-                        <option value="0">Select Country</option>
-                        {CountryDropDown.map((country) => (
-                          <option key={country.ID} value={country.ID}>
-                            {country.CountryName}
-                          </option>
-                        ))}
-                      </select>
+                  </div>
 
-                      {/* State Dropdown */}
-                      <select
-                        name="state"
-                        value={formData.state}
+                  <div className="flex items-center border border-gray-300">
+                    <div className="w-[50%] py-1 px-1">Grave Number</div>
+                    <div className="w-[50%] border-l border-gray-300">
+                      <input
+                        type="text"
+                        name="graveNumber"
+                        value={formData.graveNumber}
                         onChange={handleChange}
-                        className="w-[90%] lg:w-[33%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
-                      >
-                        <option value="0">Select State</option>
-                        {StateDropDown.map((state) => (
-                          <option key={state.ID} value={state.ID}>
-                            {state.StateName}
-                          </option>
-                        ))}
-                      </select>
-
-                      {/* City Dropdown */}
-                      <select
-                        name="city"
-                        value={formData.city}
-                        onChange={handleChange}
-                        className="w-[90%] lg:w-[30%] rounded-2xl my-2 mx-[0.3rem] py-2 px-2 border border-gray-300 text-gray-600"
-                      >
-                        <option value="0">Select City</option>
-                        {CityDropDown.map((city) => (
-                          <option key={city.ID} value={city.ID}>
-                            {city.CityName}
-                          </option>
-                        ))}
-                      </select>
+                        className="w-[95%] rounded-xl my-1 mx-1 py-1 px-1 border border-gray-300 text-gray-600"
+                      />
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
           {session.user.isAdmin === 1 ? null : (
