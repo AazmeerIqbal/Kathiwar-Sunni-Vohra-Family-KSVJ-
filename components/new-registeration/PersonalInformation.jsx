@@ -344,7 +344,7 @@ const PersonalInformation = ({
                 <div className="w-[50%] py-1 px-1">
                   Reference <span className="text-red-500">*</span>
                 </div>
-                <div className="w-[50%] border-l border-gray-300">
+                <div className="w-[50%] border-l border-gray-300  ">
                   <Select
                     name="reference"
                     value={
@@ -358,6 +358,9 @@ const PersonalInformation = ({
                             label: FatherNames.find(
                               (opt) => opt.memberId === formData.reference
                             ).MemberName,
+                            fatherName: FatherNames.find(
+                              (opt) => opt.memberId === formData.reference
+                            ).MemberFatherName,
                           }
                         : null
                     }
@@ -367,10 +370,34 @@ const PersonalInformation = ({
                         reference: selected ? selected.value : "",
                       }))
                     }
-                    options={FatherNames.map((father) => ({
+                    options={FatherNames.sort((a, b) =>
+                      a.MemberName.localeCompare(b.MemberName)
+                    ).map((father) => ({
                       value: father.memberId,
                       label: father.MemberName,
+                      fatherName: father.MemberFatherName, 
                     }))}
+                    formatOptionLabel={(option) => (
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          width: "100%",
+                        }}
+                      >
+                        <span>
+                          <p className="font-bold">Name:</p> <br></br>
+                          {option.label}
+                        </span>
+                        <span
+                          className="text-right"
+                          style={{ marginLeft: "1rem", color: "#555" }}
+                        >
+                          <p className="font-bold ">Father Name:</p> <br></br>
+                          {option.fatherName}
+                        </span>
+                      </div>
+                    )}
                     isClearable
                     isSearchable
                     placeholder="Select Reference"

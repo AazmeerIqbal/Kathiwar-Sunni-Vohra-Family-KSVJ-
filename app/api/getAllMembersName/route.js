@@ -9,7 +9,9 @@ export async function GET(req) {
     // Run queries to fetch data from multiple tables
     const MemberName = await pool
       .request()
-      .query("SELECT memberId, MemberName FROM tb_member_mst");
+      .query(
+        "SELECT memberId, MemberName, MemberFatherName FROM tb_member_mst"
+      );
     // Close the database connection
     await closeConnection(pool);
 
