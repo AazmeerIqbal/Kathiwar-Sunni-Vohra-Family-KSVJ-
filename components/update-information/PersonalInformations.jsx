@@ -359,6 +359,8 @@ const PersonalInformations = ({
     }
   };
 
+  const isAdmin = session?.user?.isAdmin === 1;
+
   return (
     <>
       <div
@@ -443,7 +445,7 @@ const PersonalInformations = ({
                       <select
                         value={formData.activeStatus}
                         onChange={handleChange}
-                        disabled
+                        disabled={isAdmin}
                         name="activeStatus"
                         className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600"
                       >
@@ -461,7 +463,7 @@ const PersonalInformations = ({
                         name="membershipNumber"
                         placeholder="0000-000000"
                         id="membership"
-                        disabled
+                        disabled={isAdmin}
                         value={formData.membershipNumber}
                         onChange={handleMembershipChange}
                         className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600"
@@ -475,7 +477,7 @@ const PersonalInformations = ({
                       <input
                         type="date"
                         name="membershipDate"
-                        disabled
+                        disabled={isAdmin}
                         value={formData.membershipDate}
                         onChange={handleChange}
                         className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600"
@@ -493,7 +495,7 @@ const PersonalInformations = ({
                     <div className="w-[50%] border-l border-gray-300">
                       <select
                         name="memberType"
-                        disabled
+                        disabled={isAdmin}
                         value={formData.memberType}
                         onChange={handleChange}
                         className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600"
@@ -511,6 +513,7 @@ const PersonalInformations = ({
                         name="nameTitle"
                         value={formData.nameTitle}
                         onChange={handleChange}
+                        disabled={isAdmin}
                         className="border border-gray-300 rounded-xl my-1 mx-1 py-1 px-1 text-gray-600"
                       >
                         <option>Mr.</option>
@@ -524,6 +527,7 @@ const PersonalInformations = ({
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
+                        disabled={isAdmin}
                         className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600"
                       />
                     </div>
@@ -537,6 +541,7 @@ const PersonalInformations = ({
                         name="fatherHusbandName"
                         value={formData.fatherHusbandName}
                         onChange={handleChange}
+                        disabled={isAdmin}
                         className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600"
                       />
                     </div>
@@ -554,6 +559,7 @@ const PersonalInformations = ({
                         name="gender"
                         value={formData.gender}
                         onChange={handleChange}
+                        disabled={isAdmin}
                         className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600"
                       >
                         <option value="1">Male</option>
@@ -571,6 +577,7 @@ const PersonalInformations = ({
                         value={formData.dob}
                         onChange={handleChange}
                         type="date"
+                        disabled={isAdmin}
                         className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600"
                       />
                     </div>
@@ -598,6 +605,7 @@ const PersonalInformations = ({
                         isClearable
                         isSearchable
                         placeholder="Select Family"
+                        isDisabled={isAdmin}
                       />
                     </div>
                   </div>
@@ -616,6 +624,7 @@ const PersonalInformations = ({
                         value={formData.cellNumber}
                         id="cellNumber"
                         onChange={handleCellNumber}
+                        disabled={isAdmin}
                         placeholder="####-#######"
                         className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600"
                       />
@@ -631,6 +640,7 @@ const PersonalInformations = ({
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
+                        disabled={isAdmin}
                         className="w-[95%] rounded-xl my-1 mx-1 py-1 px-1 border border-gray-300 text-gray-600"
                       />
                     </div>
@@ -651,6 +661,7 @@ const PersonalInformations = ({
                         value={formData.cnic}
                         id="cnic"
                         onChange={handleCNICChange}
+                        disabled={isAdmin}
                         className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600"
                       />
                     </div>
@@ -664,6 +675,7 @@ const PersonalInformations = ({
                         name="maritalStatus"
                         value={formData.maritalStatus}
                         onChange={handleChange}
+                        disabled={isAdmin}
                         className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600"
                       >
                         <option value="1">Married</option>
@@ -696,6 +708,7 @@ const PersonalInformations = ({
                         isClearable
                         isSearchable
                         placeholder="Select Blood Group"
+                        isDisabled={isAdmin}
                       />
                     </div>
                   </div>
@@ -727,6 +740,7 @@ const PersonalInformations = ({
                         isClearable
                         isSearchable
                         placeholder="Select Country"
+                        isDisabled={isAdmin}
                       />
                     </div>
                   </div>
@@ -740,6 +754,7 @@ const PersonalInformations = ({
                         name="currentCity"
                         value={formData.currentCity}
                         onChange={handleChange}
+                        disabled={isAdmin}
                         className="w-[95%] rounded-xl my-1 mx-1 py-1 px-1 border border-gray-300 text-gray-600"
                       />
                     </div>
@@ -754,6 +769,7 @@ const PersonalInformations = ({
                         name="currentAddress"
                         value={formData.currentAddress}
                         onChange={handleChange}
+                        disabled={isAdmin}
                         className="w-[95%] rounded-xl my-1 mx-1 py-1 px-1 border border-gray-300 text-gray-600"
                       />
                     </div>
@@ -772,6 +788,7 @@ const PersonalInformations = ({
                             name="address"
                             value={formData.address}
                             onChange={handleChange}
+                            disabled={isAdmin}
                             className="w-[95%] rounded-xl my-1 mx-1 py-1 px-1 border border-gray-300 text-gray-600"
                           />
                         </div>
