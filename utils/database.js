@@ -12,24 +12,40 @@ const config = {
     encrypt: false,
   },
   port: 1433,
+  pool: {
+    max: 10,
+    min: 0,
+    idleTimeoutMillis: 30000,
+    acquireTimeoutMillis: 30000,
+    createTimeoutMillis: 30000,
+    destroyTimeoutMillis: 5000,
+    reapIntervalMillis: 1000,
+    createRetryIntervalMillis: 200,
+  },
 };
+
 let pool;
 
 const connectToDB = async () => {
-  if (!pool) {
-    try {
+  try {
+    if (!pool) {
       pool = await sql.connect(config);
       console.log("Database connected successfully.");
-    } catch (error) {
-      console.log("Database connection failed:", error);
-      throw error;
+    } else if (pool.closed) {
+      pool = await sql.connect(config);
+      console.log("Database reconnected successfully.");
     }
+    return pool;
+  } catch (error) {
+    console.log("Database connection failed:", error);
+    // Reset pool on error
+    pool = null;
+    throw error;
   }
-  return pool;
 };
 
 const closeConnection = async () => {
-  if (pool) {
+  if (pool && !pool.closed) {
     try {
       await pool.close();
       pool = null;

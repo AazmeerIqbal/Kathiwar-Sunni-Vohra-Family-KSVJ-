@@ -62,7 +62,7 @@ import { connectToDB, closeConnection, config } from "@/utils/database";
 import { NextResponse } from "next/server";
 
 export async function POST(req, { params }) {
-  const { cnic } = params; // Correctly extract 'cnic' from URL parameters
+  const { cnic } = await params; // Correctly extract 'cnic' from URL parameters
 
   if (!cnic) {
     return NextResponse.json(

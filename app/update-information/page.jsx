@@ -1,14 +1,14 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { RiDownloadCloud2Fill } from "react-icons/ri";
-import { ButtonInfoHover } from "@/components/ui/ButtonInfoHover";
+
 import { useSession } from "next-auth/react";
 import { FaPlus } from "react-icons/fa";
 import { MdOutlineFileUpload } from "react-icons/md";
 import Loader from "@/components/ui/Loader";
 import { useSearchParams } from "next/navigation";
 import Swal from "sweetalert2";
+
 import { decrypt } from "@/utils/Encryption";
 import WifeInformation from "@/components/update-information/WifeInformation";
 
@@ -96,10 +96,11 @@ const Page = () => {
     childrenDetail,
   };
 
-  // Get Member Data from Temp Table
+  // Get Member Data - Unified function that handles both temp and main table data
   const getMemberData = async () => {
     try {
-      const apiUrl = `/api/getMemberUpdatedData_onload-updateInformation/${memberId}`;
+      setFetchLoading(true);
+      const apiUrl = `/api/update-information/${memberId}`;
 
       // Make the API call
       const response = await fetch(apiUrl, {
@@ -107,6 +108,7 @@ const Page = () => {
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({ memberId }), // Send MemberId
       });
 
       // Parse the response
@@ -117,45 +119,57 @@ const Page = () => {
         if (result.data) {
           // Extract all data sets from API response
           const {
-            member_mst,
-            member_edu,
-            member_professional,
-            member_living,
-            member_wife,
-            member_child,
+            memberInfo,
+            educationInfo,
+            professionalInfo,
+            livingInfo,
+            wifeInfo,
+            childInfo,
           } = result.data;
 
           // Log fetched data
-          console.log("Member Info:", member_mst);
-          console.log("Education Info:", member_edu);
-          console.log("Professional Info:", member_professional);
-          console.log("Living Info:", member_living);
-          console.log("Wife Info:", member_wife);
-          console.log("Child Info:", member_child);
+          console.log("Member Info:", memberInfo);
+          console.log("Education Info:", educationInfo);
+          console.log("Professional Info:", professionalInfo);
+          console.log("Living Info:", livingInfo);
+          console.log("Wife Info:", wifeInfo);
+          console.log("Child Info:", childInfo);
+          console.log("Data source:", result.source);
 
           // Update state with the fetched data
-          setUserData(member_mst?.[0] || {}); // Set member info
-          setEducationData(member_edu || []); // Set education info
-          setProfessionalDetail(member_professional || []); // Set professional info
-          setLivingDetail(member_living || []); // Set living info
-          setWifeData(member_wife || []); // Set wife info
-          setChildrenDetail(member_child || []); // Set child info
+          setUserData(memberInfo?.[0] || {}); // Set member info
+          setEducationData(educationInfo || []); // Set education info
+          setProfessionalDetail(professionalInfo || []); // Set professional info
+          setLivingDetail(livingInfo || []); // Set living info
+          setWifeData(wifeInfo || []); // Set wife info
+          setChildrenDetail(childInfo || []); // Set child info
 
           // Fetch additional related data if necessary
-          if (member_mst?.[0]?.FromCountryID) {
-            fetchStateData(member_mst[0].FromCountryID);
+          if (memberInfo?.[0]?.FromCountryID) {
+            fetchStateData(memberInfo[0].FromCountryID);
           }
-          if (member_mst?.[0]?.FromStateID) {
-            fetchCityData(member_mst[0].FromStateID);
+          if (memberInfo?.[0]?.FromStateID) {
+            fetchCityData(memberInfo[0].FromStateID);
           }
+
+          // Show success message based on data source
+          // if (result.source === "main_tables") {
+          //   toast.success("Data fetched from main server successfully", {
+          //     position: "top-right",
+          //   });
+          // } else {
+          //   toast.success("Data loaded from temporary storage", {
+          //     position: "top-right",
+          //   });
+          // }
         }
       } else {
         console.error("Error fetching data:", result.message);
-        toast.error(`Error: ${result.message}`, { position: "top-right" });
       }
     } catch (error) {
       console.error("Error calling API:", error);
-      toast.error("Failed to fetch user data", { position: "top-right" });
+    } finally {
+      setFetchLoading(false);
     }
   };
 
@@ -236,90 +250,6 @@ const Page = () => {
     }
   };
 
-  const handleFetchData = async () => {
-    const result = await Swal.fire({
-      title:
-        "Are you sure you want to get real-time data from the main server?",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Confirm!",
-      cancelButtonText: "Cancel",
-    });
-
-    if (!result.isConfirmed) return;
-
-    try {
-      setFetchLoading(true);
-
-      // Construct the API URL
-      const apiUrl = `/api/update-information/${memberId}`;
-
-      // Make the API call
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ memberId }), // Send CNIC and MemberId
-      });
-
-      // Parse the response
-      const result = await response.json();
-
-      // Check if the response is successful
-      if (response.ok) {
-        setFetchLoading(false);
-        toast.success("User Data Fetched Successfully", {
-          position: "top-right",
-        });
-
-        // Extract all six result sets
-        const {
-          memberInfo,
-          educationInfo,
-          professionalInfo,
-          livingInfo,
-          wifeInfo,
-          childInfo,
-        } = result.data;
-
-        // Log fetched data
-        console.log("Member Info:", memberInfo);
-        console.log("Education Info:", educationInfo);
-        console.log("Professional Info:", professionalInfo);
-        console.log("Living Info:", livingInfo);
-        console.log("Wife Info:", wifeInfo);
-        console.log("Child Info:", childInfo);
-
-        // Update state with the fetched data
-        setUserData(memberInfo?.[0] || {}); // Set member info
-        setEducationData(educationInfo || []); // Set education info
-        setProfessionalDetail(professionalInfo || []); // Set professional info
-        setLivingDetail(livingInfo || []); // Set living info
-        setWifeData(wifeInfo || []); // Set wife info
-        setChildrenDetail(childInfo || []); // Set child info
-
-        // Fetch additional related data if necessary
-        if (memberInfo?.[0]?.FromCountryID) {
-          fetchStateData(memberInfo[0].FromCountryID);
-        }
-        if (memberInfo?.[0]?.FromStateID) {
-          fetchCityData(memberInfo[0].FromStateID);
-        }
-      } else {
-        setFetchLoading(false);
-        console.error("Error fetching data:", result.message);
-        toast.error(`Error: ${result.message}`, { position: "top-right" });
-      }
-    } catch (error) {
-      setFetchLoading(false);
-      console.error("Error calling API:", error);
-      toast.error("Failed to fetch user data", { position: "top-right" });
-    }
-  };
-
   const handleSubmit = async () => {
     const result = await Swal.fire({
       title: "Are you sure you want to submit data to Admin?",
@@ -346,7 +276,7 @@ const Page = () => {
 
       if (response.ok) {
         setSbumitLoading(false);
-        toast.success("Saved Successfully", { position: "top-right" });
+        toast.success("Submitted to Admin", { position: "top-right" });
       } else {
         setSbumitLoading(false);
         console.log("Error saving data:", result.message);
@@ -416,15 +346,6 @@ const Page = () => {
                   )}
                   Submit
                 </button>
-
-                {/* Fetch */}
-                <ButtonInfoHover
-                  text={"Get Data"}
-                  info={"Get current data from the server"}
-                  icon={<RiDownloadCloud2Fill className="text-xl my-auto" />}
-                  FetchLoading={FetchLoading}
-                  handleFetchData={handleFetchData}
-                />
               </>
             )}
           </div>
