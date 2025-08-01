@@ -5,19 +5,21 @@ const config = {
   password: "test",
   server: "AZMEER",
   database: "KSVJ",
+  port: 1433,
+  connectionTimeout: 60000, // 60 seconds timeout for connections
+  requestTimeout: 60000, // 60 seconds timeout for requests
   options: {
     trustServerCertificate: true,
-    trustedConnection: false,
+    trustedConnection: false, // this is usually for Windows Auth; may not be needed here
     enableArithAbort: true,
     encrypt: false,
   },
-  port: 1433,
   pool: {
     max: 10,
     min: 0,
     idleTimeoutMillis: 30000,
-    acquireTimeoutMillis: 30000,
-    createTimeoutMillis: 30000,
+    acquireTimeoutMillis: 60000, // 60 seconds
+    createTimeoutMillis: 60000, // 60 seconds
     destroyTimeoutMillis: 5000,
     reapIntervalMillis: 1000,
     createRetryIntervalMillis: 200,

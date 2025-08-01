@@ -97,19 +97,25 @@ const Page = () => {
   };
 
   // Get Member Data - Unified function that handles both temp and main table data
-  const getMemberData = async () => {
+  const getMemberData = async (retryCount = 0) => {
     try {
       setFetchLoading(true);
       const apiUrl = `/api/update-information/${memberId}`;
 
-      // Make the API call
+      // Make the API call with timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ memberId }), // Send MemberId
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       // Parse the response
       const result = await response.json();
@@ -165,9 +171,40 @@ const Page = () => {
         }
       } else {
         console.error("Error fetching data:", result.message);
+        if (response.status === 408) {
+          toast.error("Request timed out. Please try again.", {
+            position: "top-right",
+          });
+        } else {
+          toast.error(`Error: ${result.message}`, { position: "top-right" });
+        }
       }
     } catch (error) {
       console.error("Error calling API:", error);
+
+      // Handle timeout errors with retry logic
+      if (error.name === "AbortError" || error.message.includes("timeout")) {
+        if (retryCount < 2) {
+          // Retry up to 2 times
+          console.log(`Retrying... Attempt ${retryCount + 1}`);
+          toast.info(`Request timed out. Retrying... (${retryCount + 1}/3)`, {
+            position: "top-right",
+          });
+          setTimeout(() => {
+            getMemberData(retryCount + 1);
+          }, 2000); // Wait 2 seconds before retry
+          return;
+        } else {
+          toast.error(
+            "Request timed out after multiple attempts. Please try again later.",
+            { position: "top-right" }
+          );
+        }
+      } else {
+        toast.error("Failed to fetch user data", {
+          position: "top-right",
+        });
+      }
     } finally {
       setFetchLoading(false);
     }
@@ -307,8 +344,14 @@ const Page = () => {
     <>
       <div className="m-4 mb-24">
         <div className="flex sm:flex-row flex-col justify-between sm:items-center">
-          <div>
+          <div className="flex items-center gap-2">
             <h1 className="text-xl font-bold">Update Information</h1>
+            {FetchLoading && (
+              <div className="flex items-center gap-1 text-sm text-gray-600">
+                <Loader w={4} h={4} />
+                <span>Loading data...</span>
+              </div>
+            )}
           </div>
           <div className="flex gap-2 ">
             {/* Print */}

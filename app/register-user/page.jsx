@@ -17,7 +17,6 @@ import WifeInformation from "@/components/new-registeration/WifeInformation";
 import ChildrenInformation from "@/components/new-registeration/ChildrenInformation";
 
 const page = () => {
-  zxc;
   const { data: session } = useSession();
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
