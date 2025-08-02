@@ -324,6 +324,51 @@ const Page = () => {
     }
   };
 
+  const approveRequest = async () => {
+    const result = await Swal.fire({
+      title: "Are you sure you want to approve this Information?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Approve!",
+      cancelButtonText: "Cancel",
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      setSbumitLoading(true);
+      const apiUrl = `/api/approve-updateInformation/${memberId}`;
+
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setSbumitLoading(false);
+        toast.success("Information approved successfully", {
+          position: "top-right",
+        });
+        // Optionally refresh the data after approval
+        getMemberData();
+      } else {
+        setSbumitLoading(false);
+        toast.error(`Error: ${result.message}`, { position: "top-right" });
+        console.log("Error approving data:", result.message);
+      }
+    } catch (error) {
+      setSbumitLoading(false);
+      toast.error("Failed to approve information", { position: "top-right" });
+      console.log("Error calling approve API:", error);
+    }
+  };
+
   const handlePrint = () => {
     console.log("Print Clicked");
     const printWindow = window.open(
@@ -365,7 +410,7 @@ const Page = () => {
 
             {session.user.isAdmin === 1 ? (
               <button
-                // onClick={handleSubmit}
+                onClick={approveRequest}
                 className=" flex gap-1 items-center my-2 hover:opacity-70 py-2 px-4 bg-[#22583e] text-[#f1f1f1] font-semibold rounded-3xl "
               >
                 {SbumitLoading ? (

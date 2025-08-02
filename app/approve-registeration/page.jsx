@@ -260,6 +260,37 @@ const page = () => {
     });
 
     if (!result.isConfirmed) return;
+
+    // try {
+    //   setSbumitLoading(true);
+    //   const apiUrl = `/api/approve-updateInformation/${memberId}`;
+
+    //   const response = await fetch(apiUrl, {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //   });
+
+    //   const result = await response.json();
+
+    //   if (response.ok) {
+    //     setSbumitLoading(false);
+    //     toast.success("Member approved successfully", {
+    //       position: "top-right",
+    //     });
+    //     // Optionally refresh the data after approval
+    //     getMemberData();
+    //   } else {
+    //     setSbumitLoading(false);
+    //     toast.error(`Error: ${result.message}`, { position: "top-right" });
+    //     console.log("Error approving data:", result.message);
+    //   }
+    // } catch (error) {
+    //   setSbumitLoading(false);
+    //   toast.error("Failed to approve information", { position: "top-right" });
+    //   console.log("Error calling approve API:", error);
+    // }
   };
 
   return (
