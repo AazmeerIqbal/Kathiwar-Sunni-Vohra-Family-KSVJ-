@@ -355,8 +355,8 @@ const Page = () => {
         toast.success("Information approved successfully", {
           position: "top-right",
         });
-        // Optionally refresh the data after approval
-        getMemberData();
+        router.push("/");
+        return;
       } else {
         setSbumitLoading(false);
         toast.error(`Error: ${result.message}`, { position: "top-right" });

@@ -280,7 +280,7 @@ const page = () => {
           position: "top-right",
         });
         // Optionally refresh the data after approval
-        getMemberData();
+        router.push("/");
       } else {
         setSbumitLoading(false);
         toast.error(`Error: ${result.message}`, { position: "top-right" });
