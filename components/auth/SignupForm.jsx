@@ -4,7 +4,6 @@ import { Input } from "../ui/Input";
 import { Button } from "../ui/Button";
 import { validateEmail, validatePassword } from "../../utils/validation";
 import CNICInput from "@/utils/CnicFormatter";
-import emailjs from "@emailjs/browser";
 
 // Notification Toaster
 import { toast, ToastContainer } from "react-toastify";
@@ -24,35 +23,6 @@ export const SignupForm = ({ setIsLogin }) => {
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const SendEmail = (formData) => {
-    const templateParams = {
-      from_name: "KSVJ",
-      to_email: formData.email,
-      message: `Welcome ${formData.firstName} ${formData.lastName}! We are thrilled to have you onboard.`,
-      name: `${formData.firstName} ${formData.lastName}`,
-      cnic: formData.cnic,
-      link: "http://161.97.145.87:8075/login",
-    };
-
-    emailjs
-      .send(
-        process.env.NEXT_PUBLIC_EmailJS_ServiceId,
-        process.env.NEXT_PUBLIC_EmailJS_TemplateId,
-        templateParams,
-        process.env.NEXT_PUBLIC_EmailJS_PublicKey
-      )
-      .then(
-        (result) => {
-          console.log("SUCCESS!", result.status, result.text);
-          // alert("Welcome email sent successfully!");
-        },
-        (error) => {
-          console.log("FAILED...", error);
-          alert("Failed to send the welcome email. Please try again.");
-        }
-      );
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -126,8 +96,6 @@ export const SignupForm = ({ setIsLogin }) => {
         toast.success("Signup successful!", {
           position: "bottom-center",
         });
-
-        SendEmail(formData);
 
         setFormData({
           username: "",

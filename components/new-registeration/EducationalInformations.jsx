@@ -42,6 +42,11 @@ const EducationalInformations = ({
   // ShowSpecialization state
   const [ShowSpecialization, setShowSpecialization] = useState(false);
 
+  // Lock the first chosen qualification/specialization for subsequent entries
+  const [lockedQualification, setLockedQualification] = useState(null);
+  const [lockedSpecialization, setLockedSpecialization] = useState("");
+  const isLocked = lockedQualification !== null;
+
   // Prepare options for react-select
   const HQOptions = HQ.map((item) => ({
     value: item.HQID,
@@ -96,13 +101,25 @@ const EducationalInformations = ({
   };
 
   // Add or update education entry
-  const onSubmit = async (data) => {
+  const onSubmit = async (formValues) => {
+    // When locked, reuse qualification/specialization for new entries
+    const payload = { ...formValues };
+    if (isLocked && editIndex === null) {
+      payload.qualification = lockedQualification;
+      payload.specialization = lockedSpecialization;
+    }
+
     if (editIndex === null) {
-      setEducationData((prev) => [...prev, data]);
+      setEducationData((previous) => [...previous, payload]);
       toast.success("Added successfully!", { position: "top-right" });
+      // After adding the very first record, lock the qualification/specialization
+      if (!isLocked) {
+        setLockedQualification(payload.qualification ?? null);
+        setLockedSpecialization(payload.specialization ?? "");
+      }
     } else {
-      setEducationData((prev) =>
-        prev.map((item, i) => (i === editIndex ? data : item))
+      setEducationData((previous) =>
+        previous.map((row, i) => (i === editIndex ? payload : row))
       );
       toast.success("Updated successfully!", { position: "top-right" });
       setEditIndex(null);
@@ -145,6 +162,13 @@ const EducationalInformations = ({
     setShowSpecialization(false);
   };
 
+  const handleUnlockQualification = () => {
+    setLockedQualification(null);
+    setLockedSpecialization("");
+    reset();
+    setShowSpecialization(false);
+  };
+
   return (
     <>
       {/* Education Form */}
@@ -152,35 +176,66 @@ const EducationalInformations = ({
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col sm:grid sm:grid-cols-2 gap-4 mb-6 text-xs sm:text-[13px] md:text-sm lg:text-base bg-gray-50 p-2 sm:p-4 rounded-lg border border-gray-200"
       >
-        {/* Highest Qualification */}
-        <div>
-          <label className="text-gray-600">Qualification *</label>
-          <Controller
-            name="qualification"
-            control={control}
-            rules={{ required: "Qualification is required" }}
-            render={({ field }) => (
-              <Select
-                {...field}
-                options={HQOptions}
-                isClearable
-                placeholder="Select..."
-                onChange={(selected) =>
-                  handleHQChange(selected, field.onChange)
-                }
-                value={
-                  HQOptions.find((opt) => opt.value === field.value) || null
-                }
-              />
+        {/* Locked qualification summary */}
+        {isLocked && editIndex === null && (
+          <div className="col-span-2 flex items-center justify-between bg-blue-50 border border-blue-200 rounded p-2">
+            <div className="text-gray-700">
+              <span className="mr-2">Qualification:</span>
+              <span className="font-semibold">
+                {HQ.find((hq) => hq.HQID === Number(lockedQualification))
+                  ?.HighestQualification || "N/A"}
+              </span>
+              {lockedSpecialization && (
+                <>
+                  <span className="mx-2">•</span>
+                  <span className="mr-2">Specialization:</span>
+                  <span className="font-semibold">
+                    {SP.find((sp) => sp.HQSPId === Number(lockedSpecialization))
+                      ?.AreaofSpecialization || ""}
+                  </span>
+                </>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={handleUnlockQualification}
+              className="px-3 py-1 text-sm bg-white border border-blue-300 text-blue-700 rounded hover:bg-blue-50"
+            >
+              Change
+            </button>
+          </div>
+        )}
+        {/* Highest Qualification - required only when not locked or when editing */}
+        {(!isLocked || editIndex !== null) && (
+          <div>
+            <label className="text-gray-600">Qualification *</label>
+            <Controller
+              name="qualification"
+              control={control}
+              rules={{ required: "Qualification is required" }}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  options={HQOptions}
+                  isClearable
+                  placeholder="Select..."
+                  onChange={(selected) =>
+                    handleHQChange(selected, field.onChange)
+                  }
+                  value={
+                    HQOptions.find((opt) => opt.value === field.value) || null
+                  }
+                />
+              )}
+            />
+            {errors.qualification && (
+              <p className="text-red-500 ">{errors.qualification.message}</p>
             )}
-          />
-          {errors.qualification && (
-            <p className="text-red-500 ">{errors.qualification.message}</p>
-          )}
-        </div>
+          </div>
+        )}
 
-        {/* Specialization */}
-        {ShowSpecialization && (
+        {/* Specialization - show only when applicable and when not locked or when editing */}
+        {(!isLocked || editIndex !== null) && ShowSpecialization && (
           <div>
             <label className="text-gray-600 ">Area of Specialization</label>
             <Controller
@@ -213,7 +268,7 @@ const EducationalInformations = ({
           <input
             type="text"
             {...register("degreeTitle")}
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border rounded-md border-gray-400"
           />
           {errors.degreeTitle && (
             <p className="text-red-500 ">{errors.degreeTitle.message}</p>

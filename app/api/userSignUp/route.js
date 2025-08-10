@@ -1,6 +1,7 @@
 import { connectToDB, closeConnection, config } from "@/utils/database";
 import { NextResponse } from "next/server";
 import { encrypt } from "@/utils/Encryption";
+import nodemailer from "nodemailer";
 
 export async function POST(req) {
   const { username, firstName, lastName, email, cnic, password } =
@@ -118,6 +119,47 @@ export async function POST(req) {
         .input("RoleId", "55")
         .input("MemberShipNo", memberShipNo || null)
         .query(insertQuery);
+
+      // Send welcome email
+      if (email) {
+        try {
+          const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+              user: process.env.EMAIL_USER,
+              pass: process.env.EMAIL_PASS,
+            },
+          });
+
+          const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: "Welcome to KSVJ Community - Account Created",
+            html: `
+              <h2>Welcome to KSVJ Community!</h2>
+              <p>Dear <strong>${firstName} ${lastName}</strong>,</p>
+              <p>Your account has been created successfully.</p>
+              <p><strong>Your Details:</strong></p>
+              <ul>
+                <li><strong>Name:</strong> ${firstName} ${lastName}</li>
+                <li><strong>CNIC:</strong> ${cnic}</li>
+                ${
+                  memberShipNo
+                    ? `<li><strong>Membership Number:</strong> ${memberShipNo}</li>`
+                    : ""
+                }
+              </ul>
+              <p>You can now log in to your account.</p>
+              <p>Best regards,<br/>KSVJ Team</p>
+            `,
+          };
+
+          await transporter.sendMail(mailOptions);
+          console.log("Signup welcome email sent to:", email);
+        } catch (emailError) {
+          console.error("Error sending signup email:", emailError);
+        }
+      }
 
       await closeConnection(pool);
 

@@ -89,6 +89,8 @@ export async function POST(req, { params }) {
               <li><strong>CNIC:</strong> ${CNICNo}</li>
               <li><strong>Membership Number:</strong> ${MemberShipNo}</li>
             </ul>
+
+            <p><a href="http://161.97.145.87:8075/login">Login</a>, here to access your account.</p>
             <p>Welcome to our community! We're excited to have you as part of our family.</p>
             <p>Best regards,<br>KSVJ Team</p>
           `,
