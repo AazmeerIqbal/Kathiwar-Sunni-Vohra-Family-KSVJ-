@@ -8,9 +8,11 @@ import { CiCircleCheck } from "react-icons/ci";
 import Swal from "sweetalert2";
 import { MdOutlineFileUpload } from "react-icons/md";
 import PersonalInformation from "@/components/approve-registeration/PersonalInformation";
+import { useRouter } from "next/navigation";
 
 const page = () => {
   // Use the useSearchParams hook correctly
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [memberId, setMemberId] = useState(null);
   const [loading, setLoading] = useState(false);
