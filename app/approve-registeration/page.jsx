@@ -94,6 +94,8 @@ const page = () => {
           city: member.CurrentCity || "0",
           currentAddress: member.CurrentAddress,
           reference: member.ReferenceMemberName,
+          referenceMemberName: member.ReferenceMemberName,
+          referenceMemberFatherName: member.ReferenceMemberFatherName,
         });
       } else {
         setError("No member data found for the given ID.");
@@ -113,6 +115,7 @@ const page = () => {
 
   //Personal Information
   const [FamilyDropDown, setFamilyDropDown] = useState([]);
+  const [FatherNames, setFatherNames] = useState([]);
   const [formData, setFormData] = useState({
     image: "",
     memberType: "0",
@@ -132,6 +135,9 @@ const page = () => {
     country: "0",
     state: "0",
     city: "0",
+    reference: "",
+    referenceMemberName: "",
+    referenceMemberFatherName: "",
   });
 
   const fetchCountryData = async () => {
@@ -233,9 +239,38 @@ const page = () => {
     }
   };
 
+  const fetchFatherName = async () => {
+    try {
+      // Construct the API URL
+      const apiUrl = `/api/getAllMembersName`;
+
+      // Make the API call
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      // Parse the response
+      const result = await response.json();
+
+      // Check if the response is successful
+      if (response.ok) {
+        setFatherNames(result.fathers); // Father dropdown data
+        console.log("Fathers data fetched:", result.fathers);
+      } else {
+        console.log("Error fetching fathers data:", result.message);
+      }
+    } catch (error) {
+      console.log("Error calling fathers API:", error);
+    }
+  };
+
   useEffect(() => {
     fetchDropdownData();
     fetchCountryData();
+    fetchFatherName();
   }, []);
 
   const handleChange = (e) => {
@@ -337,6 +372,7 @@ const page = () => {
             CountryDropDown={CountryDropDown}
             StateDropDown={StateDropDown}
             CityDropDown={CityDropDown}
+            FatherNames={FatherNames}
             handleChange={handleChange}
             handleCellNumber={handleCellNumber}
             handleCNICChange={handleCNICChange}

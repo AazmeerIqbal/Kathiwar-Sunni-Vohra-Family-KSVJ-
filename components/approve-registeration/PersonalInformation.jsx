@@ -279,12 +279,36 @@ const PersonalInformation = ({
                   Reference <span className="text-red-500">*</span>
                 </div>
                 <div className="w-[50%] border-l border-gray-300 flex items-center">
-                  <input
-                    type="text"
-                    value={formData.reference}
-                    disabled
-                    className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 bg-gray-100"
-                  />
+                  <div className="w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 bg-gray-100 border border-gray-300 min-h-[40px] flex items-center">
+                    {formData.reference ? (
+                      <div className="w-full">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <span className="font-semibold text-xs">
+                              Name:{" "}
+                            </span>
+                            <span className="text-xs">
+                              {formData.referenceMemberName ||
+                                formData.reference}
+                            </span>
+                          </div>
+                          <div className="flex-1 ml-2">
+                            <span className="font-semibold text-xs">
+                              Father:{" "}
+                            </span>
+                            <span className="text-xs">
+                              {formData.referenceMemberFatherName ||
+                                "Not available"}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <span className="text-gray-400 text-xs">
+                        No reference selected
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
