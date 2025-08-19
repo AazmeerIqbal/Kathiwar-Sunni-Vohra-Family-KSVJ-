@@ -1,6 +1,15 @@
 "use client";
 import { useState, useMemo } from "react";
-import { PieChart, Pie, Cell, Tooltip, Legend, Sector } from "recharts";
+import {
+  Tooltip,
+  ResponsiveContainer,
+  RadialBarChart,
+  RadialBar,
+  AreaChart,
+  Area,
+  XAxis,
+  CartesianGrid,
+} from "recharts";
 import { motion, AnimatePresence } from "framer-motion";
 import DetailedDataTable from "@/components/financial-statistics/DetailedDataTable";
 import OtherContributions from "./OtherContributions";
@@ -11,135 +20,164 @@ const DataTable = ({ data, loading }) => {
   // Calculate totals
   const totalDebit = data[0].reduce((sum, row) => sum + (row.Debit || 0), 0);
   const totalCredit = data[0].reduce((sum, row) => sum + (row.Credit || 0), 0);
-  const totalBalance = totalDebit - totalCredit;
+  const baseBalance = totalDebit - totalCredit;
 
-  // Pie Chart Data
-  const chartData = [
-    { name: "Monthly Donation", value: totalDebit, color: "#ef4444" },
-    { name: "Received", value: totalCredit, color: "#10b981" },
-    { name: "Balance", value: totalBalance, color: "#3b82f6" },
-  ];
+  // Determine monthly donation (use most recent non-zero Debit if available)
+  const recentMonthlyDonation = (() => {
+    const rows = Array.isArray(data[0]) ? data[0] : [];
+    for (let i = rows.length - 1; i >= 0; i--) {
+      const value = rows[i]?.Debit;
+      if (typeof value === "number" && value > 0) return value;
+    }
+    return 0;
+  })();
 
-  const [activeIndex, setActiveIndex] = useState(0);
+  // Calculate months remaining in current year (exclude current month)
+  const now = new Date();
+  const currentMonthNumber = now.getMonth() + 1; // 1-12
+  const monthsRemainingToDecember = 12 - currentMonthNumber; // e.g., Aug(8) => 4
+  const totalBalance =
+    baseBalance + recentMonthlyDonation * monthsRemainingToDecember;
+
+  // Year-to-date metrics for improved visualization
+  const currentYear = now.getFullYear();
+  const currentYearRows = useMemo(() => {
+    const rows = Array.isArray(data[0]) ? data[0] : [];
+    return rows.filter((row) => {
+      const d = new Date(row.TransDAte);
+      return !Number.isNaN(d?.getTime?.()) && d.getFullYear() === currentYear;
+    });
+  }, [data, currentYear]);
+
+  const receivedThisYear = useMemo(
+    () => currentYearRows.reduce((sum, row) => sum + (row.Credit || 0), 0),
+    [currentYearRows]
+  );
+
+  const expectedThisYear = useMemo(
+    () => recentMonthlyDonation * 12,
+    [recentMonthlyDonation]
+  );
+
+  const percentPaidThisYear = useMemo(() => {
+    if (!expectedThisYear) return 0;
+    const pct = Math.round((receivedThisYear / expectedThisYear) * 100);
+    return Math.max(0, Math.min(100, pct));
+  }, [receivedThisYear, expectedThisYear]);
+
+  const monthlySparklineData = useMemo(() => {
+    const base = Array.from({ length: 12 }, (_, i) => ({
+      name: new Date(currentYear, i, 1).toLocaleString("en-US", {
+        month: "short",
+      }),
+      credit: 0,
+    }));
+    currentYearRows.forEach((row) => {
+      const d = new Date(row.TransDAte);
+      if (!Number.isNaN(d?.getTime?.())) {
+        const idx = d.getMonth();
+        base[idx].credit += row.Credit || 0;
+      }
+    });
+    return base;
+  }, [currentYearRows, currentYear]);
+
   const [showDetailedTable, setShowDetailedTable] = useState(false);
-
-  const onPieEnter = (_, index) => setActiveIndex(index);
-
-  const renderActiveShape = (props) => {
-    const {
-      cx,
-      cy,
-      midAngle,
-      innerRadius,
-      outerRadius,
-      startAngle,
-      endAngle,
-      fill,
-      payload,
-      percent,
-      value,
-    } = props;
-
-    const RADIAN = Math.PI / 180;
-    const sin = Math.sin(-RADIAN * midAngle);
-    const cos = Math.cos(-RADIAN * midAngle);
-    const sx = cx + (outerRadius + 10) * cos;
-    const sy = cy + (outerRadius + 10) * sin;
-    const mx = cx + (outerRadius + 20) * cos;
-    const my = cy + (outerRadius + 20) * sin;
-    const ex = mx + (cos >= 0 ? 1 : -1) * 22;
-    const ey = my;
-    const textAnchor = cos >= 0 ? "start" : "end";
-
-    return (
-      <g>
-        <text
-          x={cx}
-          y={cy}
-          dy={8}
-          textAnchor="middle"
-          fill={fill}
-          className="text-lg font-bold"
-        >
-          {payload.name}
-        </text>
-        <Sector
-          cx={cx}
-          cy={cy}
-          innerRadius={innerRadius}
-          outerRadius={outerRadius}
-          startAngle={startAngle}
-          endAngle={endAngle}
-          fill={fill}
-        />
-        <Sector
-          cx={cx}
-          cy={cy}
-          startAngle={startAngle}
-          endAngle={endAngle}
-          innerRadius={outerRadius + 6}
-          outerRadius={outerRadius + 10}
-          fill={fill}
-        />
-        <path
-          d={`M${sx},${sy} L${mx},${my} L${ex},${ey}`}
-          stroke={fill}
-          fill="none"
-        />
-        <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
-        <text
-          x={ex + (cos >= 0 ? 1 : -1) * 12}
-          y={ey}
-          textAnchor={textAnchor}
-          fill="#333"
-          className="text-sm font-semibold"
-        >
-          {`${value} (${(percent * 100).toFixed(2)}%)`}
-        </text>
-      </g>
-    );
-  };
 
   return (
     <div className="overflow-x-auto">
-      {/* Summary Totals & Pie Chart */}
+      {/* Summary Cards & Visualizations */}
       <div className="bg-gray-100 p-4 mb-4 rounded-lg shadow-md flex flex-col lg:flex-row justify-end items-center flex-wrap">
-        {/* Custom Active Shaped Pie Chart */}
+        {/* Radial progress: Paid this year */}
         <div className="w-full lg:w-1/2 flex justify-center">
-          <PieChart width={300} height={300}>
-            <Pie
-              activeIndex={activeIndex}
-              activeShape={renderActiveShape}
-              data={chartData}
-              cx="50%"
-              cy="50%"
-              innerRadius={80}
-              outerRadius={120}
-              dataKey="value"
-              onMouseEnter={onPieEnter}
-            >
-              {chartData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
-              ))}
-            </Pie>
-            <Tooltip />
-            <Legend />
-          </PieChart>
+          <div className="flex flex-col items-center">
+            <ResponsiveContainer width={280} height={220}>
+              <RadialBarChart
+                innerRadius="70%"
+                outerRadius="100%"
+                data={[{ name: "Paid", value: percentPaidThisYear }]}
+                startAngle={90}
+                endAngle={-270}
+              >
+                <RadialBar
+                  background
+                  clockWise
+                  dataKey="value"
+                  cornerRadius={12}
+                  fill="#10b981"
+                />
+                <Tooltip />
+              </RadialBarChart>
+            </ResponsiveContainer>
+            <div className="text-center -mt-6">
+              <div className="text-sm text-gray-600">Paid this year</div>
+              <div className="text-2xl font-bold">{percentPaidThisYear}%</div>
+              <div className="text-xs text-gray-500">
+                Received {receivedThisYear} of {expectedThisYear}
+              </div>
+            </div>
+            {/* Sparkline for monthly received */}
+            <div className="w-full mt-4">
+              <ResponsiveContainer width="100%" height={80}>
+                <AreaChart
+                  data={monthlySparklineData}
+                  margin={{ left: 0, right: 0, top: 8, bottom: 0 }}
+                >
+                  <defs>
+                    <linearGradient
+                      id="colorCredit"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.6} />
+                      <stop
+                        offset="95%"
+                        stopColor="#10b981"
+                        stopOpacity={0.05}
+                      />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis
+                    dataKey="name"
+                    tick={{ fontSize: 10 }}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="credit"
+                    stroke="#10b981"
+                    fill="url(#colorCredit)"
+                    strokeWidth={2}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
         </div>
         <div className="w-full lg:w-1/2 mb-4 lg:mb-0">
           <h3 className="text-lg font-semibold mb-2">Summary</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 text-center">
-            <div className="p-2 sm:p-3 bg-red-200 rounded-md font-semibold">
+          <div
+            className="grid grid-cols-1 sm:grid-cols-1
+           gap-2 sm:gap-4 text-center"
+          >
+            {/* <div className="p-2 sm:p-3 bg-red-200 rounded-md font-semibold">
               Monthly Donation <br />
               <span className="text-red-600">{totalDebit}</span>
-            </div>
-            <div className="p-2 sm:p-3 bg-green-200 rounded-md font-semibold">
+            </div> */}
+            {/* <div className="p-2 sm:p-3 bg-green-200 rounded-md font-semibold">
               Received <br />
               <span className="text-green-600">{totalCredit}</span>
-            </div>
+            </div> */}
             <div className="p-2 sm:p-3 bg-blue-200 rounded-md font-semibold">
-              Balance <br />
-              <span className="text-blue-600">{totalBalance}</span>
+              {totalBalance > 0 ? `⚠️ ` : `✅ `} Balance till December{" "}
+              {now.getFullYear()} :{" "}
+              <span className="text-blue-600">
+                {totalBalance.toLocaleString()}
+              </span>
             </div>
           </div>
 
