@@ -107,8 +107,7 @@ const PersonalInformation = ({
                     name="memberType"
                     value={formData.memberType}
                     onChange={handleChange}
-                    className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 
-                          "
+                    className="border-2 border-gray-400 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 focus:border-blue-500 focus:outline-none transition-colors duration-200"
                   >
                     <option value={"0"}>Member</option>
                     <option value={"1"}>DOJ</option>
@@ -126,7 +125,7 @@ const PersonalInformation = ({
                     name="nameTitle"
                     value={formData.nameTitle}
                     onChange={handleChange}
-                    className="border border-gray-300 rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 "
+                    className="border-2 border-gray-400 rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 focus:border-blue-500 focus:outline-none transition-colors duration-200"
                   >
                     <option>Mr.</option>
                     <option>Mrs.</option>
@@ -139,8 +138,7 @@ const PersonalInformation = ({
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 
-                          "
+                    className="border-2 border-gray-400 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 focus:border-blue-500 focus:outline-none transition-colors duration-200"
                   />
                 </div>
               </div>
@@ -155,8 +153,7 @@ const PersonalInformation = ({
                     name="fatherHusbandName"
                     value={formData.fatherHusbandName}
                     onChange={handleChange}
-                    className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 
-                          "
+                    className="border-2 border-gray-400 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 focus:border-blue-500 focus:outline-none transition-colors duration-200"
                   />
                 </div>
               </div>
@@ -175,8 +172,7 @@ const PersonalInformation = ({
                     name="gender"
                     value={formData.gender}
                     onChange={handleChange}
-                    className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 
-                          "
+                    className="border-2 border-gray-400 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 focus:border-blue-500 focus:outline-none transition-colors duration-200"
                   >
                     <option value={"1"}>Male</option>
                     <option value={"2"}>Female</option>
@@ -195,8 +191,7 @@ const PersonalInformation = ({
                     value={formData.dob}
                     onChange={handleChange}
                     type="date"
-                    className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 
-                          "
+                    className="border-2 border-gray-400 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 focus:border-blue-500 focus:outline-none transition-colors duration-200"
                   />
                 </div>
               </div>
@@ -263,8 +258,7 @@ const PersonalInformation = ({
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-[95%] rounded-xl my-1 mx-1 py-1 px-1 border border-gray-300 text-gray-600 
-                          "
+                    className="w-[95%] rounded-xl my-1 mx-1 py-1 px-1 border-2 border-gray-400 text-gray-600 focus:border-blue-500 focus:outline-none transition-colors duration-200"
                   />
                 </div>
               </div>
@@ -286,8 +280,7 @@ const PersonalInformation = ({
                     value={formData.cnic}
                     id="cnic"
                     onChange={handleCNICChange}
-                    className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 
-                          "
+                    className="border-2 border-gray-400 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 focus:border-blue-500 focus:outline-none transition-colors duration-200"
                   />
                 </div>
               </div>
@@ -302,8 +295,7 @@ const PersonalInformation = ({
                     name="maritalStatus"
                     value={formData.maritalStatus}
                     onChange={handleChange}
-                    className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 
-                          "
+                    className="border-2 border-gray-400 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 focus:border-blue-500 focus:outline-none transition-colors duration-200"
                   >
                     <option value={"1"}>Married</option>
                     <option value={"2"}>Single</option>
@@ -339,12 +331,12 @@ const PersonalInformation = ({
                 </div>
               </div>
 
-              {/* Referenece */}
-              <div className="flex items-center border border-gray-300">
-                <div className="w-[50%] py-1 px-1">
+              {/* Reference */}
+              <div className="flex flex-col border border-gray-300">
+                <div className="py-1 px-1 border-b border-gray-300">
                   Reference <span className="text-red-500">*</span>
                 </div>
-                <div className="w-[50%] border-l border-gray-300  ">
+                <div className="w-full">
                   <Select
                     name="reference"
                     value={
@@ -361,6 +353,14 @@ const PersonalInformation = ({
                             fatherName: FatherNames.find(
                               (opt) => opt.memberId === formData.reference
                             ).MemberFatherName,
+                            familyName:
+                              FamilyDropDown.find(
+                                (family) =>
+                                  family.FamilyID ===
+                                  FatherNames.find(
+                                    (opt) => opt.memberId === formData.reference
+                                  )?.FamilyID
+                              )?.FamilyName || "N/A",
                           }
                         : null
                     }
@@ -375,7 +375,11 @@ const PersonalInformation = ({
                     ).map((father) => ({
                       value: father.memberId,
                       label: father.MemberName,
-                      fatherName: father.MemberFatherName, 
+                      fatherName: father.MemberFatherName,
+                      familyName:
+                        FamilyDropDown.find(
+                          (family) => family.FamilyID === father.FamilyID
+                        )?.FamilyName || "N/A",
                     }))}
                     formatOptionLabel={(option) => (
                       <div
@@ -396,11 +400,37 @@ const PersonalInformation = ({
                           <p className="font-bold ">Father Name:</p> <br></br>
                           {option.fatherName}
                         </span>
+                        <span
+                          className="text-right"
+                          style={{ marginLeft: "1rem", color: "#555" }}
+                        >
+                          <p className="font-bold ">Family Name:</p> <br></br>
+                          {option.familyName}
+                        </span>
                       </div>
                     )}
                     isClearable
                     isSearchable
                     placeholder="Select Reference"
+                  />
+                </div>
+              </div>
+
+              {/* Reference Number */}
+              <div className="flex items-center border border-gray-300">
+                <div className="w-[50%] py-1 px-1">
+                  Reference Person Number{" "}
+                  <span className="text-red-500">*</span>
+                </div>
+                <div className="w-[50%] border-l border-gray-300">
+                  <input
+                    type="text"
+                    name="referenceNum"
+                    placeholder="####-#######"
+                    value={formData.referenceNum}
+                    id="referenceNum"
+                    onChange={handleCellNumber}
+                    className="border-2 border-gray-400 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 focus:border-blue-500 focus:outline-none transition-colors duration-200"
                   />
                 </div>
               </div>
@@ -449,7 +479,7 @@ const PersonalInformation = ({
                     name="currentCity"
                     value={formData.currentCity}
                     onChange={handleChange}
-                    className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-1 px-1 border border-gray-300 text-gray-600"
+                    className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-1 px-1 border-2 border-gray-400 text-gray-600 focus:border-blue-500 focus:outline-none transition-colors duration-200"
                   />
                 </div>
               </div>
@@ -465,7 +495,7 @@ const PersonalInformation = ({
                     name="currentAddress"
                     value={formData.currentAddress}
                     onChange={handleChange}
-                    className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-1 px-1 border border-gray-300 text-gray-600"
+                    className="w-[90%] rounded-2xl my-2 mx-[0.3rem] py-1 px-1 border-2 border-gray-400 text-gray-600 focus:border-blue-500 focus:outline-none transition-colors duration-200"
                   />
                 </div>
               </div>
@@ -484,8 +514,7 @@ const PersonalInformation = ({
                         name="PakistaniAddress"
                         value={formData.PakistaniAddress}
                         onChange={handleChange}
-                        className="w-[95%] rounded-xl my-1 mx-1 py-1 px-1 border border-gray-300 text-gray-600 
-                              "
+                        className="w-[95%] rounded-xl my-1 mx-1 py-1 px-1 border-2 border-gray-400 text-gray-600 focus:border-blue-500 focus:outline-none transition-colors duration-200"
                       />
                     </div>
                   </div>

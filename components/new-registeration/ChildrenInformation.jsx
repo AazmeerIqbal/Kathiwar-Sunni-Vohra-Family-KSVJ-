@@ -97,7 +97,7 @@ const ChildrenInformation = ({ childrenDetail, setChildrenDetail }) => {
           <label className="text-gray-600">Membership ID</label>
           <input
             {...register("MembershipID")}
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border-2 border-gray-400 rounded-md focus:border-blue-500 focus:outline-none transition-colors duration-200"
           />
           {errors.MembershipID && (
             <p className="text-red-500">{errors.MembershipID.message}</p>
@@ -108,7 +108,7 @@ const ChildrenInformation = ({ childrenDetail, setChildrenDetail }) => {
           <label className="text-gray-600">Child Name *</label>
           <input
             {...register("ChildName", { required: "Child Name is required" })}
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border-2 border-gray-400 rounded-md focus:border-blue-500 focus:outline-none transition-colors duration-200"
           />
           {errors.ChildName && (
             <p className="text-red-500">{errors.ChildName.message}</p>
@@ -119,7 +119,7 @@ const ChildrenInformation = ({ childrenDetail, setChildrenDetail }) => {
           <label className="text-gray-600">Gender *</label>
           <select
             {...register("Gender", { required: "Gender is required" })}
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border-2 border-gray-400 rounded-md focus:border-blue-500 focus:outline-none transition-colors duration-200"
           >
             <option value="">Select Gender</option>
             <option value="0">Male</option>
@@ -134,7 +134,7 @@ const ChildrenInformation = ({ childrenDetail, setChildrenDetail }) => {
           <label className="text-gray-600">B-Form #</label>
           <input
             {...register("BFormNo")}
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border-2 border-gray-400 rounded-md focus:border-blue-500 focus:outline-none transition-colors duration-200"
           />
           {errors.BFormNo && (
             <p className="text-red-500">{errors.BFormNo.message}</p>
@@ -174,7 +174,7 @@ const ChildrenInformation = ({ childrenDetail, setChildrenDetail }) => {
           <input
             type="date"
             {...register("DOB", { required: "Date of Birth is required" })}
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border-2 border-gray-400 rounded-md focus:border-blue-500 focus:outline-none transition-colors duration-200"
           />
           {errors.DOB && <p className="text-red-500">{errors.DOB.message}</p>}
         </div>

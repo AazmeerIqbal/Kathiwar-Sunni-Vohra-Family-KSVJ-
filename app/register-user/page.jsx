@@ -16,6 +16,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import WifeInformation from "@/components/new-registeration/WifeInformation";
 import ChildrenInformation from "@/components/new-registeration/ChildrenInformation";
 
+import StepTracker from "@/components/new-registeration/StepTracker";
+
 const page = () => {
   const { data: session } = useSession();
   const router = useRouter();
@@ -173,6 +175,7 @@ const page = () => {
     currentCountry: "",
     currentCity: "",
     currentAddress: "",
+    referenceNum: "",
   });
 
   useEffect(() => {
@@ -284,28 +287,46 @@ const page = () => {
 
   const handleCellNumber = (e) => {
     let value = e.target.value;
+    const fieldName = e.target.name;
 
     // Remove all non-numeric characters
     value = value.replace(/\D/g, "");
 
-    // Add hyphen (-) after 4 digits
-    if (value.length > 4) {
-      value = value.slice(0, 4) + "-" + value.slice(4);
+    // Check if this is a cell number or reference number
+    if (fieldName === "cellNumber") {
+      // Cell number format: ####-#######
+      if (value.length > 4) {
+        value = value.slice(0, 4) + "-" + value.slice(4);
+      }
+      // Limit the length to 12 characters (4 digits + - + 7 digits)
+      if (value.length > 12) {
+        value = value.slice(0, 12);
+      }
+
+      // Update the cellNumber state
+      setCellNumber(value);
+
+      // Update the formData state
+      setFormData((prevState) => ({
+        ...prevState,
+        cellNumber: value,
+      }));
+    } else if (fieldName === "referenceNum") {
+      // Reference number format: ####-#######
+      if (value.length > 4) {
+        value = value.slice(0, 4) + "-" + value.slice(4);
+      }
+      // Limit the length to 12 characters (4 digits + - + 7 digits)
+      if (value.length > 12) {
+        value = value.slice(0, 12);
+      }
+
+      // Update the formData state for reference number
+      setFormData((prevState) => ({
+        ...prevState,
+        referenceNum: value,
+      }));
     }
-
-    // Limit the length to 12 characters (4 digits + - + 7 digits)
-    if (value.length > 12) {
-      value = value.slice(0, 12);
-    }
-
-    // Update the cellNumber state
-    setCellNumber(value);
-
-    // Update the formData state
-    setFormData((prevState) => ({
-      ...prevState,
-      cellNumber: value, // Update the cellNumber field in formData
-    }));
   };
 
   const handleSubmit = async () => {
@@ -560,6 +581,7 @@ const page = () => {
         { name: "currentCountry", label: "Current Country" },
         { name: "currentCity", label: "Current City" },
         { name: "currentAddress", label: "Current Address" },
+        { name: "referenceNum", label: "Reference Number" },
       ];
 
       if (showPakistaniFields) {
@@ -666,11 +688,14 @@ const page = () => {
             Close
           </button>
         </div>
+        {/* Step Tracker */}
+        <StepTracker currentStep={currentStep} steps={steps} />
+
         {/* Personal Information  */}
         <div className="bg-transparent">
           <div className="space-y-1">
             <h1 className="text-xl font-semibold mb-4">
-              Step {currentStep + 1}: {steps[currentStep].title}
+              {steps[currentStep].title}
             </h1>
             <div className="bg-white shadow rounded p-2 lg:p-6">
               <AnimatePresence mode="wait" initial={false}>

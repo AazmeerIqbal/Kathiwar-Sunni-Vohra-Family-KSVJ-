@@ -139,7 +139,7 @@ const ProfessionalInformation = ({
           <input
             type="text"
             {...register("companyName")}
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border-2 border-gray-400 rounded-md focus:border-blue-500 focus:outline-none transition-colors duration-200"
             placeholder="Enter Company Name"
           />
         </div>
@@ -150,7 +150,7 @@ const ProfessionalInformation = ({
           <input
             type="text"
             {...register("currentPosition")}
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border-2 border-gray-400 rounded-md focus:border-blue-500 focus:outline-none transition-colors duration-200"
             placeholder="Enter Current Position"
           />
         </div>

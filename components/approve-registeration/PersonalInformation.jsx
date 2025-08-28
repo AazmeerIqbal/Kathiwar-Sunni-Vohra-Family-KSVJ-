@@ -301,6 +301,32 @@ const PersonalInformation = ({
                                 "Not available"}
                             </span>
                           </div>
+                          <div className="flex-1 ml-2">
+                            <span className="font-semibold text-xs">
+                              Family:{" "}
+                            </span>
+                            <span className="text-xs">
+                              {(() => {
+                                const referenceMember = FatherNames.find(
+                                  (member) =>
+                                    member.memberId === formData.reference
+                                );
+                                if (
+                                  referenceMember &&
+                                  referenceMember.FamilyID
+                                ) {
+                                  const family = FamilyDropDown.find(
+                                    (f) =>
+                                      f.FamilyID === referenceMember.FamilyID
+                                  );
+                                  return family
+                                    ? family.FamilyName
+                                    : "Not available";
+                                }
+                                return "Not available";
+                              })()}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     ) : (
@@ -309,6 +335,21 @@ const PersonalInformation = ({
                       </span>
                     )}
                   </div>
+                </div>
+              </div>
+              {/* Reference Number */}
+              <div className="flex items-center border border-gray-300">
+                <div className="w-[50%] py-1 px-1">
+                  Reference Person Number{" "}
+                  <span className="text-red-500">*</span>
+                </div>
+                <div className="w-[50%] border-l border-gray-300 flex items-center">
+                  <input
+                    type="text"
+                    value={formData.referenceNumber || ""}
+                    disabled
+                    className="border border-gray-300 w-[95%] rounded-xl my-1 mx-1 py-1 px-1 text-gray-600 bg-gray-100"
+                  />
                 </div>
               </div>
             </div>

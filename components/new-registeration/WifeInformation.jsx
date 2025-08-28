@@ -107,7 +107,7 @@ const WifeInformation = ({
           <input
             type="text"
             {...register("wifeName", { required: "Wife Name is required" })}
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border-2 border-gray-400 rounded-md focus:border-blue-500 focus:outline-none transition-colors duration-200"
           />
           {errors.wifeName && (
             <p className="text-red-500">{errors.wifeName.message}</p>
@@ -119,7 +119,7 @@ const WifeInformation = ({
           <input
             type="text"
             {...register("fatherName")}
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border-2 border-gray-400 rounded-md focus:border-blue-500 focus:outline-none transition-colors duration-200"
           />
         </div>
         {/* DOB */}
@@ -128,7 +128,7 @@ const WifeInformation = ({
           <input
             type="date"
             {...register("dob")}
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border-2 border-gray-400 rounded-md focus:border-blue-500 focus:outline-none transition-colors duration-200"
           />
         </div>
         {/* CNIC No */}
@@ -137,7 +137,7 @@ const WifeInformation = ({
           <input
             type="text"
             {...register("cnicNo")}
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border-2 border-gray-400 rounded-md focus:border-blue-500 focus:outline-none transition-colors duration-200"
             placeholder="00000-000000-0"
           />
         </div>
@@ -147,7 +147,7 @@ const WifeInformation = ({
           <input
             type="text"
             {...register("cellNumber")}
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border-2 border-gray-400 rounded-md focus:border-blue-500 focus:outline-none transition-colors duration-200"
           />
         </div>
         {/* E-mail ID */}
@@ -156,7 +156,7 @@ const WifeInformation = ({
           <input
             type="email"
             {...register("email")}
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border-2 border-gray-400 rounded-md focus:border-blue-500 focus:outline-none transition-colors duration-200"
           />
         </div>
         {/* Marriage Date */}
@@ -165,7 +165,7 @@ const WifeInformation = ({
           <input
             type="date"
             {...register("marriageDate")}
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border-2 border-gray-400 rounded-md focus:border-blue-500 focus:outline-none transition-colors duration-200"
           />
         </div>
         {/* Father Name (if member) */}

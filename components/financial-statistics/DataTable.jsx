@@ -173,8 +173,10 @@ const DataTable = ({ data, loading }) => {
               <span className="text-green-600">{totalCredit}</span>
             </div> */}
             <div className="p-2 sm:p-3 bg-blue-200 rounded-md font-semibold">
-              {totalBalance > 0 ? `⚠️ ` : `✅ `} Balance till December{" "}
-              {now.getFullYear()} :{" "}
+              {totalBalance > 0
+                ? `⚠️ Due till December ${now.getFullYear()}`
+                : `✅ Your Dues are all cleared`}
+
               <span className="text-blue-600">
                 {totalBalance.toLocaleString()}
               </span>

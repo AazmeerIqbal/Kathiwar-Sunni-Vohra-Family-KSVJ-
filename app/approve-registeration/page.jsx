@@ -96,6 +96,7 @@ const page = () => {
           reference: member.ReferenceMemberName,
           referenceMemberName: member.ReferenceMemberName,
           referenceMemberFatherName: member.ReferenceMemberFatherName,
+          referenceNumber: member.ReferenceNum,
         });
       } else {
         setError("No member data found for the given ID.");
@@ -138,6 +139,7 @@ const page = () => {
     reference: "",
     referenceMemberName: "",
     referenceMemberFatherName: "",
+    referenceNumber: "",
   });
 
   const fetchCountryData = async () => {

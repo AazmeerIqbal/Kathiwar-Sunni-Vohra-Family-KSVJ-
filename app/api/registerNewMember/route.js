@@ -25,6 +25,7 @@ export async function POST(req) {
       .input("MaritalStatus", formData.maritalStatus)
       .input("CurrentAddress", formData.currentAddress)
       .input("ReferenceID", formData.reference)
+      .input("ReferenceNum", formData.referenceNum)
       .input("CurrentCountry", formData.currentCountry)
       .input("FromStateID", formData.state)
       .input("CurrentCity", formData.currentCity)
@@ -49,6 +50,7 @@ export async function POST(req) {
           MaritalStatus,
           CurrentAddress,
           ReferenceID,
+          ReferenceNum,
           CurrentCountry,
           FromStateID,
           CurrentCity,
@@ -75,6 +77,7 @@ export async function POST(req) {
           @MaritalStatus,
           @CurrentAddress,
           @ReferenceID,
+          @ReferenceNum,
           @CurrentCountry,
           @FromStateID,
           @CurrentCity,

@@ -268,7 +268,7 @@ const EducationalInformations = ({
           <input
             type="text"
             {...register("degreeTitle")}
-            className="w-full p-2 border rounded-md border-gray-400"
+            className="w-full p-2 border-2 border-gray-400 rounded-md focus:border-blue-500 focus:outline-none transition-colors duration-200"
           />
           {errors.degreeTitle && (
             <p className="text-red-500 ">{errors.degreeTitle.message}</p>

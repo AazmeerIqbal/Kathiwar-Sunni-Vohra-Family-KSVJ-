@@ -10,8 +10,10 @@ export async function GET(req) {
     const MemberName = await pool
       .request()
       .query(
-        "SELECT memberId, MemberName, MemberFatherName FROM tb_member_mst"
+        "SELECT memberId, MemberName, MemberFatherName, FamilyID FROM tb_member_mst"
       );
+
+    //  "SELECT m.MemberId, m.MemberName, m.MemberFatherName, m.FamilyID, f.FamilyName FROM tb_member_mst m INNER JOIN tb_member_family_mst f ON m.FamilyID = f.FamilyID"
     // Close the database connection
     await closeConnection(pool);
 
