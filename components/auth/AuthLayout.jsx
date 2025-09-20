@@ -3,8 +3,8 @@ import Image from "next/image";
 
 export const AuthLayout = ({ children, title, subtitle }) => {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 sm:p-6 lg:p-8">
-      <div className="w-full max-w-md sm:max-w-lg bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+    <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+      <div className="w-full max-w-md sm:max-w-lg bg-white rounded-3xl drop-shadow-2xl border border-gray-100 overflow-hidden">
         {/* Header Section with Logo */}
         <div className="bg-white px-8 pt-8 pb-6 text-center border-b border-gray-100">
           <div className="flex justify-center mb-6">
