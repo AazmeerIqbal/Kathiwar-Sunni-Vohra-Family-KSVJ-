@@ -39,15 +39,17 @@ const Login = () => {
             isAdmin={isAdmin}
             onToggleMode={() => setIsAdmin(!isAdmin)}
           />
-          <p className="text-center text-sm text-gray-600">
-            Don't have an account?{" "}
-            <button
-              className="text-blue-600 hover:text-blue-500 font-medium"
-              onClick={() => setIsModalOpen(true)}
-            >
-              Sign up
-            </button>
-          </p>
+          <div className="text-center pt-4 border-t border-gray-100">
+            <p className="text-sm text-gray-600">
+              Don't have an account?{" "}
+              <button
+                className="text-blue-600 hover:text-blue-500 font-medium transition-colors duration-200"
+                onClick={() => setIsModalOpen(true)}
+              >
+                Sign up
+              </button>
+            </p>
+          </div>
           <SignupOptionsModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
@@ -58,15 +60,17 @@ const Login = () => {
       ) : (
         <>
           <SignupForm setIsLogin={setIsLogin} />
-          <p className="text-center text-sm text-gray-600">
-            Already have an account?{" "}
-            <button
-              className="text-blue-600 hover:text-blue-500 font-medium"
-              onClick={() => setIsLogin(true)}
-            >
-              Sign in
-            </button>
-          </p>
+          <div className="text-center pt-4 border-t border-gray-100">
+            <p className="text-sm text-gray-600">
+              Already have an account?{" "}
+              <button
+                className="text-blue-600 hover:text-blue-500 font-medium transition-colors duration-200"
+                onClick={() => setIsLogin(true)}
+              >
+                Sign in
+              </button>
+            </p>
+          </div>
         </>
       )}
     </AuthLayout>

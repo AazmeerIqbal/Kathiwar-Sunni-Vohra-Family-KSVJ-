@@ -2,8 +2,8 @@ const sql = require("mssql");
 
 const config = {
   user: "sa",
-  password: "test",
-  server: "AZMEER",
+  password: "test", 
+  server: "DESKTOP-TQFVMDC",
   database: "KSVJ",
   port: 1433,
   connectionTimeout: 60000, // 60 seconds timeout for connections

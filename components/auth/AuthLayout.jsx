@@ -1,16 +1,31 @@
 import React from "react";
-import { Shield } from "lucide-react";
+import Image from "next/image";
 
 export const AuthLayout = ({ children, title, subtitle }) => {
   return (
-    <div className="min-h-screen bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-400 flex items-center justify-center p-4">
-      <div className="md:max-w-lg max-w-md w-full bg-white/80 backdrop-blur-lg rounded-2xl shadow-2xl p-8 space-y-8 border border-white/20">
-        <div className="text-center space-y-2">
-          {/* <span className="text-4xl font-extrabold tracking-wide">KSVJ</span> */}
-          <h1 className="text-3xl font-bold text-gray-900 mt-4">{title}</h1>
-          {subtitle && <p className="text-gray-600">{subtitle}</p>}
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+      <div className="w-full max-w-md sm:max-w-lg bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+        {/* Header Section with Logo */}
+        <div className="bg-white px-8 pt-8 pb-6 text-center border-b border-gray-100">
+          <div className="flex justify-center mb-6">
+            <div className="relative w-24 h-24 sm:w-28 sm:h-28">
+              <Image
+                src="/ksvj.jpg"
+                alt="KSVJ Logo"
+                fill
+                className="object-contain rounded-full"
+                priority
+              />
+            </div>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{title}</h1>
+          {subtitle && <p className="text-gray-600 text-sm sm:text-base">{subtitle}</p>}
         </div>
-        {children}
+        
+        {/* Form Section */}
+        <div className="px-8 py-6 sm:py-8">
+          {children}
+        </div>
       </div>
     </div>
   );

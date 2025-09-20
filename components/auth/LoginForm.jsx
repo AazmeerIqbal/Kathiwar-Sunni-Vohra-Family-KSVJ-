@@ -186,86 +186,86 @@ export const LoginForm = ({ isAdmin, onToggleMode }) => {
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
         {isAdmin ? (
-          <Input
-            label="Username"
-            type="text"
-            placeholder="Enter username"
-            value={formData.username}
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, username: e.target.value }))
-            }
-            error={errors.username}
-          />
+          <div className="space-y-2">
+            <Input
+              label="Username"
+              type="text"
+              placeholder="Enter username"
+              value={formData.username}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, username: e.target.value }))
+              }
+              error={errors.username}
+            />
+          </div>
         ) : (
-          <CNICInput
-            label="CNIC #"
-            placeholder="Enter CNIC"
-            formData={formData}
-            setFormData={setFormData}
-            errors={errors}
-          />
+          <div className="space-y-2">
+            <CNICInput
+              label="CNIC #"
+              placeholder="Enter CNIC"
+              formData={formData}
+              setFormData={setFormData}
+              errors={errors}
+            />
+          </div>
         )}
 
-        <Input
-          label="Password"
-          type={showPassword ? "text" : "password"}
-          placeholder="••••••••"
-          value={formData.password}
-          onChange={(e) =>
-            setFormData((prev) => ({ ...prev, password: e.target.value }))
-          }
-          error={errors.password}
-          icon={<Lock className="w-5 h-5" />}
-        />
+        <div className="space-y-2">
+          <Input
+            label="Password"
+            type={showPassword ? "text" : "password"}
+            placeholder="••••••••"
+            value={formData.password}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, password: e.target.value }))
+            }
+            error={errors.password}
+            icon={<Lock className="w-4 h-4 sm:w-5 sm:h-5" />}
+          />
+        </div>
 
-        <div className="flex items-center justify-between">
-          <label className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+          <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
-              className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 focus:ring-2"
               checked={showPassword}
               onChange={(e) => setShowPassword(e.target.checked)}
             />
-            <span className="text-sm text-gray-600">Show Password</span>
+            <span className="text-sm text-gray-600 select-none">Show Password</span>
           </label>
 
           {!isAdmin && (
             <button
               type="button"
-              className="text-sm text-blue-600 hover:text-blue-500 font-medium"
+              className="text-sm text-blue-600 hover:text-blue-500 font-medium transition-colors duration-200 self-start sm:self-auto"
               onClick={handleForgotPass}
               disabled={forgetPassClick}
             >
-              Forgot password?
+              {forgetPassClick ? "Sending..." : "Forgot password?"}
             </button>
           )}
         </div>
 
-        <div className="flex gap-2 w-full">
-          {/* {isAdmin ? null : (
-            <Button
-              fullWidth={"w-2/4"}
-              type="button"
-              variant="outline"
-              onClick={newRegisterationClick}
-            >
-              New Registeration
-            </Button>
-          )} */}
-
-          <Button type="submit" isLoading={isLoading} fullWidth={"w-2/4"}>
+        <div className="pt-2">
+          <Button 
+            type="submit" 
+            isLoading={isLoading} 
+            fullWidth={"w-full"}
+            className="h-12 text-base font-semibold"
+          >
             {isLoading
               ? "Signing in..."
-              : `Sign in as ${isAdmin ? "Admin" : "User"}`}
+              : `Sign in as ${isAdmin ? "Admin" : "Member"}`}
           </Button>
         </div>
 
-        <div className="text-center">
+        <div className="text-center pt-2">
           <button
             type="button"
-            className="text-sm text-gray-600 hover:text-blue-500 font-medium"
+            className="text-sm text-gray-600 hover:text-blue-500 font-medium transition-colors duration-200"
             onClick={onToggleMode}
           >
             Switch to {isAdmin ? "Member" : "Admin"} Login
@@ -273,7 +273,18 @@ export const LoginForm = ({ isAdmin, onToggleMode }) => {
         </div>
       </form>
 
-      <ToastContainer />
+      <ToastContainer 
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </>
   );
 };
