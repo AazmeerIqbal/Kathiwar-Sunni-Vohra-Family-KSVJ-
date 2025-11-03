@@ -6,7 +6,6 @@ import { SignupForm } from "@/components/auth/SignupForm";
 import SignupOptionsModal from "@/components/auth/SignupOptionsModal";
 
 const Login = () => {
-  const [isAdmin, setIsAdmin] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -24,7 +23,7 @@ const Login = () => {
     <AuthLayout
       title={
         isLogin
-          ? `KSVJ - ${isAdmin ? "Admin" : "Member"} Login`
+          ? `KSVJ - Member Login`
           : "Create Account"
       }
       subtitle={
@@ -35,10 +34,7 @@ const Login = () => {
     >
       {isLogin ? (
         <>
-          <LoginForm
-            isAdmin={isAdmin}
-            onToggleMode={() => setIsAdmin(!isAdmin)}
-          />
+          <LoginForm isAdmin={false} />
           <div className="text-center pt-4 border-t border-gray-100">
             <p className="text-sm text-gray-600">
               Don't have an account?{" "}

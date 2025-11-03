@@ -1,19 +1,17 @@
-import React, { use, useState } from "react";
+import React, { useState } from "react";
 import { Lock } from "lucide-react";
 import { Input } from "../ui/Input";
 import { Button } from "../ui/Button";
 import CNICInput from "@/utils/CnicFormatter";
 import emailjs from "@emailjs/browser";
-import { decrypt } from "@/utils/Encryption";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 // Notification Toaster
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Link from "next/link";
 
-export const LoginForm = ({ isAdmin, onToggleMode }) => {
+export const LoginForm = ({ isAdmin }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
@@ -262,15 +260,6 @@ export const LoginForm = ({ isAdmin, onToggleMode }) => {
           </Button>
         </div>
 
-        <div className="text-center pt-2">
-          <button
-            type="button"
-            className="text-sm text-gray-600 hover:text-blue-500 font-medium transition-colors duration-200"
-            onClick={onToggleMode}
-          >
-            Switch to {isAdmin ? "Member" : "Admin"} Login
-          </button>
-        </div>
       </form>
 
       <ToastContainer 

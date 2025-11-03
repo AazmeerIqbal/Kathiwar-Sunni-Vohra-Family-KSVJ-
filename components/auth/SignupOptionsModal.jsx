@@ -29,11 +29,15 @@ const SignupOptionsModal = ({
               <div className="flex-shrink-0">
                 <UserPlus className="w-6 h-6 text-blue-600 group-hover:text-blue-700" />
               </div>
-              <div className="text-left">
-                <div className="font-medium text-gray-900">I'm a new member</div>
-                <div className="text-sm text-gray-600">
+              <div className="text-left w-full">
+                <div className="font-medium text-gray-900">I'm not a member</div>
+                <div className="text-sm text-right text-gray-600">
+                میں ایک ممبر نہیں ہوں۔
+                </div>
+                {/* <div className="text-sm text-gray-600">
                   Register as a new family member
                 </div>
+                 */}
               </div>
             </div>
           </button>
@@ -43,15 +47,18 @@ const SignupOptionsModal = ({
             onClick={onSignup}
             className="w-full p-4 border-2 border-green-200 rounded-lg hover:border-green-400 hover:bg-green-50 transition-all duration-200 group"
           >
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3 ">
               <div className="flex-shrink-0">
                 <UserCheck className="w-6 h-6 text-green-600 group-hover:text-green-700" />
               </div>
-              <div className="text-left">
+              <div className="text-left w-full">
                 <div className="font-medium text-gray-900">I'm already a member</div>
-                <div className="text-sm text-gray-600">
-                  Create login credentials for existing membership
+                <div className="text-sm text-right text-gray-600 ">
+                میں ایک موجودہ ممبر ہوں۔
                 </div>
+                {/* <div className="text-sm text-gray-600">
+                  Create login credentials for existing membership
+                </div> */}
               </div>
             </div>
           </button>

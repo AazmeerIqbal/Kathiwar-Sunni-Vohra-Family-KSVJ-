@@ -6,6 +6,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { SessionProvider, useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
 import Login from "./login/page";
+import AdminLogin from "./admin/login/page";
 import ResetPassword from "./reset-password/page";
 import Dashboard from "@/components/Dashboard";
 import { Loader } from "lucide-react";
@@ -63,10 +64,12 @@ export default function RootLayout({ children }) {
         <SessionProvider>
           <div className="main">
             <main className="app">
-              {pathname === "/login" || pathname === "/reset-password" ? (
-                // Allow the resetPassword page to be rendered without authentication
+              {pathname === "/login" || pathname === "/admin/login" || pathname === "/reset-password" ? (
+                // Allow login pages and resetPassword page to be rendered without authentication
                 pathname === "/login" ? (
                   <Login />
+                ) : pathname === "/admin/login" ? (
+                  <AdminLogin />
                 ) : (
                   children // This will render the ResetPassword page
                 )
