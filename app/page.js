@@ -6,7 +6,7 @@ import Cards from "../components/dashboard/Cards";
 import UpdateInformationRequest from "@/components/dashboard/updateInformationRequest";
 import NewRegisterationRequest from "@/components/dashboard/NewRegisterationRequest";
 import { IoIosDocument, IoMdInformationCircleOutline } from "react-icons/io";
-import { FaCircleDollarToSlot } from "react-icons/fa6";
+import { FaCircleDollarToSlot, FaFileInvoiceDollar  } from "react-icons/fa6";
 
 export default function Home() {
   const [UpdatedMembers, setUpdatedMembers] = useState([]);
@@ -91,6 +91,16 @@ export default function Home() {
               }
               link={"/financial-statistics"}
             />
+            {session.user.isAdmin === 1 && (
+             <Cards
+              Icon={
+                <FaFileInvoiceDollar className="stroke-purple-200 shrink-0 text-purple-200 w-12 h-12" />
+              }
+              Heading="Payment History"
+                Text="View users payment history and transaction details."
+                link={"/transaction-history"}
+              />
+            )}
           </div>
 
           {/* Requestes */}
