@@ -10,6 +10,7 @@ import {
   LifeBuoy,
   Settings,
   CircleUserRound,
+  Users,
 } from "lucide-react";
 import { IoMdInformationCircleOutline, IoIosDocument } from "react-icons/io";
 import { encrypt } from "@/utils/Encryption";
@@ -62,10 +63,14 @@ const Dashboard = ({ children }) => {
               active={pathname?.includes("/financial-statistics")}
             />
           </Link>
+          <Link href="/members-list">
           <SidebarItem
-            icon={<Calendar size={20} />}
-            text="Contribution Detail"
+            icon={<Users size={20} />}
+            text="Members List"
+            active={pathname?.includes("/members-list")}
           />
+          </Link>
+
           <SidebarItem icon={<Layers size={20} />} text="Event Attendace" />
           <SidebarItem icon={<Flag size={20} />} text="Reporting" />
           <hr className="my-3" />
