@@ -12,7 +12,18 @@ export async function POST(req) {
     );
   }
 
-  const currentTime = new Date();
+  // Use UTC time to match the expiration time stored in UTC
+  // Create a UTC date for comparison to ensure consistency
+  const now = new Date();
+  const currentTime = new Date(Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate(),
+    now.getUTCHours(),
+    now.getUTCMinutes(),
+    now.getUTCSeconds(),
+    now.getUTCMilliseconds()
+  ));
 
   const checkTokenQuery = `
     SELECT UserId 

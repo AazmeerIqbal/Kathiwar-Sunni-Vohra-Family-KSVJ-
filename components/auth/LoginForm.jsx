@@ -3,7 +3,6 @@ import { Lock } from "lucide-react";
 import { Input } from "../ui/Input";
 import { Button } from "../ui/Button";
 import CNICInput from "@/utils/CnicFormatter";
-import emailjs from "@emailjs/browser";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -23,35 +22,6 @@ export const LoginForm = ({ isAdmin }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [forgetPassClick, setforgetPassClick] = useState(false);
   const router = useRouter();
-
-  const SendEmail = (formData) => {
-    const { email, username, resetLink, cnic } = formData.data;
-    const templateParams = {
-      from_name: "KSVJ",
-      username: username,
-      cnic: cnic,
-      to_email: email,
-      message: `${username}, recover your password`,
-      link: resetLink,
-    };
-
-    emailjs
-      .send(
-        process.env.NEXT_PUBLIC_EmailJS_ServiceId,
-        process.env.NEXT_PUBLIC_EmailJS_TemplateId_PassRecovery,
-        templateParams,
-        process.env.NEXT_PUBLIC_EmailJS_PublicKey
-      )
-      .then(
-        (result) => {
-          console.log("SUCCESS!", result.status, result.text);
-        },
-        (error) => {
-          console.log("FAILED...", error);
-          alert("Failed to send the reset email. Please try again.");
-        }
-      );
-  };
 
   const handleForgotPass = async (e) => {
     e.preventDefault();
@@ -73,19 +43,14 @@ export const LoginForm = ({ isAdmin }) => {
     setforgetPassClick(true);
 
     try {
-      // Send the GET request
+      // Send the GET request - email is now sent from the API
       const response = await fetch(`/api/forgetPass/${formData.cnic.trim()}`, {
         method: "GET",
       });
 
       const data = await response.json();
-      if (response.ok) {
-        SendEmail(data);
-        console.log("Fetched data:", data);
-
-        // Access fetched user details
-        const { email, userId, password, cnic, resetLink } = data.data;
-        toast.success(`Password recovery email sent to ${email}`, {
+      if (response.ok && data.success) {
+        toast.success(data.message || "Password recovery email sent successfully.", {
           position: "bottom-center",
         });
 
