@@ -16,7 +16,7 @@ const MembersListPage = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("default");
-  const [showDaughterOnly, setShowDaughterOnly] = useState(false);
+  const [daughterFilter, setDaughterFilter] = useState("all"); // "all", "show", "hide"
   const [printTimestamp, setPrintTimestamp] = useState("");
 
   // Fetch members from API (only if admin)
@@ -124,6 +124,12 @@ const MembersListPage = () => {
         cell: ({ getValue }) => (
           <span className="text-gray-700">{getValue() || "N/A"}</span>
         ),
+      },{
+        accessorKey: "Age18",
+        header: "Age",
+        cell: ({ getValue }) => (
+          <span className="text-gray-700">{getValue() || "N/A"}</span>
+        ),
       },
       {
         accessorKey: "DughterOfJamat",
@@ -161,8 +167,9 @@ const MembersListPage = () => {
       });
     }
 
-    // Show only Daughter of Jamat if toggled
-    if (showDaughterOnly) {
+    // Filter by Daughter of Jamat
+    if (daughterFilter === "show") {
+      // Show only Daughter of Jamat (value = 1)
       data = data.filter((member) => {
         const raw = member.DughterOfJamat;
         const normalized = `${raw ?? ""}`.toLowerCase().trim();
@@ -175,10 +182,32 @@ const MembersListPage = () => {
           normalized === "t"
         );
       });
+    } else if (daughterFilter === "hide") {
+      // Hide Daughter of Jamat (value = 0)
+      data = data.filter((member) => {
+        const raw = member.DughterOfJamat;
+        const normalized = `${raw ?? ""}`.toLowerCase().trim();
+        return !(
+          raw === 1 ||
+          raw === "1" ||
+          normalized === "yes" ||
+          normalized === "true" ||
+          normalized === "y" ||
+          normalized === "t"
+        );
+      });
     }
+    // If "all", no filtering needed
 
     // Sorting
-    if (sortOption === "name-asc") {
+    if (sortOption === "default" || sortOption === "family-asc") {
+      // Default: Sort by FamilyName A-Z
+      data = [...data].sort((a, b) => {
+        const familyA = (a.FamilyName || "").toLowerCase();
+        const familyB = (b.FamilyName || "").toLowerCase();
+        return familyA.localeCompare(familyB);
+      });
+    } else if (sortOption === "name-asc") {
       data = [...data].sort((a, b) =>
         (a.MemberName || "").toLowerCase().localeCompare((b.MemberName || "").toLowerCase())
       );
@@ -189,7 +218,7 @@ const MembersListPage = () => {
     }
 
     return data;
-  }, [members, searchQuery, showDaughterOnly, sortOption]);
+  }, [members, searchQuery, daughterFilter, sortOption]);
 
   const handlePrint = () => {
     const now = new Date();
@@ -285,7 +314,7 @@ const MembersListPage = () => {
 
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-gray-700">Filter</label>
+              <label className="text-sm font-medium text-gray-700">Filters</label>
               <select
                 value={sortOption}
                 onChange={(e) => {
@@ -300,18 +329,21 @@ const MembersListPage = () => {
               </select>
             </div>
 
-            <label className="inline-flex items-center gap-2 text-sm text-gray-700">
-              <input
-                type="checkbox"
-                checked={showDaughterOnly}
+            <div className="flex items-center gap-2">
+              {/* <label className="text-sm font-medium text-gray-700">Daughter Of Jamat</label> */}
+              <select
+                value={daughterFilter}
                 onChange={(e) => {
-                  setShowDaughterOnly(e.target.checked);
+                  setDaughterFilter(e.target.value);
                   setPagination({ ...pagination, pageIndex: 0 });
                 }}
-                className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-              />
-              Show DaughterOfJamat
-            </label>
+                className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              >
+                <option value="all">All</option>
+                <option value="show">Show Daughter Of Jamat</option>
+                <option value="hide">Show Members</option>
+              </select>
+            </div>
           </div>
 
           <div className="flex items-center gap-3 print:hidden">
@@ -445,66 +477,83 @@ const MembersListPage = () => {
       </div>
 
       {/* Print View */}
-      <div className="hidden print:block p-6 text-gray-900 print-area">
-        <div className="text-center mb-6">
+      <div className="hidden print:block text-gray-900 print-area">
+        <div className="text-center mb-4">
           <h2 className="text-xl font-bold">
-            Kathiwarei Sunni Vohra Jammat Family
+            Kathiawar Sunni Vohra Jamat
           </h2>
-          <p className="text-sm">
-            Printed on: {printTimestamp || new Date().toLocaleString()}
-          </p>
         </div>
-        <div className="overflow-x-auto">
-          <table className="min-w-full border border-gray-300">
-            <thead>
-              <tr className="bg-gray-200 text-left text-sm">
-                {columns.map((col) => (
-                  <th key={col.accessorKey || col.id} className="px-3 py-2 border-b border-gray-300">
-                    {typeof col.header === "string"
-                      ? col.header
-                      : flexRender(col.header, {
-                          table: { options: {} },
-                          column: { columnDef: col },
-                        })}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="text-sm">
-              {filteredData.length === 0 ? (
-                <tr>
-                  <td colSpan={columns.length} className="text-center py-6">
-                    No members available.
-                  </td>
+        <div className="flex justify-center">
+          <div className="overflow-x-auto">
+            <table className="border border-gray-300">
+              <thead>
+                <tr className="bg-gray-200 text-left text-sm">
+                  {columns
+                    .filter((col) => col.accessorKey !== "DughterOfJamat")
+                    .map((col) => (
+                      <th key={col.accessorKey || col.id} className="px-3 py-2 border-b border-gray-300">
+                        {typeof col.header === "string"
+                          ? col.header
+                          : flexRender(col.header, {
+                              table: { options: {} },
+                              column: { columnDef: col },
+                            })}
+                      </th>
+                    ))}
+                  {/* Empty header cell for signature column */}
+                  <th className="px-3 py-2 border-b border-gray-300 w-32"></th>
                 </tr>
-              ) : (
-                filteredData.map((row, idx) => (
-                  <tr key={idx} className="border-b border-gray-200">
-                    {columns.map((col) => {
-                      const value =
-                        typeof col.cell === "function"
-                          ? col.cell({
-                              row: { original: row },
-                              getValue: () => row[col.accessorKey],
-                            })
-                          : row[col.accessorKey];
-                      return (
-                        <td key={col.accessorKey || col.id} className="px-3 py-2 align-top">
-                          {value}
-                        </td>
-                      );
-                    })}
+              </thead>
+              <tbody className="text-sm">
+                {filteredData.length === 0 ? (
+                  <tr>
+                    <td colSpan={columns.filter((col) => col.accessorKey !== "DughterOfJamat").length + 1} className="text-center py-6">
+                      No members available.
+                    </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  filteredData.map((row, idx) => (
+                    <tr key={idx} className="border-b border-gray-200">
+                      {columns
+                        .filter((col) => col.accessorKey !== "DughterOfJamat")
+                        .map((col) => {
+                          const value =
+                            typeof col.cell === "function"
+                              ? col.cell({
+                                  row: { original: row },
+                                  getValue: () => row[col.accessorKey],
+                                })
+                              : row[col.accessorKey];
+                          return (
+                            <td key={col.accessorKey || col.id} className="px-3 py-2 align-top">
+                              {value}
+                            </td>
+                          );
+                        })}
+                      {/* Empty cell for signature */}
+                      <td className="px-3 py-2 align-top w-32"></td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
       {/* Print isolation to hide global layout/sidebars */}
       <style jsx global>{`
         @media print {
+          @page {
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+          }
           body * {
             visibility: hidden !important;
           }
@@ -513,10 +562,19 @@ const MembersListPage = () => {
             visibility: visible !important;
           }
           .print-area {
-            position: static !important;
-            inset: 0 !important;
-            margin: 0 auto !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            margin: 0 !important;
+            padding: 20px !important;
             width: 100% !important;
+            height: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: flex-start !important;
           }
         }
       `}</style>
