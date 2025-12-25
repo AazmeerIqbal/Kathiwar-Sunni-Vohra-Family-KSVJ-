@@ -17,6 +17,7 @@ const MembersListPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("default");
   const [daughterFilter, setDaughterFilter] = useState("all"); // "all", "show", "hide"
+  const [statusFilter, setStatusFilter] = useState("all"); // "all", "active", "inactive"
   const [printTimestamp, setPrintTimestamp] = useState("");
 
   // Fetch members from API (only if admin)
@@ -63,29 +64,6 @@ const MembersListPage = () => {
   const columns = useMemo(
     () => [
       {
-        accessorKey: "PicPath",
-        header: "",
-        cell: ({ row }) => {
-          const picPath = row.original.PicPath;
-          const memberId = row.original.memberId;
-          const imagePath = getImagePath(picPath, memberId);
-
-          return (
-            <div className="flex items-center justify-center">
-              <img
-                src={imagePath}
-                alt={`${row.original.MemberName || "Member"}`}
-                className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover border-2 border-gray-200 shadow-sm"
-                onError={(e) => {
-                  e.target.src = "/DummyUser.png";
-                }}
-              />
-            </div>
-          );
-        },
-        size: 80,
-      },
-      {
         accessorKey: "MemberShipNo",
         header: "MemberShip No.",
         cell: ({ getValue }) => (
@@ -131,14 +109,26 @@ const MembersListPage = () => {
           <span className="text-gray-700">{getValue() || "N/A"}</span>
         ),
       },
+      // {
+      //   accessorKey: "DughterOfJamat",
+      //   header: "DOJ",
+      //   cell: ({ getValue }) => {
+      //     const val = getValue();
+      //     const yesValues = ["1", 1, true, "true", "yes", "y", "t"];
+      //     const isYes = yesValues.some((v) => v === val || `${val}`.toLowerCase() === `${v}`.toLowerCase());
+      //     return <span className="text-gray-700">{isYes ? "Yes" : "No"}</span>;
+      //   },
+      // },
       {
-        accessorKey: "DughterOfJamat",
-        header: "Daughter Of Jamat",
+        accessorKey: "Dues",
+        header: "Dues",
         cell: ({ getValue }) => {
-          const val = getValue();
-          const yesValues = ["1", 1, true, "true", "yes", "y", "t"];
-          const isYes = yesValues.some((v) => v === val || `${val}`.toLowerCase() === `${v}`.toLowerCase());
-          return <span className="text-gray-700">{isYes ? "Yes" : "No"}</span>;
+          const dues = getValue();
+          return (
+            <span className={`${dues > 0 ? 'text-red-500' : 'text-green-500'} font-medium`}>
+              {dues !== null && dues !== undefined ? dues : "0"}
+            </span>
+          );
         },
       },
     ],
@@ -199,6 +189,22 @@ const MembersListPage = () => {
     }
     // If "all", no filtering needed
 
+    // Filter by Status
+    if (statusFilter === "active") {
+      // Show only active members (Status = 1)
+      data = data.filter((member) => {
+        const status = member.Status;
+        return status === 1 || status === "1" || status === true;
+      });
+    } else if (statusFilter === "inactive") {
+      // Show only inactive members (Status = 0)
+      data = data.filter((member) => {
+        const status = member.Status;
+        return status === 0 || status === "0" || status === false;
+      });
+    }
+    // If "all", no filtering needed
+
     // Sorting
     if (sortOption === "default" || sortOption === "family-asc") {
       // Default: Sort by FamilyName A-Z
@@ -218,7 +224,7 @@ const MembersListPage = () => {
     }
 
     return data;
-  }, [members, searchQuery, daughterFilter, sortOption]);
+  }, [members, searchQuery, daughterFilter, statusFilter, sortOption]);
 
   const handlePrint = () => {
     const now = new Date();
@@ -312,9 +318,9 @@ const MembersListPage = () => {
             />
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-gray-700">Filters</label>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
+            <div className="flex gap-2 flex-col">
+              <label className="text-sm w-3/4 sm:w-32 font-medium text-gray-700 pl-2">Arrange By</label>
               <select
                 value={sortOption}
                 onChange={(e) => {
@@ -329,8 +335,8 @@ const MembersListPage = () => {
               </select>
             </div>
 
-            <div className="flex items-center gap-2">
-              {/* <label className="text-sm font-medium text-gray-700">Daughter Of Jamat</label> */}
+            <div className="flex gap-2 flex-col">
+              <label className="text-sm w-3/4 sm:w-32 font-medium text-gray-700 text-left pl-2">DOJ</label>
               <select
                 value={daughterFilter}
                 onChange={(e) => {
@@ -340,8 +346,24 @@ const MembersListPage = () => {
                 className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               >
                 <option value="all">All</option>
-                <option value="show">Show Daughter Of Jamat</option>
+                <option value="show">Show DOJ</option>
                 <option value="hide">Show Members</option>
+              </select>
+            </div>
+
+            <div className="flex gap-2 flex-col">
+              <label className="text-sm w-3/4 sm:w-32 font-medium text-gray-700 text-left pl-2">Status</label>
+              <select
+                value={statusFilter}
+                onChange={(e) => {
+                  setStatusFilter(e.target.value);
+                  setPagination({ ...pagination, pageIndex: 0 });
+                }}
+                className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              >
+                <option value="all">All</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
               </select>
             </div>
           </div>
@@ -489,7 +511,7 @@ const MembersListPage = () => {
               <thead>
                 <tr className="bg-gray-200 text-left text-sm">
                   {columns
-                    .filter((col) => col.accessorKey !== "DughterOfJamat")
+                    .filter((col) => col.accessorKey !== "DughterOfJamat" && col.accessorKey !== "PicPath")
                     .map((col) => (
                       <th key={col.accessorKey || col.id} className="px-3 py-2 border-b border-gray-300">
                         {typeof col.header === "string"
@@ -500,14 +522,14 @@ const MembersListPage = () => {
                             })}
                       </th>
                     ))}
-                  {/* Empty header cell for signature column */}
-                  <th className="px-3 py-2 border-b border-gray-300 w-32"></th>
+                  {/* Signature header cell */}
+                  <th className="px-3 py-2 border-b border-gray-300 w-32">Signature</th>
                 </tr>
               </thead>
               <tbody className="text-sm">
                 {filteredData.length === 0 ? (
                   <tr>
-                    <td colSpan={columns.filter((col) => col.accessorKey !== "DughterOfJamat").length + 1} className="text-center py-6">
+                    <td colSpan={columns.filter((col) => col.accessorKey !== "DughterOfJamat" && col.accessorKey !== "PicPath").length + 1} className="text-center py-6">
                       No members available.
                     </td>
                   </tr>
@@ -515,7 +537,7 @@ const MembersListPage = () => {
                   filteredData.map((row, idx) => (
                     <tr key={idx} className="border-b border-gray-200">
                       {columns
-                        .filter((col) => col.accessorKey !== "DughterOfJamat")
+                        .filter((col) => col.accessorKey !== "DughterOfJamat" && col.accessorKey !== "PicPath")
                         .map((col) => {
                           const value =
                             typeof col.cell === "function"
@@ -530,8 +552,12 @@ const MembersListPage = () => {
                             </td>
                           );
                         })}
-                      {/* Empty cell for signature */}
-                      <td className="px-3 py-2 align-top w-32"></td>
+                      {/* Signature cell with line */}
+                      <td className="px-3 align-top w-32">
+                        {/* <div className="border-b-2 border-gray-700 pt-1" style={{ minHeight: '20px' }}>
+                          &nbsp;
+                        </div> */}
+                      </td>
                     </tr>
                   ))
                 )}

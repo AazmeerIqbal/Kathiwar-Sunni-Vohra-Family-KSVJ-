@@ -10,7 +10,7 @@ export async function GET(req) {
     const MemberName = await pool
       .request()
       .query(
-        "SELECT m.memberId, MemberShipNo, m.CNICNo, m.MemberName, m.MemberFatherName, PicPath, Age18, DughterOfJamat, m.FamilyID, f.FamilyName FROM tb_member_mst AS m LEFT JOIN tb_member_family_mst AS f ON m.FamilyID = f.FamilyID;"
+        "SELECT m.memberId, MemberShipNo, m.CNICNo, m.MemberName, m.MemberFatherName, PicPath, Age18, DughterOfJamat, Status, m.FamilyID, f.FamilyName, Dues=convert(numeric(18,0),dbo.GetMemberFeeStatus(M.memberID,M.CompanyID,'21'))FROM tb_member_mst AS m LEFT JOIN tb_member_family_mst AS f ON m.FamilyID = f.FamilyID;"
       );
 
     //  "SELECT m.MemberId, m.MemberName, m.MemberFatherName, m.FamilyID, f.FamilyName FROM tb_member_mst m INNER JOIN tb_member_family_mst f ON m.FamilyID = f.FamilyID"
