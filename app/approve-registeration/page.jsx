@@ -5,9 +5,14 @@ import { Loader2 } from "lucide-react"; // Import the loader icon if used
 import { useSearchParams } from "next/navigation";
 import Loader from "@/components/ui/Loader";
 import { CiCircleCheck } from "react-icons/ci";
+import { FiPrinter } from "react-icons/fi"; // Added printer icon
 import Swal from "sweetalert2";
 import { MdOutlineFileUpload } from "react-icons/md";
 import PersonalInformation from "@/components/approve-registeration/PersonalInformation";
+import ProfessionalInformation from "@/components/approve-registeration/ProfessionalInformation";
+import EducationalInformation from "@/components/approve-registeration/EducationalInformation";
+import WifeInformation from "@/components/approve-registeration/WifeInformation";
+import ChildrenInformation from "@/components/approve-registeration/ChildrenInformation";
 import { useRouter } from "next/navigation";
 
 const page = () => {
@@ -18,6 +23,11 @@ const page = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [SbumitLoading, setSbumitLoading] = useState(false);
+
+  const [ProfessionalDetail, setProfessionalDetail] = useState([]);
+  const [EducationData, setEducationData] = useState([]);
+  const [wifeData, setWifeData] = useState([]);
+  const [childrenDetail, setChildrenDetail] = useState([]);
 
   useEffect(() => {
     const encryptedMemberId = searchParams.get("memberId");
@@ -98,6 +108,35 @@ const page = () => {
           referenceMemberFatherName: member.ReferenceMemberFatherName,
           referenceNumber: member.ReferenceNum,
         });
+
+        // Fetch extra info
+        try {
+          const [profRes, eduRes, wifeRes, childRes] = await Promise.all([
+            fetch(`/api/getProfessionalInformation/${id}`, { method: "POST" }),
+            fetch(`/api/getEductionalInformation/${id}`, { method: "POST" }),
+            fetch(`/api/getWifeInformation/${id}`),
+            fetch(`/api/getChildrenInformation/${id}`),
+          ]);
+
+          if (profRes.ok) {
+            const profData = await profRes.json();
+            setProfessionalDetail(profData.data || []);
+          }
+          if (eduRes.ok) {
+            const eduData = await eduRes.json();
+            setEducationData(eduData.data || []);
+          }
+          if (wifeRes.ok) {
+            const wifeDataRes = await wifeRes.json();
+            setWifeData(wifeDataRes.data || []);
+          }
+          if (childRes.ok) {
+            const childData = await childRes.json();
+            setChildrenDetail(childData.data || []);
+          }
+        } catch (err) {
+          console.error("Error fetching extra details", err);
+        }
       } else {
         setError("No member data found for the given ID.");
       }
@@ -348,13 +387,19 @@ const page = () => {
           <p className="mt-2 text-gray-700">Loading member data...</p>
         </div>
       ) : (
-        <div className="p-4 text-gray-900">
+        <div className="p-4 text-gray-900 print:p-0 print:m-0">
           <div className="flex sm:flex-row flex-col justify-between sm:items-center mb-3">
             <div>
               <h1 className="text-xl font-bold">Approve New Registeration</h1>
             </div>
-            <div>
-              {" "}
+            <div className="flex gap-2 print:hidden">
+              <button
+                onClick={() => window.print()}
+                className="flex gap-1 items-center my-2 hover:opacity-70 py-2 px-4 bg-blue-600 text-[#f1f1f1] font-semibold rounded-3xl"
+              >
+                <FiPrinter className="text-xl my-auto" />
+                Print Details
+              </button>
               <button
                 onClick={handleApprove}
                 className=" flex gap-1 items-center my-2 hover:opacity-70 py-2 px-4 bg-[#22583e] text-[#f1f1f1] font-semibold rounded-3xl "
@@ -379,6 +424,12 @@ const page = () => {
             handleCellNumber={handleCellNumber}
             handleCNICChange={handleCNICChange}
           />
+          <section className="flex flex-col gap-2 mb-6">
+            <ProfessionalInformation ProfessionalDetail={ProfessionalDetail} />
+            <EducationalInformation EducationData={EducationData} />
+            <WifeInformation wifeData={wifeData} FatherNames={FatherNames} FamilyDropDown={FamilyDropDown} />
+            <ChildrenInformation childrenDetail={childrenDetail} />
+          </section>
         </div>
       )}
     </div>

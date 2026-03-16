@@ -34,8 +34,9 @@ const Dashboard = ({ children }) => {
   return (
     <>
       <div className="flex">
-        <Sidebar onToggle={handleSidebarToggle}>
-          <Link href="/">
+        <div className="print:hidden h-full">
+          <Sidebar onToggle={handleSidebarToggle}>
+            <Link href="/">
             <SidebarItem
               icon={<LayoutDashboard size={20} />}
               text="Dashboard"
@@ -77,8 +78,9 @@ const Dashboard = ({ children }) => {
           <SidebarItem icon={<Settings size={20} />} text="Settings" />
           <SidebarItem icon={<LifeBuoy size={20} />} text="Help" />
         </Sidebar>
+        </div>
         <div className="w-full">
-          <div className="w-full h-16 border-r shadow-sm">
+          <div className="w-full h-16 border-r shadow-sm print:hidden">
             <div className="flex justify-between h-full items-center p-6">
               <div className="font-bold md:text-3xl text-2xl">
                 {isSidebarOpen ? (

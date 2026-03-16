@@ -48,3 +48,44 @@ body {
   scrollbar-width: thin; /* "auto" or "thin" */
   scrollbar-color: #888 #f1f1f1; /* thumb and track color */
 }
+
+@media print {
+  /* Force table layouts on print, overriding the responsive max-width/flex logic */
+  table {
+    width: 100% !important;
+  }
+  thead {
+    display: table-header-group !important;
+  }
+  tbody {
+    display: table-row-group !important;
+  }
+  tr {
+    display: table-row !important;
+    page-break-inside: avoid;
+  }
+  td, th {
+    display: table-cell !important;
+    padding: 8px !important;
+  }
+  /* Hide mobile headers */
+  .block.md\:hidden.text-xs.font-bold {
+    display: none !important;
+  }
+  /* Show table headers */
+  tr.hidden.md\:table-row {
+    display: table-row !important;
+  }
+  
+  /* Reset background for print */
+  body {
+    background-color: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  /* Page breaks */
+  @page {
+    margin: 1cm;
+  }
+}
